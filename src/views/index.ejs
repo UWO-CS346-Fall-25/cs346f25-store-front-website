@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> - CS346 Project</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="container">
+        <a href="/" class="logo">CS346 Project</a>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <% if (user) { %>
+            <li><a href="/profile">Profile</a></li>
+            <li>
+              <form action="/users/logout" method="POST" style="display: inline;">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn-link">Logout</button>
+              </form>
+            </li>
+          <% } else { %>
+            <li><a href="/users/login">Login</a></li>
+            <li><a href="/users/register">Register</a></li>
+          <% } %>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Welcome to CS346 Project Template</h1>
+      <p>A secure Node.js + Express + EJS + PostgreSQL application template</p>
+    </section>
+
+    <section class="features">
+      <h2>Features</h2>
+      <div class="feature-grid">
+        <div class="feature">
+          <h3>🔒 Security</h3>
+          <p>Built with Helmet, CSRF protection, and secure sessions</p>
+        </div>
+        <div class="feature">
+          <h3>🗄️ Database</h3>
+          <p>PostgreSQL with parameterized queries for SQL injection prevention</p>
+        </div>
+        <div class="feature">
+          <h3>🎨 Templates</h3>
+          <p>EJS templating engine for dynamic HTML rendering</p>
+        </div>
+        <div class="feature">
+          <h3>📦 Modern Stack</h3>
+          <p>Node.js 20, Express 4, and best practices</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="getting-started">
+      <h2>Getting Started</h2>
+      <ol>
+        <li>Copy <code>.env.example</code> to <code>.env</code> and configure your environment variables</li>
+        <li>Set up your PostgreSQL database</li>
+        <li>Run <code>npm run migrate</code> to create database tables</li>
+        <li>Run <code>npm run seed</code> to populate with sample data</li>
+        <li>Start the development server with <code>npm run dev</code></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 CS346 Project. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>
