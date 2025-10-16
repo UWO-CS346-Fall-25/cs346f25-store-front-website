@@ -13,7 +13,7 @@ const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
 const session = require('express-session');
-const csrf = require('csurf');
+const morgan = require('morgan');
 
 // Initialize Express app
 const app = express();
@@ -35,6 +35,14 @@ app.use(
 // View engine setup - EJS
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev", {
+  // Skip logging for health checks and static files
+  skip: (req) =>
+    req.path === '/health' ||
+    req.path === '/favicon.ico' ||
+    req.path.startsWith('/static/')
+}));
 
 // Body parsing middleware
 app.use(express.json());
@@ -67,53 +75,31 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
+// ==============================
+// =========== Routes ===========
+// ==============================
+
+
+
 // Import and use your route files here
 // Example:
 // const indexRouter = require('./routes/index');
 // app.use('/', indexRouter);
 
 
+app.get('/health', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.status(200).json({
+    ok: true,
+    uptime_s: Math.round(process.uptime()),
+    now: new Date().toISOString(),
+  });
+});
+
+
 app.use('/', require('./routes/pages.routes'));
 
-app.use('/', require('./routes/error.routes'));
+app.use(require('./routes/error.routes'));
 
-// // Placeholder home route
-// app.get('/', csrfProtection, (req, res) => {
-//   res.render('index', {
-//     title: 'Home',
-//     csrfToken: req.csrfToken(),
-//   });
-// });
-
-// // 404 handler
-// app.use((req, res) => {
-//   res.status(404).render('error', {
-//     title: 'Page Not Found',
-//     message: 'The page you are looking for does not exist.',
-//     error: { status: 404 },
-//   });
-// });
-
-// // Error handler
-// // eslint-disable-next-line no-unused-vars
-// app.use((err, req, res, _next) => {
-//   // Log error in development
-//   if (process.env.NODE_ENV === 'development') {
-//     console.error(err.stack);
-//   }
-
-//   // Set locals, only providing error details in development
-//   res.locals.message = err.message;
-//   res.locals.error = process.env.NODE_ENV === 'development' ? err : {};
-
-//   // Render error page
-//   res.status(err.status || 500);
-//   res.render('error', {
-//     title: 'Error',
-//     message: err.message,
-//     error: res.locals.error,
-//   });
-// });
 
 module.exports = app;
