@@ -59,7 +59,7 @@ app.use(
 
 // CSRF protection
 // Note: Apply this after session middleware
-const csrfProtection = csrf({ cookie: false });
+// const csrfProtection = csrf({ cookie: false });
 
 // Make CSRF token available to all views
 app.use((req, res, next) => {
@@ -73,42 +73,47 @@ app.use((req, res, next) => {
 // const indexRouter = require('./routes/index');
 // app.use('/', indexRouter);
 
-// Placeholder home route
-app.get('/', csrfProtection, (req, res) => {
-  res.render('index', {
-    title: 'Home',
-    csrfToken: req.csrfToken(),
-  });
-});
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).render('error', {
-    title: 'Page Not Found',
-    message: 'The page you are looking for does not exist.',
-    error: { status: 404 },
-  });
-});
+app.use('/', require('./routes/pages.routes'));
 
-// Error handler
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, _next) => {
-  // Log error in development
-  if (process.env.NODE_ENV === 'development') {
-    console.error(err.stack);
-  }
+app.use('/', require('./routes/error.routes'));
 
-  // Set locals, only providing error details in development
-  res.locals.message = err.message;
-  res.locals.error = process.env.NODE_ENV === 'development' ? err : {};
+// // Placeholder home route
+// app.get('/', csrfProtection, (req, res) => {
+//   res.render('index', {
+//     title: 'Home',
+//     csrfToken: req.csrfToken(),
+//   });
+// });
 
-  // Render error page
-  res.status(err.status || 500);
-  res.render('error', {
-    title: 'Error',
-    message: err.message,
-    error: res.locals.error,
-  });
-});
+// // 404 handler
+// app.use((req, res) => {
+//   res.status(404).render('error', {
+//     title: 'Page Not Found',
+//     message: 'The page you are looking for does not exist.',
+//     error: { status: 404 },
+//   });
+// });
+
+// // Error handler
+// // eslint-disable-next-line no-unused-vars
+// app.use((err, req, res, _next) => {
+//   // Log error in development
+//   if (process.env.NODE_ENV === 'development') {
+//     console.error(err.stack);
+//   }
+
+//   // Set locals, only providing error details in development
+//   res.locals.message = err.message;
+//   res.locals.error = process.env.NODE_ENV === 'development' ? err : {};
+
+//   // Render error page
+//   res.status(err.status || 500);
+//   res.render('error', {
+//     title: 'Error',
+//     message: err.message,
+//     error: res.locals.error,
+//   });
+// });
 
 module.exports = app;
