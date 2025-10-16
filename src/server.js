@@ -15,8 +15,10 @@ const PORT = process.env.PORT || 3000;
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  require('node-color-log').color('yellow').append(`Environment: `)
+    .bold().log(`${process.env.NODE_ENV || 'development'}`);
+  require('node-color-log').color('green').append(`Server up on `)
+    .bold().log(`http://localhost:${PORT}`);
 });
 
 // Handle server errors
