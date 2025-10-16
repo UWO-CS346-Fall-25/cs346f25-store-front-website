@@ -86,16 +86,8 @@ app.use((req, res, next) => {
 // const indexRouter = require('./routes/index');
 // app.use('/', indexRouter);
 
-
-app.get('/health', (req, res) => {
-  res.set('Cache-Control', 'no-store');
-  res.status(200).json({
-    ok: true,
-    uptime_s: Math.round(process.uptime()),
-    now: new Date().toISOString(),
-  });
-});
-
+const health = require("express-pretty-errors").health;
+app.get("/health", health({ package: require("../package.json") }));
 
 app.use('/', require('./routes/pages.routes'));
 
