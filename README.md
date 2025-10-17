@@ -127,6 +127,9 @@ Comprehensive documentation is available in the `docs/` folder:
 - [Node.js Documentation](https://nodejs.org/docs/)
 - [OWASP Security Guide](https://owasp.org/)
 
+## 🗺️ Roadmap
+High-level plan is tracked in **[docs/TODO.md](docs/TODO.md)**.
+
 ## Contributing
 
 This is a teaching template. Feel free to:
