@@ -86,7 +86,15 @@ app.use((req, res, next) => {
 // const indexRouter = require('./routes/index');
 // app.use('/', indexRouter);
 
+const { configure, registry } = require('express-page-registry');
+// These are parameters that will be passed to every page by default unless overridden
+configure({
+  meta: { author: 'Michael Hulbert, CloseRange', title: 'Raven\'s Wares', description: "Your one-stop shop for all things Ravens!" }
+});
+
 app.use('/', require('./routes/pages.routes'));
+
+
 
 // Health check and error handling using express-pretty-errors
 const { notFound, errorHandler, health } = require("express-pretty-errors");
@@ -101,5 +109,15 @@ app.use(errorHandler({
     panel: "#0e0f12"             // darker card in dark mode
   }
 }));
+
+
+// Log registered pages to console
+const rows = registry.all().map(p => ({
+  Title: p.meta?.title || '',
+  Route: p.route,
+  View: p.view,
+}));
+console.table(rows);
+
 
 module.exports = app;
