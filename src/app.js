@@ -86,10 +86,18 @@ app.use((req, res, next) => {
 // const indexRouter = require('./routes/index');
 // app.use('/', indexRouter);
 
+app.use(require('./middleware/auth-context')());
+
+
 const { configure, registry } = require('express-page-registry');
 // These are parameters that will be passed to every page by default unless overridden
 configure({
-  meta: { author: 'Michael Hulbert, CloseRange', title: 'Raven\'s Wares', description: "Your one-stop shop for all things Ravens!" }
+  meta: {
+    author: 'Michael Hulbert, CloseRange',
+    title: 'Raven\'s Wares',
+    description: "Your one-stop shop for all things Ravens!",
+    siteName: "Raven's Wares",
+  }
 });
 
 app.use('/', require('./routes/pages.routes'));

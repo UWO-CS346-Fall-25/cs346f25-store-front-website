@@ -1,0 +1,38 @@
+<% // Expected locals: // brandName (string), tagline (string) // ctaHref (string), ctaLabel (string) // links (array of
+  {href, label}) // heroImage (optional string URL) %>
+
+  <header class="hero" role="banner" aria-label="Site hero">
+    <div class="hero__inner">
+      <h1 class="hero__title">
+        <%= brandName %>
+      </h1>
+      <% if (typeof tagline==='string' && tagline.trim()) { %>
+        <p class="hero__tagline">
+          <%= tagline %>
+        </p>
+        <% } %>
+
+          <p class="hero__cta">
+            <a class="button button--primary" href="<%= ctaHref || '/shop' %>">
+              <%= ctaLabel || 'Shop Now' %>
+            </a>
+          </p>
+
+          <% if (Array.isArray(links) && links.length) { %>
+            <nav class="hero__quicklinks" aria-label="Quick links">
+              <ul>
+                <% links.forEach(l=> { %>
+                  <li><a href="<%= l.href %>">
+                      <%= l.label %>
+                    </a></li>
+                  <% }) %>
+              </ul>
+            </nav>
+            <% } %>
+    </div>
+
+    <% if (heroImage) { %>
+      <!-- Decorative background image; mark hidden for screen readers -->
+      <div class="hero__bg" aria-hidden="true" style="--hero-image: url('<%= heroImage %>');"></div>
+      <% } %>
+  </header>

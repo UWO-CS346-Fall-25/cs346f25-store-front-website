@@ -1,25 +1,53 @@
-<header>
-  <nav>
-    <div class="container">
-      <a href="/" class="logo">Raven's Wares</a>
-      <ul class="nav-links">
+<header class="site-header" role="banner">
+  <div class="container nav-inner">
+    <a href="/" class="brand" aria-label="Home">
+      <!-- Remove width/height attributes; control via CSS so it won't clip -->
+      <img src="/images/RavensTreasures_Logo.png" alt="Raven's Treasures logo" decoding="async">
+      <span class="brand-title"><%- siteName %></span>
+    </a>
+
+    <button class="nav-toggle" aria-label="Toggle menu" aria-controls="primary-nav" aria-expanded="false">
+      <span class="nav-toggle__bar"></span>
+      <span class="nav-toggle__bar"></span>
+      <span class="nav-toggle__bar"></span>
+    </button>
+
+    <nav id="primary-nav" class="nav" aria-label="Primary">
+      <ul class="nav-list" role="list">
         <li><a href="/">Home</a></li>
-        <li><a href="/about">Chat</a></li>
-        <li><a href="/help">Help</a></li>
-        <li><a href="/cart">Cart</a></li>
-        <% if (user) { %>
-          <li><a href="/profile">Profile</a></li>
-          <li>
-          <li><a href="/users/account">Account</a></li>
-          <form action="/users/logout" method="POST" style="display: inline;">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <button type="submit" class="btn-link">Logout</button>
-          </form>
-          </li>
-          <% } else { %>
-            <li><a href="/users/login">Account</a></li>
-            <% } %>
+        <li><a href="/contact">Contact</a></li>
+
+        <% if (isAdmin) { %>
+          <li><a href="/auth/admin">Admin</a></li>
+          <% } %>
+
+            <li>
+              <a href="/shop/cart">
+                Cart<%= cartCount> 0 ? ' (' + cartCount + ')' : '' %>
+              </a>
+            </li>
+
+            <% if (user !=null) { %>
+              <li><a href="/auth/account">Account</a></li>
+              <li><a href="/auth/logout">Logout</a></li>
+              <% } else { %>
+                <li><a href="/auth/login">Login</a></li>
+                <li><a href="/auth/signup">Sign up</a></li>
+                <% } %>
       </ul>
-    </div>
-  </nav>
+    </nav>
+  </div>
 </header>
+
+<script>
+  (function () {
+    var btn = document.querySelector('.nav-toggle');
+    var nav = document.getElementById('primary-nav');
+    if (!btn || !nav) return;
+    btn.addEventListener('click', function () {
+      var open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!open));
+      nav.classList.toggle('is-open', !open);
+    });
+  })();
+</script>
