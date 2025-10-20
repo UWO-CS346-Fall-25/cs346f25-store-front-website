@@ -1,52 +1,47 @@
 (function () {
-  document.querySelectorAll('[data-hscroll]').forEach((wrap) => {
-    const track = wrap.querySelector('.hscroll__track');
-    const prev = wrap.querySelector('[data-hscroll-prev]');
-    const next = wrap.querySelector('[data-hscroll-next]');
-    if (!track || !prev || !next) return;
+  document.querySelectorAll('[data-hscroll] .hscroll__track').forEach((track) => {
+    // Only enable drag scrolling for mouse pointers
+    let isDown = false, startX = 0, startLeft = 0, dragged = false, pid = null;
 
-    const pageAmount = () => track.clientWidth; // scroll by a "view" (next 4/3/2/1 cards)
-
-    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-
-    const updateButtons = () => {
-      const maxX = track.scrollWidth - track.clientWidth;
-      const x = track.scrollLeft;
-      prev.disabled = x <= 2;
-      next.disabled = x >= maxX - 2;
+    const onPointerDown = (e) => {
+      if (e.pointerType !== 'mouse') return; // <-- ignore touch/pen
+      isDown = true;
+      dragged = false;
+      pid = e.pointerId;
+      track.setPointerCapture(pid);
+      startX = e.clientX;
+      startLeft = track.scrollLeft;
+      track.classList.add('is-dragging');
     };
 
-    const snapToNearest = () => {
-      // Let scroll snap do the heavy lifting; just update buttons after settle
-      updateButtons();
+    const onPointerMove = (e) => {
+      if (!isDown) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 3) dragged = true;
+      track.scrollLeft = startLeft - dx;
     };
 
-    const page = (dir) => {
-      const amount = pageAmount();
-      track.scrollBy({ left: dir * amount, behavior: 'smooth' });
-      // buttons will update on 'scroll' event
+    const endDrag = () => {
+      if (!isDown) return;
+      isDown = false;
+      try { track.releasePointerCapture(pid); } catch { }
+      track.classList.remove('is-dragging');
+      pid = null;
     };
 
-    prev.addEventListener('click', () => page(-1));
-    next.addEventListener('click', () => page(1));
-    track.addEventListener('scroll', () => {
-      // throttle with rAF for perf
-      if (track._raf) cancelAnimationFrame(track._raf);
-      track._raf = requestAnimationFrame(updateButtons);
-    });
-    window.addEventListener('resize', updateButtons);
+    track.addEventListener('pointerdown', onPointerDown);
+    track.addEventListener('pointermove', onPointerMove);
+    track.addEventListener('pointerup', endDrag);
+    track.addEventListener('pointercancel', endDrag);
+    track.addEventListener('pointerleave', endDrag);
 
-    // Keyboard support on focus
-    track.setAttribute('tabindex', '0');
-    track.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); page(1); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); page(-1); }
-    });
-
-    // Init
-    updateButtons();
+    // Prevent clicks after a mouse-drag (don’t affect touch)
+    track.addEventListener('click', (e) => {
+      if (dragged) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
   });
 })();
+
 
 (function () {
   const AUTOPLAY_MS = 4000;          // time between auto-advances

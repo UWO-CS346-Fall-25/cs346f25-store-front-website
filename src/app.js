@@ -93,7 +93,6 @@ app.use(require('./middleware/auth-context')());
 
 
 const { configure, registry } = require('express-page-registry'); // page-registry is my own package for managing page routes
-// These are default parameters that will be passed to every page unless overridden
 
 // TODO: Replace with real data source
 let products = require('./controllers/_randomItemGenerator')(24);
@@ -105,6 +104,7 @@ let categories = Array.from({ length: 6 }, (_, i) => ({
   imageUrl: "/images/RavensTreasures_Logo.jpg" // optional fallback if no products
 }));
 
+// These are default parameters that will be passed to every page unless overridden
 configure({
   meta: {
     author: 'Michael Hulbert, CloseRange',
@@ -112,15 +112,9 @@ configure({
     description: "Your one-stop shop for all things Ravens!",
     siteName: "Raven's Treasures",
     tagline: 'Handmade goods crafted with care.',
-    heroImage: '/images/RavensTreasures_Logo.png',
     featuredProducts: featuredProducts,
     categories: categories,
     allProducts: products,
-    reviews: [
-      { rating: 5, text: 'Beautiful quality and fast shipping!', author: 'Alison' },
-      { rating: 5, text: 'Perfect gift. Will buy again.', author: 'Mark' },
-      { rating: 4, text: 'Loved the craftsmanship.', author: 'Sofia' }
-    ],
   }
 });
 

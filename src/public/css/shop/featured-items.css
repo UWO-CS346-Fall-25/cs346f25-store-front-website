@@ -108,14 +108,16 @@
 }
 
 /* Make horizontal panning “just work” on touch and avoid rubber-banding into the page */
+/* Let the browser lock to the user's gesture direction */
 .hscroll__track {
-  touch-action: pan-x;
-  /* allow horizontal touch panning */
-  overscroll-behavior-x: contain;
-  /* prevent parent scroll from hijacking */
-  cursor: grab;
-  /* hint that it’s draggable on desktop */
+  touch-action: auto;
+  /* allow both directions; browser locks intelligently */
+  overscroll-behavior-inline: contain;
+  /* keep horizontal overscroll from bouncing the page */
+  -webkit-overflow-scrolling: touch;
+  /* smooth on iOS */
 }
+
 
 .hscroll__track.is-dragging {
   cursor: grabbing;
