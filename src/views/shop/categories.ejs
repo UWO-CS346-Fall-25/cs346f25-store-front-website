@@ -1,0 +1,43 @@
+<% if (categories && categories.length) { %>
+  <section class="section" aria-labelledby="categories-heading">
+    <div class="container">
+      <%- include('../partials/category-title', { categoryTitle: 'Shop by Category' , url: '/shop' ,
+        urlText: 'View all →' }) %>
+
+        <ul class="grid grid--categories" role="list">
+          <% categories.forEach(function (c) { const imgs=(c.products || []) .map(p=> p.imageUrl)
+            .slice(0, 4);
+            const href = '/shop?category=' + encodeURIComponent(c.slug || c.name);
+            %>
+            <li class="grid__item">
+              <a class="card category" href="<%= href %>" aria-label="Browse <%= c.name %>">
+                <figure class="category__media">
+                  <div class="category__stage">
+                    <div class="category__grid category__grid--<%= imgs.length %>">
+                      <% imgs.forEach(function(src){ %>
+                        <div class="category__cell">
+                          <img src="<%= src %>" alt="" loading="lazy" decoding="async">
+                        </div>
+                        <% }) %>
+                    </div>
+                  </div>
+                </figure>
+
+                <!-- overlay label -->
+                <div class="category__body">
+                  <span class="category__label">
+                    <%= c.name %>
+                  </span>
+                  <% if (typeof c.count==='number' ) { %>
+                    <span class="category__count">
+                      <%= c.count %> items
+                    </span>
+                    <% } %>
+                </div>
+              </a>
+            </li>
+            <% }) %>
+        </ul>
+    </div>
+  </section>
+  <% } %>

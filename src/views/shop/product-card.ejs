@@ -1,0 +1,37 @@
+<article class="card product" itemscope itemtype="https://schema.org/Product">
+  <a class="product__link" href="<%= url %>" aria-label="<%= (product?.name || 'View product') %>">
+    <figure class="product__media">
+      <!-- square stage -->
+      <div class="product__stage">
+        <img class="product__img" src="<%= product?.imageUrl%>"
+          alt="<%= product?.alt || product?.name || 'Product image' %>" loading="lazy" decoding="async">
+      </div>
+
+      <% if (product?.badge) { %>
+        <figcaption class="product__badge">
+          <%= product.badge %>
+        </figcaption>
+        <% } %>
+    </figure>
+
+    <div class="product__body">
+      <h3 class="product__name" itemprop="name">
+        <%= product?.name || 'Untitled Product' %>
+      </h3>
+      <p class="product__price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+        <span itemprop="priceCurrency" content="USD">$</span>
+        <span itemprop="price">
+          <%= price.toFixed ? price.toFixed(2) : price %>
+        </span>
+      </p>
+    </div>
+
+    <!-- Slide-up reveal on hover -->
+    <div class="product__reveal" aria-hidden="true">
+      <p class="product__blurb">
+        <%= (product?.blurb || product?.description || 'Handmade with care.' ) %>
+      </p>
+      <p class="product__cta">View details →</p>
+    </div>
+  </a>
+</article>

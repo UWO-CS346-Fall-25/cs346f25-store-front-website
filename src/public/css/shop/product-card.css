@@ -1,0 +1,181 @@
+.card.product {
+  position: relative;
+  border: 1px solid #eee;
+  border-radius: .9rem;
+  overflow: hidden;
+  background: #fff;
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+
+@media (hover:hover) {
+  .card.product:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .08);
+  }
+}
+
+.card.product:focus-within {
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 3px rgba(155, 135, 245, .35);
+}
+
+/* --- Media (square stage, centered image, minimal whitespace) --- */
+.product__media {
+  position: relative;
+}
+
+.product__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  /* modern square */
+  background: #fafafa;
+  /* subtle, can be transparent */
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+@supports not (aspect-ratio: 1 / 1) {
+  .product__stage::before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+  }
+
+  .product__stage {
+    position: relative;
+  }
+
+  .product__img {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+  }
+}
+
+.product__img {
+  max-width: 96%;
+  max-height: 96%;
+  object-fit: contain;
+  display: block;
+  transition: transform .25s ease;
+}
+
+@media (hover:hover) {
+  .card.product:hover .product__img {
+    transform: scale(1.03);
+  }
+}
+
+/* --- Badge --- */
+.product__badge {
+  position: absolute;
+  top: .6rem;
+  left: .6rem;
+  z-index: 4;
+  background: #000;
+  color: #fff;
+  padding: .25rem .5rem;
+  border-radius: .5rem;
+  font-size: .75rem;
+}
+
+/* --- Name/Price overlay (sits over the image) --- */
+.product__body {
+  position: absolute;
+  left: .6rem;
+  right: .6rem;
+  bottom: .6rem;
+  z-index: 2;
+  padding: .5rem .65rem;
+  border-radius: .6rem;
+
+  /* translucent, readable on any photo */
+  background: color-mix(in srgb, #ffffff 70%, transparent);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .5rem;
+
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.product__name {
+  margin: 0;
+  font-size: .95rem;
+  color: var(--tint-overlay);
+  line-height: 1.25;
+}
+
+.product__price {
+  margin: 0;
+  font-size: .95rem;
+  color: var(--tint-overlay);
+}
+
+/* --- Slide-up reveal on hover/focus --- */
+.product__reveal {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .92) 24%, #fff 60%);
+  transform: translateY(100%);
+  transition: transform .3s ease;
+  padding: .9rem 1rem 1rem;
+}
+
+.product__blurb {
+  margin: 0 0 .35rem;
+  color: #333;
+  font-size: .92rem;
+  line-height: 1.35;
+  max-height: 3.6em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.product__cta {
+  margin: 0;
+  font-weight: 600;
+  font-size: .9rem;
+  color: var(--tint-alt);
+}
+
+/* Handoff: when reveal slides up, fade the overlay down a touch */
+@media (hover:hover) {
+  .card.product:hover .product__reveal {
+    transform: translateY(0);
+  }
+
+  .card.product:hover .product__body {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.card.product:focus-within .product__reveal {
+  transform: translateY(0);
+}
+
+.card.product:focus-within .product__body {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+/* --- Reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+
+  .card.product,
+  .product__img,
+  .product__reveal,
+  .product__body {
+    transition: none;
+  }
+}

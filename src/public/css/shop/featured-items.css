@@ -1,0 +1,179 @@
+/* --- Horizontal scroller --- */
+.hscroll {
+  position: relative;
+}
+
+.hscroll__track {
+  --gap: 1rem;
+  --items-per-view: 4;
+  /* desktop default */
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - (var(--items-per-view) - 1)*var(--gap)) / var(--items-per-view));
+  gap: var(--gap);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: .25rem 0 .5rem;
+  margin: 0;
+  list-style: none;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.hscroll__item {
+  scroll-snap-align: start;
+}
+
+/* Arrows */
+.hscroll__nav {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: 999px;
+  border: 1px solid #e4e7ee;
+  background: #fff;
+  color: #222;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 5;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+  transition: transform .15s ease, opacity .15s ease;
+}
+
+.hscroll__nav--prev {
+  left: -.5rem;
+}
+
+.hscroll__nav--next {
+  right: -.5rem;
+}
+
+.hscroll__nav:hover {
+  transform: scale(1.05);
+}
+
+.hscroll__nav:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Edge fades (optional) */
+.hscroll__fade {
+  position: absolute;
+  inset-block: 0;
+  inline-size: 40px;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.hscroll__fade--left {
+  left: 0;
+  background: linear-gradient(90deg, #fff 60%, transparent);
+}
+
+.hscroll__fade--right {
+  right: 0;
+  background: linear-gradient(270deg, #fff 60%, transparent);
+}
+
+/* Responsive items-per-view */
+@media (max-width: 1100px) {
+  .hscroll__track {
+    --items-per-view: 3;
+  }
+}
+
+@media (max-width: 780px) {
+  .hscroll__track {
+    --items-per-view: 2;
+  }
+}
+
+@media (max-width: 520px) {
+  .hscroll__track {
+    --items-per-view: 2;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .hscroll__track {
+    scroll-behavior: auto;
+  }
+}
+
+/* Make horizontal panning “just work” on touch and avoid rubber-banding into the page */
+.hscroll__track {
+  touch-action: pan-x;
+  /* allow horizontal touch panning */
+  overscroll-behavior-x: contain;
+  /* prevent parent scroll from hijacking */
+  cursor: grab;
+  /* hint that it’s draggable on desktop */
+}
+
+.hscroll__track.is-dragging {
+  cursor: grabbing;
+}
+
+/* === Smallest view: text no longer over the image === */
+@media (max-width: 520px) {
+
+  /* Let the image stage breathe and separate from text */
+  .product__stage {
+    border-bottom: 1px solid #eee;
+  }
+
+  /* Move name/price into normal flow under the image */
+  .product__body {
+    position: static;
+    /* not overlayed */
+    left: auto;
+    right: auto;
+    bottom: auto;
+    z-index: auto;
+
+    background: transparent;
+    /* remove translucent bg */
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+
+    padding: .75rem .9rem;
+    /* comfortable spacing */
+    margin-top: .25rem;
+    border-radius: 0;
+
+    opacity: 1;
+    /* ensure visible */
+    transform: none;
+    /* cancel hover transition offset */
+  }
+
+  .product__name,
+  .product__price {
+    font-size: .95rem;
+  }
+
+  /* Disable the slide-up reveal on tiny screens (hover doesn’t exist) */
+  .product__reveal {
+    position: static;
+    /* stack below name/price if you keep it */
+    transform: none;
+    padding: .25rem .9rem .9rem;
+    border-top: 0;
+    display: none;
+    /* hide entirely on smallest view */
+  }
+
+  /* In case hover/focus rules were fading the body out */
+  .card.product:hover .product__body,
+  .card.product:focus-within .product__body {
+    opacity: 1;
+    transform: none;
+  }
+}

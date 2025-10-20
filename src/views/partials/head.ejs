@@ -7,7 +7,13 @@
   <link rel="stylesheet" href="/css/colors.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/navbar.css">
-
-
   <script src="/js/nav.js" defer></script>
+
+  <% for(const _css of (cssFiles || [])) { %>
+    <link rel="stylesheet" href="/css/<%= _css %>">
+    <% } %>
+      <% for(const _js of (scripts || [])) { %>
+        <script src="/js/<%= _js %>" defer></script>
+        <% } %>
+
 </head>

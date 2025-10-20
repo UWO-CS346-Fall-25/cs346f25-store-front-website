@@ -1,11 +1,27 @@
 <!DOCTYPE html>
-
 <html lang="en">
-<%- include('partials/head') %>
+<%- include('partials/head', { cssFiles: ['shop/categories.css', 'shop/product-card.css' , 'shop/featured-items.css' ],
+  scripts: ['featured-items.js']}) %>
 
   <body>
     <%- include('partials/navbar') %>
 
+      <main id="main-content">
+
+        <!-- FEATURED PRODUCTS -->
+        <%- include('shop/featured-products') %>
+
+          <!-- CATEGORIES -->
+          <%- include('shop/categories') %>
+
+            <!-- TODO : About / Story -->
+
+            <!-- TODO: Reviews / Social Proof -->
+
+
+      </main>
+
+      <!-- TODO: Newsletter? / Footer-->
       <%- include('partials/footer') %>
   </body>
 
