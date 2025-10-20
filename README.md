@@ -102,6 +102,14 @@ A teaching template for building secure web applications with Node.js, Express, 
 - **Parameterized SQL**: SQL injection prevention with prepared statements
 - **Environment Variables**: Sensitive data kept out of source code
 
+## Pages
+- **Health**: `/health` A simple health page to display the status of the site
+- **Home**: `/` Home page showing the basic shop
+- **Contact**: `/contact` Simple contact page
+- **Auth**: No functionality yet
+   * `/login` Simple login page
+   * `/signup` Signup page
+
 ## Documentation
 
 Comprehensive documentation is available in the `docs/` folder:
