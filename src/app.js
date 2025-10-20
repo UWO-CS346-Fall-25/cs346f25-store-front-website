@@ -112,6 +112,7 @@ configure({
     heroImage: '/images/RavensTreasures_Logo.png',
     featuredProducts: featuredProducts,
     categories: categories,
+    allProducts: products,
     reviews: [
       { rating: 5, text: 'Beautiful quality and fast shipping!', author: 'Alison' },
       { rating: 5, text: 'Perfect gift. Will buy again.', author: 'Mark' },

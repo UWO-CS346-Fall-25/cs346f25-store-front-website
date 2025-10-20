@@ -11,12 +11,18 @@
         <!-- FEATURED PRODUCTS -->
         <%- include('shop/featured-products') %>
 
-          <!-- CATEGORIES -->
-          <%- include('shop/categories') %>
+          <%- include('shop/scrollable-products', { title: 'New Arrivals' , products: allProducts.slice(4, 8),
+            url: '/shop' } ) %>
 
-            <!-- TODO : About / Story -->
+            <!-- Testing empty category-->
+            <%- include('shop/scrollable-products', { title: 'Summertime Exclusives' , products: [], url: '/shop' } ) %>
 
-            <!-- TODO: Reviews / Social Proof -->
+              <!-- CATEGORIES -->
+              <%- include('shop/categories') %>
+
+                <!-- TODO : About / Story -->
+
+                <!-- TODO: Reviews / Social Proof -->
 
 
       </main>

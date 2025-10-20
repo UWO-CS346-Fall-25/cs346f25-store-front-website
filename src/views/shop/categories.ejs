@@ -1,8 +1,7 @@
 <% if (categories && categories.length) { %>
   <section class="section" aria-labelledby="categories-heading">
     <div class="container">
-      <%- include('../partials/category-title', { categoryTitle: 'Shop by Category' , url: '/shop' ,
-        urlText: 'View all →' }) %>
+      <%- include('../partials/category-title', { title: 'Shop by Category' , url: '/shop' , urlText: 'View all →' }) %>
 
         <ul class="grid grid--categories" role="list">
           <% categories.forEach(function (c) { const imgs=(c.products || []) .map(p=> p.imageUrl)

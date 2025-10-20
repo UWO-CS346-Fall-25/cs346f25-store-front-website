@@ -1,0 +1,33 @@
+<section class="section" aria-labelledby="<%= title %>-heading">
+  <div class="container">
+    <div class="section__header">
+      <h2 id="<%= title %>-heading">
+        <%= title %>
+      </h2>
+      <% if (url) { %><a href="<%= url %>" class="link">View all →</a>
+        <% } %>
+    </div>
+
+    <% if (products && products.length) { %>
+      <div class="hscroll" data-hscroll data-autoplay="false" data-loop="true">
+
+
+        <button class="hscroll__nav hscroll__nav--prev" type="button" aria-label="Scroll left"
+          data-hscroll-prev>‹</button>
+
+        <button class="hscroll__nav hscroll__nav--next" type="button" aria-label="Scroll right"
+          data-hscroll-next>›</button>
+
+        <ul class="hscroll__track" role="list" aria-label="<%= title || 'Items' %>">
+          <% products.forEach(function (p) { %>
+            <li class="hscroll__item">
+              <%- include('product-card', { product: p, url: p.url, price: p.price }) %>
+            </li>
+            <% }) %>
+        </ul>
+      </div>
+      <% } else { %>
+        <p class="muted">No products to show yet. Check back soon.</p>
+        <% } %>
+  </div>
+</section>
