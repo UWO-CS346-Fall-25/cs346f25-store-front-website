@@ -1,0 +1,231 @@
+:root {
+  --contact-bg: var(--tint-light);
+  --contact-fg: var(--tint-overlay);
+  --contact-muted: var(--tint-overlay);
+  --contact-accent: var(--tint-alt);
+  --contact-accent-2: var(--tint-highlight);
+  --contact-border: var(--tint-alt);
+  --contact-radius: 12px;
+  --contact-shadow: 0 8px 28px rgba(0, 0, 0, .06);
+}
+
+/* Layout */
+.container--narrow {
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: 2.25rem;
+  background: var(--contact-bg);
+  color: var(--contact-fg);
+}
+
+.lead {
+  color: var(--contact-muted);
+  margin-bottom: 1rem;
+}
+
+.contact-card {
+  background: #fff;
+  border: 1px solid var(--contact-border);
+  border-radius: var(--contact-radius);
+  box-shadow: var(--contact-shadow);
+  padding: 1.25rem;
+  margin-top: 1rem;
+}
+
+
+/* Contact info links */
+.section a {
+  color: var(--contact-accent);
+  text-decoration: none;
+}
+
+.section a:hover {
+  text-decoration: underline;
+}
+
+/* Form grid */
+.contact-form {
+  margin-top: 1rem;
+}
+
+.contact-form .form-row {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 700px) {
+  .contact-form .form-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .contact-form .form-row> :only-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Labels & help text */
+.contact-form label {
+  display: inline-block;
+  margin-bottom: .35rem;
+  color: var(--contact-muted);
+  font-weight: 600;
+  letter-spacing: .1px;
+}
+
+.contact-form .help {
+  margin-top: .35rem;
+  color: var(--contact-muted);
+  font-size: .9rem;
+}
+
+/* Inputs */
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  border: 1px solid var(--contact-border);
+  border-radius: 10px;
+  padding: .7rem .8rem;
+  background: #fff;
+  color: var(--contact-fg);
+  font: inherit;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+.contact-form textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+/* Focus states */
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--contact-accent) 55%, var(--contact-border));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--contact-accent) 25%, transparent);
+}
+
+/* Error/success alerts (optional) */
+.alert {
+  padding: .75rem 1rem;
+  border-radius: 10px;
+  margin: 0 0 1rem;
+  border: 1px solid transparent;
+}
+
+.alert--success {
+  background: #e8f5ef;
+  border-color: #b9e1cd;
+  color: #215f44;
+}
+
+.alert--error {
+  background: #fdecea;
+  border-color: #f5c2bf;
+  color: #7a1f19;
+}
+
+/* Button */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .7rem 1rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.button--primary {
+  background: var(--contact-accent);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(107, 92, 255, .24);
+}
+
+.button--primary:hover {
+  filter: brightness(0.96);
+}
+
+.button--primary:active {
+  transform: translateY(1px);
+}
+
+/* Optional yellow “tint” outline variant */
+.button--tint {
+  background: #fffbe6;
+  /* soft yellow */
+  color: var(--contact-fg);
+  border-color: color-mix(in srgb, var(--contact-accent-2) 50%, var(--contact-border));
+}
+
+.button--tint:hover {
+  background: #fff6c7;
+}
+
+/* Accessibility */
+.contact-form :focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--contact-accent) 75%, transparent);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+  .button,
+  .contact-form input,
+  .contact-form textarea {
+    transition: none;
+  }
+}
+
+/* Hide honeypot if you kept it in the markup (harmless here) */
+.hp {
+  position: absolute;
+  left: -5000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+
+/* Ensure predictable sizing */
+.contact-form *,
+.contact-form *::before,
+.contact-form *::after {
+  box-sizing: border-box;
+}
+
+/* Base: single column */
+.contact-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Two-up row on wider screens */
+@media (min-width: 700px) {
+  .contact-form .form-row--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1rem;
+    /* explicit, though gap already covers it */
+  }
+
+  /* If one child only, span full width */
+  .contact-form .form-row--two> :only-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Inputs fill their grid cell */
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  display: block;
+}
