@@ -18,13 +18,10 @@ bind(router, {
 bind(router, {
   route: '/contact',
   view: 'contact',
-  meta: {
-    title: 'Contact',
-    description: 'Questions about an order or a custom item? Get in touch.'
-  },
-  nav: { label: 'Contact', order: 99, visible: true },
+  meta: { title: 'Contact' },
+  middleware: [csrfProtection],
   getData: async (req, res) => ({
-    flash: { success: req.flash?.('success'), error: req.flash?.('error') } // if using connect-flash
+    csrfToken: req.csrfToken()
   })
 });
 
