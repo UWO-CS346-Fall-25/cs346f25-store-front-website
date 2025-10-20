@@ -41,5 +41,18 @@ bind(router, {
   })
 });
 
+bind(router, {
+  route: '/signup',
+  view: 'auth/signup',
+  meta: {
+    title: 'Signup',
+    description: 'Create a new account to view orders and manage details.'
+  },
+  getData: async (req, _res) => ({
+    flash: {
+      error: req.flash ? req.flash('error') : null
+    }
+  })
+});
 
 module.exports = router;

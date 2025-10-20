@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('../partials/head', { cssFiles: ['auth.css' ], scripts: ['auth-login.js', 'auth-common.js' ]}) %>
+<%- include('../partials/head', { cssFiles: ['auth.css'], scripts: ['auth-signup.js', 'auth-common.js' ] }) %>
 
   <body>
     <%- include('../partials/navbar') %>
 
-      <main class="section" aria-labelledby="login-heading">
+      <main class="section" aria-labelledby="signup-heading">
         <div class="container container--narrow">
-          <h1 id="login-heading">
-            <%= 'Log in' %>
-          </h1>
-          <p class="lead">Welcome back! Enter your details to continue.</p>
+          <h1 id="signup-heading">Sign up</h1>
+          <p class="lead">Create your account to save your details and view orders.</p>
 
-          <!-- Optional flash placeholders -->
+          <!-- Optional flash placeholders (if you wire them later) -->
           <% if (flash && flash.error) { %>
             <div class="alert alert--error" role="alert">
               <%= flash.error %>
@@ -23,6 +21,13 @@
                 <% if (csrfToken) { %>
                   <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                   <% } %>
+
+                    <div class="form-row">
+                      <div>
+                        <label for="name">Full name</label>
+                        <input id="name" name="name" type="text" autocomplete="name" required>
+                      </div>
+                    </div>
 
                     <div class="form-row">
                       <div>
@@ -51,29 +56,28 @@
                             </svg>
                           </button>
                         </div>
-                        <div class="auth-actions">
-                          <label class="checkbox">
-                            <input type="checkbox" name="remember" value="1"> Remember me
-                          </label>
-                          <a class="link" href="/forgot">Forgot password?</a>
-                        </div>
                       </div>
                     </div>
 
 
+
                     <div class="form-row">
-                      <button class="button button--primary" type="submit">Log in</button>
+                      <label class="checkbox">
+                        <input type="checkbox" name="terms" required>
+                        I agree to the <a class="link" href="/terms">Terms</a> and <a class="link"
+                          href="/privacy">Privacy Policy</a>.
+                      </label>
                     </div>
 
-                    <p class="muted">Don’t have an account? <a class="link" href="/signup">Sign up</a></p>
+                    <div class="form-row">
+                      <button class="button button--primary" type="submit">Create account</button>
+                    </div>
+
+                    <p class="muted">Already have an account? <a class="link" href="/login">Log in</a></p>
               </form>
         </div>
       </main>
 
-
-
-
-      <!-- TODO: Newsletter? / Footer-->
       <%- include('../partials/footer') %>
   </body>
 

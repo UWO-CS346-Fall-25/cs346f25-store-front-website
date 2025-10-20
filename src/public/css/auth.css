@@ -1,0 +1,215 @@
+/* =========================
+   Vars
+   ========================= */
+:root {
+  --field-h: 44px;
+  --field-pad-x: .8rem;
+}
+
+/* =========================
+   Layout
+   ========================= */
+.container--narrow {
+  max-width: 520px;
+  margin-inline: auto;
+}
+
+.auth-form {
+  margin-top: 1rem;
+}
+
+.auth-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* =========================
+   Fields (uniform sizing)
+   ========================= */
+.auth-form *,
+.auth-form *::before,
+.auth-form *::after {
+  box-sizing: border-box;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"],
+.auth-form textarea {
+  width: 100%;
+  height: var(--field-h);
+  padding: 0 var(--field-pad-x);
+  border: 1px solid #e6e8eb;
+  border-radius: 10px;
+  background: #fff;
+  color: #0f1a2b;
+  font: inherit;
+  line-height: 1.2;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+.auth-form textarea {
+  height: auto;
+  padding: .7rem var(--field-pad-x);
+}
+
+/* =========================
+   Password field + toggle
+   ========================= */
+.password-input {
+  position: relative;
+}
+
+.password-input input {
+  padding-right: calc(var(--field-h) + .25rem);
+  /* reserve space for the button */
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: .35rem;
+  transform: translateY(-50%);
+  width: var(--field-h);
+  height: calc(var(--field-h) - 8px);
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+  color: #6b7280;
+}
+
+.password-toggle:hover {
+  color: #3b3f46;
+}
+
+/* Swap icons via aria-pressed */
+.password-toggle .icon-eye,
+.password-toggle .icon-eye-off {
+  display: none;
+  fill: currentColor;
+}
+
+.password-toggle[aria-pressed="false"] .icon-eye {
+  display: block;
+}
+
+.password-toggle[aria-pressed="true"] .icon-eye-off {
+  display: block;
+}
+
+/* Small layout tidy for any helper cluster under the field */
+.password-field .cluster {
+  margin-top: .35rem;
+}
+
+/* =========================
+   Focus & a11y
+   (later rules prioritized)
+   ========================= */
+.auth-form input:focus,
+.auth-form textarea:focus,
+.password-toggle:focus-visible {
+  outline: none;
+  border-color: #9b87f5;
+  box-shadow: 0 0 0 3px rgba(155, 135, 245, .25);
+}
+
+/* Also provide :focus-visible ring for any child controls */
+.auth-form :focus-visible {
+  outline: 2px solid #9b87f5;
+  outline-offset: 2px;
+}
+
+/* =========================
+   Buttons, links, text
+   ========================= */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .7rem 1rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.button--primary {
+  background: var(--tint-alt);
+  color: var(--tint-light);
+  box-shadow: 0 6px 18px rgba(107, 92, 255, .24);
+}
+
+.button--primary:hover {
+  filter: brightness(0.96);
+}
+
+.lead {
+  color: var(--tint-overlay);
+  margin-bottom: 1rem;
+}
+
+.muted {
+  color: #6b7280;
+}
+
+.link {
+  color: var(--tint-alt);
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   Checkbox & actions row
+   ========================= */
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  color: #6b7280;
+}
+
+.auth-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .75rem;
+}
+
+/* =========================
+   Alerts
+   ========================= */
+.alert {
+  padding: .75rem 1rem;
+  border-radius: 10px;
+  margin: 0 0 1rem;
+  border: 1px solid transparent;
+}
+
+.alert--error {
+  background: #fdecea;
+  border-color: #f5c2bf;
+  color: var(--danger-color);
+}
+
+/* =========================
+   Reduced motion
+   ========================= */
+@media (prefers-reduced-motion: reduce) {
+
+  .button,
+  .auth-form input,
+  .auth-form textarea {
+    transition: none;
+  }
+}
