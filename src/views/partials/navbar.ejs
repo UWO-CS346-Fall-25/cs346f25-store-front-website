@@ -14,20 +14,21 @@
         <% if (isAdmin) { %>
           <li><a href="/auth/admin">Admin</a></li>
           <% } %>
+            <% if (false) { %>}
+              <li>
+                <a href="/shop/cart">
+                  Cart<%= cartCount> 0 ? ' (' + cartCount + ')' : '' %>
+                </a>
+              </li>
+              <% } %>
 
-            <li>
-              <a href="/shop/cart">
-                Cart<%= cartCount> 0 ? ' (' + cartCount + ')' : '' %>
-              </a>
-            </li>
-
-            <% if (user !=null) { %>
-              <li><a href="/account">Account</a></li>
-              <li><a href="/logout">Logout</a></li>
-              <% } else { %>
-                <li><a href="/login">Login</a></li>
-                <li><a href="/signup">Sign up</a></li>
-                <% } %>
+                <% if (user !=null) { %>
+                  <li><a href="/account">Account</a></li>
+                  <li><a href="/logout">Logout</a></li>
+                  <% } else { %>
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/signup">Sign up</a></li>
+                    <% } %>
       </ul>
     </nav>
   </div>
