@@ -1,5 +1,7 @@
 
 
+// A simple random item generator for testing purposes
+
 module.exports = function randomItemGenerator(count) {
   return Array.from({ length: 24 }, (_, i) => ({
     id: i + 1,
