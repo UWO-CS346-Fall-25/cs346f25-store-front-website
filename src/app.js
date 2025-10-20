@@ -41,7 +41,10 @@ app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev", {
   skip: (req) =>
     req.path === '/health' ||
     req.path === '/favicon.ico' ||
-    req.path.startsWith('/static/')
+    req.path.startsWith('/static/') ||
+    req.path.startsWith('/images/') ||
+    req.path.startsWith('/css/') ||
+    req.path.startsWith('/js/')
 }));
 
 // Body parsing middleware
