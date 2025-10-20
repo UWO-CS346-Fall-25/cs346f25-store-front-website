@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { cssFiles: ['login.css' ], scripts: ['auth-login.js']}) %>
+
+  <body>
+    <%- include('../partials/navbar') %>
+
+      <main class="section" aria-labelledby="login-heading">
+        <div class="container container--narrow">
+          <h1 id="login-heading">
+            <%= 'Log in' %>
+          </h1>
+          <p class="lead">Welcome back! Enter your details to continue.</p>
+
+          <!-- Optional flash placeholders -->
+          <% if (flash && flash.error) { %>
+            <div class="alert alert--error" role="alert">
+              <%= flash.error %>
+            </div>
+            <% } %>
+
+              <form class="auth-form" action="#" method="post" onsubmit="return false;">
+                <% if (csrfToken) { %>
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <% } %>
+
+                    <div class="form-row">
+                      <div>
+                        <label for="email">Email</label>
+                        <input id="email" name="email" type="email" autocomplete="email" required>
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="password-field">
+                        <label for="password">Password</label>
+                        <div class="password-input">
+                          <input id="password" name="password" type="password" autocomplete="current-password" required>
+                          <button type="button" class="password-toggle" aria-label="Show password">👁️</button>
+                        </div>
+                        <div class="cluster" style="justify-content: space-between;">
+                          <label class="checkbox">
+                            <input type="checkbox" name="remember" value="1"> Remember me
+                          </label>
+                          <a class="link" href="/forgot">Forgot password?</a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <button class="button button--primary" type="submit">Log in</button>
+                    </div>
+
+                    <p class="muted">Don’t have an account? <a class="link" href="/signup">Sign up</a></p>
+              </form>
+        </div>
+      </main>
+
+
+
+
+      <!-- TODO: Newsletter? / Footer-->
+      <%- include('../partials/footer') %>
+  </body>
+
+</html>

@@ -25,5 +25,21 @@ bind(router, {
   })
 });
 
+bind(router, {
+  route: '/login',
+  view: 'auth/login',
+  meta: {
+    title: 'Log in',
+    description: 'Access your account to view orders and manage details.'
+  },
+  getData: async (req, _res) => ({
+    // If you use connect-flash, this will feed flash messages to the view
+    flash: {
+      error: req.flash ? req.flash('error') : null
+    }
+    // csrfToken is injected by the binder if present
+  })
+});
+
 
 module.exports = router;
