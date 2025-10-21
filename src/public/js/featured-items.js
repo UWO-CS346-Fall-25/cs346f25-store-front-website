@@ -1,43 +1,53 @@
 (function () {
   document.querySelectorAll('[data-hscroll] .hscroll__track').forEach((track) => {
-    // Only enable drag scrolling for mouse pointers
-    let isDown = false, startX = 0, startLeft = 0, dragged = false, pid = null;
+    let isDown = false;
+    let startX = 0;
+    let startLeft = 0;
+    let dragDist = 0;
+    const DRAG_THRESHOLD = 10; // px
 
-    const onPointerDown = (e) => {
-      if (e.pointerType !== 'mouse') return; // <-- ignore touch/pen
+    // Mouse down starts possible drag
+    track.addEventListener('mousedown', (e) => {
+      // Only left-click and only on mouse (ignore touchpads emulating mousedown)
+      if (e.button !== 0) return;
       isDown = true;
-      dragged = false;
-      pid = e.pointerId;
-      track.setPointerCapture(pid);
+      dragDist = 0;
       startX = e.clientX;
       startLeft = track.scrollLeft;
       track.classList.add('is-dragging');
-    };
+      // Avoid text selection while dragging
+      document.documentElement.style.userSelect = 'none';
+    });
 
-    const onPointerMove = (e) => {
+    // Move scrolls horizontally if mouse is down
+    track.addEventListener('mousemove', (e) => {
       if (!isDown) return;
       const dx = e.clientX - startX;
-      if (Math.abs(dx) > 3) dragged = true;
+      dragDist = Math.max(dragDist, Math.abs(dx));
       track.scrollLeft = startLeft - dx;
-    };
+      e.preventDefault(); // prevent selecting images/text while dragging
+    });
 
+    // Mouse up ends drag
     const endDrag = () => {
       if (!isDown) return;
       isDown = false;
-      try { track.releasePointerCapture(pid); } catch { }
       track.classList.remove('is-dragging');
-      pid = null;
+      document.documentElement.style.userSelect = '';
+      // do nothing else; we'll decide on click whether to suppress
     };
+    track.addEventListener('mouseleave', endDrag);
+    track.addEventListener('mouseup', endDrag);
 
-    track.addEventListener('pointerdown', onPointerDown);
-    track.addEventListener('pointermove', onPointerMove);
-    track.addEventListener('pointerup', endDrag);
-    track.addEventListener('pointercancel', endDrag);
-    track.addEventListener('pointerleave', endDrag);
-
-    // Prevent clicks after a mouse-drag (don’t affect touch)
+    // Suppress click ONLY if we actually dragged far enough
     track.addEventListener('click', (e) => {
-      if (dragged) { e.preventDefault(); e.stopPropagation(); }
+      if (dragDist <= DRAG_THRESHOLD) return; // treat as a real click
+      // If it was a drag, block the click on links inside the track
+      const a = e.target.closest('a');
+      if (a) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
     }, true);
   });
 })();
