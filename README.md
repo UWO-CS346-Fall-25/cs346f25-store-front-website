@@ -1,15 +1,38 @@
-# CS346 Semester Project Template
+# 🛍️ Ravens Treasures – Handmade Storefront
 
-A teaching template for building secure web applications with Node.js, Express, EJS, and PostgreSQL.
 
 ## Features
+### 🧭 Pages
+- 🏠 **Home**	            - Hero banner, featured products carousel, quick navigation links
+- 🛒 **Shop**	            - Product grid with filters, categories, and search
+- 📦 **Product Details**   - Images, description, price, variants, related items
+- 🧾 **Cart & Checkout**	- (Planned) Shopping cart + payment integration
+- 👤 **Account**	         - Login, signup, and user profile pages
+- 📞 **Contact**	         - Simple contact form & social links
+- 📜 **Policies**   	      - Shipping, refunds, and privacy pages
+### 🔧 Backend
+- Product management: add/edit/remove items
+- Order & stock overview
+- Analytics dashboard
 
+## 🔧 Tech Stack
+|        Tech      |          Solution        |
+| :--------------- | :----------------------- |
+| 🚀**Server**       | Node.js 20 + Express 4   |
+| 🧾**Templating**   | EJS (server-rendered)    |
+| 🎨**Styling**      | Vanilla CSS              |
+| 📝**Scripts**      | Vanilla JS               |
+| 🗄️**Data**         | Supabase & mock data     |
+| 🔒**Security**     | Helmet, CSRF tokens      |
+| 📜**Clean Code**   | ESLint, Prettier         |
+
+
+- 🚀 **Server** - **Node.js 20** + **Express 4**
 - 🚀 **Node.js 20** + **Express 4** - Modern JavaScript backend
 - 🎨 **EJS** - Server-side templating
 - 🗄️ **PostgreSQL** - Reliable relational database
 - 🔒 **Security First** - Helmet, CSRF protection, secure sessions
 - 📝 **Clean Code** - ESLint, Prettier, best practices
-- 🎓 **Educational** - Well-documented, instructional code
 
 ## Quick Start
 
@@ -27,7 +50,7 @@ A teaching template for building secure web applications with Node.js, Express, 
 3. **Set up environment variables**
    ```bash
    cp .env.example .env
-   # Edit .env with your database credentials
+   # Edit .env with your credentials
    ```
 
 4. **Set up PostgreSQL database**
@@ -67,6 +90,7 @@ A teaching template for building secure web applications with Node.js, Express, 
 │   ├── models/             # Database models
 │   ├── views/              # EJS templates
 │   └── public/             # Static files (CSS, JS, images)
+│   └── middleware/         # Express middleware
 ├── db/
 │   ├── migrations/         # Database migrations
 │   ├── seeds/              # Database seeds
@@ -137,14 +161,6 @@ Comprehensive documentation is available in the `docs/` folder:
 
 ## 🗺️ Roadmap
 High-level plan is tracked in **[docs/TODO.md](docs/TODO.md)**.
-
-## Contributing
-
-This is a teaching template. Feel free to:
-- Report issues
-- Suggest improvements
-- Submit pull requests
-- Use it for your own projects
 
 ## License
 
