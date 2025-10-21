@@ -111,4 +111,21 @@ body {
   background: #fafbff;
 }
 
-/* then add class="section section--tint" */
+html {
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+}
+
+
+/* Safety reset (if not already applied globally) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
