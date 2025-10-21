@@ -94,15 +94,19 @@
 
   .site-header .container {
     display: block;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
     padding: .75rem 0;
   }
 
   .brand {
-    flex-direction: column;
+    flex-direction: row;
+    display: flex;
     align-items: center;
-    gap: .35rem;
-    margin-bottom: .5rem;
-    text-align: center;
+    gap: .6rem;
+    margin-bottom: 0;
+    text-align: left;
   }
 
   /* adjust if you want smaller/larger */
