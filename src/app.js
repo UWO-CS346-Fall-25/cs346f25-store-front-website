@@ -94,16 +94,6 @@ app.use(require('./middleware/auth-context')());
 
 const { configure, registry } = require('express-page-registry'); // page-registry is my own package for managing page routes
 
-// TODO: Replace with real data source
-let products = require('./controllers/_randomItemGenerator')(24);
-let featuredProducts = Array.from({ length: 12 }, (_, i) => products[i]);
-let categories = Array.from({ length: 6 }, (_, i) => ({
-  name: `Category ${i + 1}`,
-  products: products.slice(i * 4, i * 4 + 4), // 4 products per category
-  count: 4,
-  imageUrl: "/images/RavensTreasures_Logo.jpg" // optional fallback if no products
-}));
-
 // These are default parameters that will be passed to every page unless overridden
 configure({
   meta: {
@@ -111,10 +101,7 @@ configure({
     title: 'Raven\'s Treasures',
     description: "Your one-stop shop for all things Ravens!",
     siteName: "Raven's Treasures",
-    tagline: 'Handmade goods crafted with care.',
-    featuredProducts: featuredProducts,
-    categories: categories,
-    allProducts: products,
+    tagline: 'Handmade goods crafted with care.'
   }
 });
 
