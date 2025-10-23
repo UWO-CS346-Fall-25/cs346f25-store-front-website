@@ -1,0 +1,26 @@
+<header class="hero" role="region" aria-label="Shop hero">
+  <div class="container hero__inner">
+    <div class="hero__content">
+      <p class="hero__title">Your one-stop shop for unique and handcrafted items.</p>
+
+      <div class="hero__actions">
+        <a class="btn btn--accent" href="/sales">View Sales</a>
+        <!-- <a class="btn btn--ghost" href="/shop/new">New Arrivals</a> -->
+      </div>
+    </div>
+
+    <div class="hero__media">
+      <% if (featuredProducts && featuredProducts.length) { %>
+        <figure class="hero__stage">
+          <img
+            src="<%= featuredProducts[0].imageUrl %>"
+            alt="Featured product from Raven’s Treasures"
+            decoding="async"
+            loading="eager">
+        </figure>
+      <% } else { %>
+        <div class="hero__empty">No featured products yet. Check back soon.</div>
+      <% } %>
+    </div>
+  </div>
+</header>

@@ -91,6 +91,12 @@ app.use((req, res, next) => {
 
 app.use(require('./middleware/auth-context')());
 
+app.use((req, res, next) => {
+  res.locals.currentPath = req.path;
+  res.locals.currentUrl = req.originalUrl;
+  res.locals.isPath = (p) => req.path === p;
+  next();
+});
 
 const { configure, registry } = require('express-page-registry'); // page-registry is my own package for managing page routes
 

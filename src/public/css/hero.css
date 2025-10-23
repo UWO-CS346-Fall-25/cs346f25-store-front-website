@@ -1,0 +1,125 @@
+/* --- Hero wrapper --- */
+.hero {
+  position: relative;
+  background: linear-gradient(to bottom, var(--tint-color-2), var(--tint-color-3));
+  color: var(--tint-overlay);
+  border-bottom: 1px solid #e9e9e9;
+  padding: clamp(1.25rem, 3vw, 2.5rem) 0;
+}
+
+/* two-column layout */
+.hero__inner {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  /* text / image */
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+}
+
+/* text side */
+.hero__title {
+  font-size: clamp(1.6rem, 3.6vw, 2.4rem);
+  line-height: 1.15;
+  margin: 0 0 .35rem 0;
+}
+
+.hero__tagline {
+  max-width: 42ch;
+  opacity: .9;
+  margin: 0 0 1rem 0;
+}
+
+/* actions */
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.5rem;
+  padding: .7rem 1rem;
+  border-radius: .5rem;
+  transition: transform .15s ease, background .2s ease, color .2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn--accent {
+  background: var(--tint-alt);
+  color: #fff;
+}
+
+.btn--accent:hover {
+  background: var(--tint-alt-2);
+}
+
+.btn--ghost {
+  border: 1px solid color-mix(in srgb, #434343 30%, transparent);
+  color: #fff;
+}
+
+/* image side */
+.hero__media {
+  justify-self: end;
+}
+
+/* The image "stage": controls size, crop, and rounding */
+.hero__stage {
+  inline-size: min(100%, 780px);
+  /* don’t let it explode on ultrawide */
+  block-size: clamp(220px, 38vh, 420px);
+  /* visual height (≈ your 400px) */
+  border-radius: .6rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+  background: #111;
+  /* fallback behind transparent pngs */
+  display: block;
+  margin: 0;
+  /* reset default figure margins */
+}
+
+.hero__stage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* fills stage, crops edges */
+}
+
+/* empty state */
+.hero__empty {
+  inline-size: min(100%, 780px);
+  block-size: clamp(220px, 38vh, 420px);
+  display: grid;
+  place-items: center;
+  border: 1px dashed color-mix(in srgb, #fff 35%, transparent);
+  border-radius: .6rem;
+  opacity: .85;
+}
+
+/* responsive stack */
+@media (max-width: 900px) {
+  .hero__inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .hero__media {
+    justify-self: center;
+  }
+
+  .hero__tagline {
+    margin-inline: auto;
+  }
+
+  .hero__actions {
+    display: inline-flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

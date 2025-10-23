@@ -1,34 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head', { cssFiles: ['shop/categories.css', 'shop/product-card.css' , 'shop/featured-items.css' ],
+<%- include('partials/head',
+{ cssFiles: ['shop/categories.css', 'shop/product-card.css' , 'shop/featured-items.css', 'hero.css'
+  ],
   scripts: ['featured-items.js']}) %>
+<body>
+  <%- include('partials/navbar') %>
 
-  <body>
-    <%- include('partials/navbar') %>
+    <main id="main-content">
 
-      <main id="main-content">
+      <%- include('partials/hero') %>
+      <!-- FEATURED PRODUCTS -->
+      <%- include('shop/featured-products') %>
 
-        <!-- FEATURED PRODUCTS -->
-        <%- include('shop/featured-products') %>
+      <%- include('shop/scrollable-products', { title: 'New Arrivals' , products: allProducts.slice(4, 8),
+        url: '/shop' } ) %>
 
-          <%- include('shop/scrollable-products', { title: 'New Arrivals' , products: allProducts.slice(4, 8),
-            url: '/shop' } ) %>
+      <!-- Testing empty category-->
+      <%- include('shop/scrollable-products', { title: 'Summertime Exclusives' , products: [], url: '/shop' } ) %>
 
-            <!-- Testing empty category-->
-            <%- include('shop/scrollable-products', { title: 'Summertime Exclusives' , products: [], url: '/shop' } ) %>
+      <!-- CATEGORIES -->
+      <%- include('shop/categories') %>
 
-              <!-- CATEGORIES -->
-              <%- include('shop/categories') %>
+      <!-- TODO : About / Story -->
 
-                <!-- TODO : About / Story -->
-
-                <!-- TODO: Reviews / Social Proof -->
+      <!-- TODO: Reviews / Social Proof -->
 
 
-      </main>
+    </main>
 
-      <!-- TODO: Newsletter? / Footer-->
-      <%- include('partials/footer') %>
-  </body>
+    <!-- TODO: Newsletter? / Footer-->
+    <%- include('partials/footer') %>
+</body>
 
 </html>
