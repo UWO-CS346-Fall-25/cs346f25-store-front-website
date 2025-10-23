@@ -76,7 +76,6 @@
   border-radius: .6rem;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
-  background: #111;
   /* fallback behind transparent pngs */
   display: block;
   margin: 0;

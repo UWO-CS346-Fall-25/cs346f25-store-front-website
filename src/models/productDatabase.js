@@ -2,7 +2,7 @@
 
 const cache = require('../controllers/cache.js');
 
-const _PROD_COUNT = 24;
+const _PROD_COUNT = 30;
 // TODO: Switch to database queries
 
 // Fisher–Yates shuffle
