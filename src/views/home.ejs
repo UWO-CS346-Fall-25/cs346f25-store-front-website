@@ -11,13 +11,23 @@
 
       <%- include('partials/hero') %>
       <!-- FEATURED PRODUCTS -->
-      <%- include('shop/featured-products') %>
+      <%- include('shop/scrollable-products', {
+        title: "New Arrivals",
+        products: newArrivals,
+        isFeatured: true}) %>
 
-      <%- include('shop/scrollable-products', { title: 'New Arrivals' , products: newArrivals,
-        url: '/shop' } ) %>
+      <%- include('shop/scrollable-products', {
+        title: 'Winter Deals' ,
+        products: allProducts.slice(10, 15),
+        url: '/shop',
+        isFeatured: false } ) %>
 
       <!-- Testing empty category-->
-      <%- include('shop/scrollable-products', { title: 'Summertime Exclusives' , products: [], url: '/shop' } ) %>
+      <%- include('shop/scrollable-products', {
+        title: 'Summertime Exclusives' ,
+        products: [],
+        url: '/shop',
+        isFeatured: false } ) %>
 
       <!-- CATEGORIES -->
       <%- include('shop/categories') %>

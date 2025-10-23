@@ -3,9 +3,9 @@
   position: relative;
   background: linear-gradient(to bottom, var(--tint-color-2), var(--tint-color-3));
   color: var(--tint-overlay);
-  border-bottom: 1px solid #e9e9e9;
   padding: clamp(1.25rem, 3vw, 2.5rem) 0;
 }
+
 
 /* two-column layout */
 .hero__inner {
@@ -71,8 +71,7 @@
 .hero__stage {
   inline-size: min(100%, 780px);
   /* don’t let it explode on ultrawide */
-  block-size: clamp(220px, 38vh, 420px);
-  /* visual height (≈ your 400px) */
+  block-size: clamp(220px, 38vh, 320px);
   border-radius: .6rem;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
