@@ -22,17 +22,16 @@ async function getProducts() {
     imageUrl: `https://ihnfcvhiejquvpktwiai.supabase.co/storage/v1/object/public/test_items/${i + 1}.png`,
     alt: `Product ${i + 1}`,
     slug: `product-${i + 1}`,
-    url: `/products/product-${i + 1}`
+    url: `/products/product-${i + 1}`,
+    description: `This is a description for Product ${i + 1}.`,
   }));
 };
 async function getFeatured() {
-  console.log('Fetching featured products...');
   const temp = Array.from({ length: _PROD_COUNT }, (_, i) => i + 1);
   shuffle(temp);
   return temp.slice(0, 8);
 }
 async function getCategories() {
-  console.log('Fetching all categories...');
   const temp = Array.from({ length: _PROD_COUNT }, (_, i) => i + 1);
   shuffle(temp);
 
