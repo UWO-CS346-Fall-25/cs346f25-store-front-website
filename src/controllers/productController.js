@@ -1,6 +1,7 @@
 
 
 const db = require('../models/productDatabase.js');
+const { get } = require('./cache.js');
 
 
 const productManager = {
@@ -33,6 +34,10 @@ const productManager = {
       products: products.filter(p => cat.products.includes(p.id))
     }));
   },
+  getNewArrivals: async function (count) {
+    return await db.getNewArrivals(count);
+  }
+
 };
 
 module.exports = productManager;

@@ -16,7 +16,8 @@ bind(router, {
     csrfToken: req.csrfToken(),
     allProducts: await productManager.getProducts(),
     featuredProducts: await productManager.getFeatured(),
-    categories: await productManager.getCategories()
+    categories: await productManager.getCategories(),
+    newArrivals: await productManager.getNewArrivals(8)
   })
 });
 
