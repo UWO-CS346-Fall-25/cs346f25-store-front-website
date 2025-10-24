@@ -10,17 +10,38 @@
     </div>
 
     <div class="hero__media">
-      <% if (featuredProducts && featuredProducts.length) { %>
+      <% if (products && products.length) { %>
         <figure class="hero__stage">
-          <img
-            src="<%= featuredProducts[0].imageUrl %>"
-            alt="Featured product from Raven’s Treasures"
-            decoding="async"
-            loading="eager">
+          <div class="hero__frame">
+            <img
+              src=""
+              alt="Featured product from Raven’s Treasures"
+              decoding="async"
+              loading="eager">
+          </div>
+
+          <!-- Indicators below the image -->
+          <div class="carousel__indicators" role="tablist" aria-label="Slide indicators">
+            <% products.forEach((p, i) => { %>
+              <button
+                class="carousel__indicator <%= i === 0 ? 'is-active' : '' %>"
+                role="tab"
+                aria-selected="<%= i === 0 ? 'true' : 'false' %>"
+                aria-controls="carousel-slide-<%= i %>"
+                data-slide="<%= i %>"
+                data-src="<%= p.imageUrl %>"
+                data-alt="<%= p.name || 'Featured product' %>"
+                data-href="/shop/product/<%= p.slug || p.id %>"
+                data-caption="<%= p.name || '' %>">
+                <span class="carousel__indicator-bar"></span>
+              </button>
+            <% }) %>
+          </div>
         </figure>
       <% } else { %>
         <div class="hero__empty">No featured products yet. Check back soon.</div>
       <% } %>
     </div>
+    
   </div>
 </header>

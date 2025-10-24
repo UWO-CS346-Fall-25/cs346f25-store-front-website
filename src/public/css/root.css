@@ -12,6 +12,7 @@
   --tint-alt-2: #21b977;
   --tint-light: #F0F0F3;
 
+  --carousel-interval: 5000ms;
 
   --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, sans-serif;

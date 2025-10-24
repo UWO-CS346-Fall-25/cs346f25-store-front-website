@@ -28,22 +28,43 @@
   letter-spacing: .2px;
 }
 
+/* Track (merged) */
 .hscroll__track {
   --gap: 1rem;
   --items-per-view: 4;
   /* desktop default */
+
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: calc((100% - (var(--items-per-view) - 1)*var(--gap)) / var(--items-per-view));
   gap: var(--gap);
-  overflow-x: auto;
-  overflow-y: hidden;
+
   padding: .25rem 0 .5rem;
   margin: 0;
   list-style: none;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
+
+  /* scrolling polish */
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge legacy */
+  touch-action: auto;
+  /* let browser lock gesture direction */
+  overscroll-behavior-inline: contain;
+  /* avoid page rubber-band */
+}
+
+.hscroll__track::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+  background: transparent;
 }
 
 .hscroll__item {
@@ -67,19 +88,6 @@
   z-index: 5;
   box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
   transition: transform .15s ease, opacity .15s ease;
-}
-
-.featured .hscroll__track {
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.featured .hscroll__track::-webkit-scrollbar {
-  height: 0;
-  width: 0;
-  background: transparent;
 }
 
 .hscroll__nav--prev {
@@ -119,6 +127,11 @@
   background: linear-gradient(270deg, #fff 60%, transparent);
 }
 
+/* Dragging affordance */
+.hscroll__track.is-dragging {
+  cursor: grabbing;
+}
+
 /* Responsive items-per-view */
 @media (max-width: 1100px) {
   .hscroll__track {
@@ -132,12 +145,6 @@
   }
 }
 
-@media (max-width: 520px) {
-  .hscroll__track {
-    --items-per-view: 2;
-  }
-}
-
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .hscroll__track {
@@ -145,53 +152,26 @@
   }
 }
 
-/* Make horizontal panning “just work” on touch and avoid rubber-banding into the page */
-/* Let the browser lock to the user's gesture direction */
-.hscroll__track {
-  touch-action: auto;
-  /* allow both directions; browser locks intelligently */
-  overscroll-behavior-inline: contain;
-  /* keep horizontal overscroll from bouncing the page */
-  -webkit-overflow-scrolling: touch;
-  /* smooth on iOS */
-}
-
-
-.hscroll__track.is-dragging {
-  cursor: grabbing;
-}
-
-/* === Smallest view: text no longer over the image === */
+/* === Smallest view: product card layout tweaks === */
 @media (max-width: 520px) {
-
-  /* Let the image stage breathe and separate from text */
   .product__stage {
     border-bottom: 1px solid #eee;
   }
 
-  /* Move name/price into normal flow under the image */
   .product__body {
     position: static;
-    /* not overlayed */
     left: auto;
     right: auto;
     bottom: auto;
     z-index: auto;
-
     background: transparent;
-    /* remove translucent bg */
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-
     padding: .75rem .9rem;
-    /* comfortable spacing */
     margin-top: .25rem;
     border-radius: 0;
-
     opacity: 1;
-    /* ensure visible */
     transform: none;
-    /* cancel hover transition offset */
   }
 
   .product__name,
@@ -199,18 +179,15 @@
     font-size: .95rem;
   }
 
-  /* Disable the slide-up reveal on tiny screens (hover doesn’t exist) */
   .product__reveal {
     position: static;
-    /* stack below name/price if you keep it */
     transform: none;
     padding: .25rem .9rem .9rem;
     border-top: 0;
     display: none;
-    /* hide entirely on smallest view */
+    /* hide on tiny screens */
   }
 
-  /* In case hover/focus rules were fading the body out */
   .card.product:hover .product__body,
   .card.product:focus-within .product__body {
     opacity: 1;
