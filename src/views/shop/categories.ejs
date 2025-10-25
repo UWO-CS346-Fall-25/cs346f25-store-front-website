@@ -4,7 +4,7 @@
       <%- include('../partials/category-title', { title: 'Shop by Category' , url: '/shop' , urlText: 'View all →' }) %>
 
         <ul class="grid grid--categories" role="list">
-          <% categories.forEach(function (c) { const imgs=(c.products || []) .map(p=> p.imageUrl)
+          <% categories.filter(function(c) { return c.products.length > 0 && c.displayIndex == 0; }).forEach(function (c) { const imgs=(c.products || []) .map(p=> p.imageUrl)
             .slice(0, 4);
             const href = '/shop?category=' + encodeURIComponent(c.slug || c.name);
             %>

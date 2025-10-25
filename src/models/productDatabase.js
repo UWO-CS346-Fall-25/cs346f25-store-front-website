@@ -34,13 +34,16 @@ async function getFeatured() {
 async function getCategories() {
   const temp = Array.from({ length: _PROD_COUNT }, (_, i) => i + 1);
   shuffle(temp);
+  const categoryNames = ['Summer Exclusive', 'Winter Collection', 'Autumn Arrivals', 'Book Covers', 'Art Prints'];
 
   const perCat = 7;
-  const numCats = Math.ceil(_PROD_COUNT / perCat); // <-- was % 4 (0)
+  const numCats = Math.ceil(_PROD_COUNT / perCat);
   return Array.from({ length: numCats }, (_, i) => ({
-    name: `Category ${i + 1}`,
+    name: categoryNames[i] || `Category ${i + 1}`,
     products: temp.slice(i * perCat, i * perCat + perCat),
     count: perCat,
+    displayIndex: (i >= 2 ? 0 : i + 1),
+    slug: `category-${i + 1}`,
     imageUrl: '/images/RavensTreasures_Logo.jpg',
   }));
 }
