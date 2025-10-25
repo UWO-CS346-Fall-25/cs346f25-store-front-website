@@ -1,15 +1,17 @@
-/* ===== Footer base (full-bleed, no outer whitespace) ===== */
 .site-footer {
-  --footer-bg: var(--tint-color);
-  --footer-fg: black;
-  --footer-muted: var(--tint-overlay);
-  --footer-accent: var(--tint-alt);
+  --footer-muted: var(--foreground);
+  --footer-accent: var(--tint-1);
   --footer-border: rgba(255, 255, 255, .15);
   --radius: 12px;
 
   margin: 0;
-  color: var(--footer-fg);
+  color: var(--foreground);
   background: var(--footer-bg);
+}
+
+footer {
+  margin-top: auto;
+  /* ensures it hugs the bottom on short pages */
 }
 
 /* Top section */
@@ -39,7 +41,7 @@
 .footer__logo {
   font-weight: 800;
   font-size: 1.25rem;
-  color: var(--footer-fg);
+  color: var(--foreground);
   text-decoration: none;
 }
 
@@ -64,7 +66,7 @@
   height: 36px;
   border-radius: 999px;
   background: rgba(255, 255, 255, .1);
-  color: var(--footer-fg);
+  color: var(--foreground);
   text-decoration: none;
   transition: transform .15s ease, background-color .15s ease;
 }
@@ -79,7 +81,7 @@
   margin: 0 0 .5rem;
   font-size: 1rem;
   font-weight: 700;
-  color: var(--footer-fg);
+  color: var(--foreground);
 }
 
 .footer__links {
@@ -96,7 +98,7 @@
 }
 
 .footer__links a:hover {
-  color: var(--footer-fg);
+  color: var(--foreground);
   text-decoration: underline;
 }
 
@@ -126,25 +128,6 @@
   outline: none;
 }
 
-.footer__btn {
-  border: 0;
-  border-radius: calc(var(--radius) - 4px);
-  padding: .6rem .9rem;
-  font-weight: 700;
-  cursor: pointer;
-  background: var(--footer-accent);
-  color: var(--tint-light);
-  transition: filter .15s ease, transform .1s ease;
-}
-
-.footer__btn:hover {
-  filter: brightness(.97);
-}
-
-.footer__btn:active {
-  transform: translateY(1px);
-}
-
 .footer__micro {
   margin-top: .4rem;
   color: var(--footer-muted);
@@ -153,7 +136,7 @@
 
 /* Bottom bar */
 .footer__bottom {
-  border-top: 1px solid var(--footer-border);
+  border-top: 1px solid var(--footer-fg);
   padding: .9rem 0;
 }
 
@@ -188,5 +171,3 @@
     align-items: flex-start;
   }
 }
-
-/* If your global .container adds side padding, it’ll still align nicely. */

@@ -111,11 +111,11 @@ configure({
   }
 });
 
+app.use('/', require('./routes/root.routes'));
 app.use('/', require('./routes/pages.routes'));
 
 const ebayRoutes = require("./routes/ebay.routes.js");
 app.use("/ebay", ebayRoutes);
-
 
 
 // Health check and error handling using express-pretty-errors

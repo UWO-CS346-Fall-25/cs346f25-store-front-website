@@ -8,9 +8,9 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: var(--tint-color);
+  background: var(--primary-1);
   /* desktop background */
-  color: var(--tint-overlay);
+  color: var(--foreground);
   /* desktop text */
   box-shadow: 0 5px 30px rgba(0, 0, 0, .25);
 }
@@ -68,14 +68,13 @@
 
 .nav-list a[aria-current="page"] {
   font-weight: bold;
-  color: var(--tint-alt);
+  /* color: var(--tint-1); */
   /* background: var(--tint-highlight); */
 }
 
 
 .nav-list a:hover,
 .nav-list a:focus-visible {
-  color: var(--tint-alt);
   outline: none;
   transition: background .2s ease, color .2s ease;
 }
@@ -83,9 +82,9 @@
 /* ---------- Mobile overrides (apply tint theme + stacked layout) ---------- */
 @media (max-width: 800px) {
   .site-header {
-    background: var(--tint-color);
-    color: var(--tint-overlay);
-    border-bottom: 1px solid color-mix(in srgb, var(--tint-overlay) 20%, transparent);
+    background: var(--primary-1);
+    color: var(--foreground);
+    border-bottom: 1px solid color-mix(in srgb, var(--foreground) 20%, transparent);
   }
 
   .site-header a,
@@ -143,7 +142,7 @@ nav a::after {
   height: 2px;
   bottom: -3px;
   left: 0;
-  background-color: var(--tint-alt);
+  background-color: var(--foreground);
   transition: width 0.3s;
 }
 

@@ -1,8 +1,8 @@
 /* --- Hero wrapper --- */
 .hero {
   position: relative;
-  background: linear-gradient(to bottom, var(--tint-color-2), var(--tint-color-3));
-  color: var(--tint-overlay);
+  background: linear-gradient(to bottom, var(--primary-2), var(--primary-3));
+  color: var(--foreground);
   padding: clamp(1.25rem, 3vw, 2.5rem) 0;
 }
 
@@ -26,39 +26,6 @@
   max-width: 42ch;
   opacity: .9;
   margin: 0 0 1rem;
-}
-
-/* actions */
-.btn {
-  display: inline-block;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1.5rem;
-  padding: .7rem 1rem;
-  border-radius: .5rem;
-  transition: transform .15s ease, background .2s ease, color .2s ease;
-}
-
-.btn:hover {
-  transform: translateY(-1px);
-}
-
-.btn:active {
-  transform: translateY(0);
-}
-
-.btn--accent {
-  background: var(--tint-alt);
-  color: #fff;
-}
-
-.btn--accent:hover {
-  background: var(--tint-alt-2);
-}
-
-.btn--ghost {
-  border: 1px solid color-mix(in srgb, #434343 30%, transparent);
-  color: #fff;
 }
 
 /* image side */

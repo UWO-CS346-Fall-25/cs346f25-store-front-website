@@ -1,10 +1,9 @@
 :root {
-  --contact-bg: var(--tint-light);
-  --contact-fg: var(--tint-overlay);
-  --contact-muted: var(--tint-overlay);
-  --contact-accent: var(--tint-alt);
-  --contact-accent-2: var(--tint-highlight);
-  --contact-border: var(--tint-alt);
+  --contact-bg: var(--background);
+  --contact-fg: var(--foreground);
+  --contact-muted: var(--foreground);
+  --contact-accent: var(--primary-1);
+  --contact-border: var(--primary-1);
   --contact-radius: 12px;
   --contact-shadow: 0 8px 28px rgba(0, 0, 0, .06);
 }
@@ -13,12 +12,6 @@
 .container--narrow {
   max-width: 720px;
   margin-inline: auto;
-}
-
-.section {
-  padding-block: 2.25rem;
-  background: var(--contact-bg);
-  color: var(--contact-fg);
 }
 
 .lead {
@@ -33,17 +26,6 @@
   box-shadow: var(--contact-shadow);
   padding: 1.25rem;
   margin-top: 1rem;
-}
-
-
-/* Contact info links */
-.section a {
-  color: var(--contact-accent);
-  text-decoration: none;
-}
-
-.section a:hover {
-  text-decoration: underline;
 }
 
 /* Form grid */
@@ -89,8 +71,8 @@
   border: 1px solid var(--contact-border);
   border-radius: 10px;
   padding: .7rem .8rem;
-  background: #fff;
-  color: var(--contact-fg);
+  background: var(--overlay);
+  color: var(--foreground);
   font: inherit;
   transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
 }
@@ -128,61 +110,12 @@
   color: #7a1f19;
 }
 
-/* Button */
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  padding: .7rem 1rem;
-  border-radius: 10px;
-  border: 1px solid transparent;
-  cursor: pointer;
-  text-decoration: none;
-  font-weight: 700;
-}
-
-.button--primary {
-  background: var(--contact-accent);
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(107, 92, 255, .24);
-}
-
-.button--primary:hover {
-  filter: brightness(0.96);
-}
-
-.button--primary:active {
-  transform: translateY(1px);
-}
-
-/* Optional yellow “tint” outline variant */
-.button--tint {
-  background: #fffbe6;
-  /* soft yellow */
-  color: var(--contact-fg);
-  border-color: color-mix(in srgb, var(--contact-accent-2) 50%, var(--contact-border));
-}
-
-.button--tint:hover {
-  background: #fff6c7;
-}
-
 /* Accessibility */
 .contact-form :focus-visible {
   outline: 2px solid color-mix(in srgb, var(--contact-accent) 75%, transparent);
   outline-offset: 2px;
 }
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-
-  .button,
-  .contact-form input,
-  .contact-form textarea {
-    transition: none;
-  }
-}
 
 /* Hide honeypot if you kept it in the markup (harmless here) */
 .hp {

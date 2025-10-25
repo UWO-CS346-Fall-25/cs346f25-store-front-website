@@ -39,8 +39,8 @@
 .auth-form input[type="password"],
 .auth-form textarea {
   width: 100%;
-  height: var(--field-h);
-  padding: 0 var(--field-pad-x);
+  height: 44px;
+  padding: 0;
   border: 1px solid #e6e8eb;
   border-radius: 10px;
   background: #fff;
@@ -126,33 +126,10 @@
   outline-offset: 2px;
 }
 
-/* =========================
-   Buttons, links, text
-   ========================= */
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: .7rem 1rem;
-  border-radius: 10px;
-  border: 1px solid transparent;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.button--primary {
-  background: var(--tint-alt);
-  color: var(--tint-light);
-  box-shadow: 0 6px 18px rgba(107, 92, 255, .24);
-}
-
-.button--primary:hover {
-  filter: brightness(0.96);
-}
+/* ====================
 
 .lead {
-  color: var(--tint-overlay);
+  color: var(--foreground);
   margin-bottom: 1rem;
 }
 
@@ -161,7 +138,7 @@
 }
 
 .link {
-  color: var(--tint-alt);
+  color: var(--tint-1);
   text-decoration: none;
 }
 
@@ -176,7 +153,7 @@
   display: inline-flex;
   align-items: center;
   gap: .5rem;
-  color: #6b7280;
+  color: var(--foreground);
 }
 
 .auth-actions {
@@ -186,30 +163,13 @@
   gap: .75rem;
 }
 
-/* =========================
-   Alerts
-   ========================= */
-.alert {
-  padding: .75rem 1rem;
-  border-radius: 10px;
-  margin: 0 0 1rem;
-  border: 1px solid transparent;
+
+label {
+  color: var(--foreground);
+  font-weight: 600;
+  margin-bottom: .35rem;
 }
 
-.alert--error {
-  background: #fdecea;
-  border-color: #f5c2bf;
-  color: var(--danger-color);
-}
-
-/* =========================
-   Reduced motion
-   ========================= */
-@media (prefers-reduced-motion: reduce) {
-
-  .button,
-  .auth-form input,
-  .auth-form textarea {
-    transition: none;
-  }
+h1 {
+  color: var(--tint-1);
 }

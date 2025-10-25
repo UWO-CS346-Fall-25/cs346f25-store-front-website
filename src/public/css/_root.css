@@ -3,14 +3,14 @@
   --danger-color: #dc3545;
   --warning-color: #ffc107;
 
-  --tint-color: #a9a7be;
-  --tint-color-2: #9b93b7;
-  --tint-color-3: #857aab;
-  --tint-overlay: #002031;
+  --primary-1: #a9a7be;
+  --primary-2: #9b93b7;
+  --primary-3: #857aab;
+  --foreground: #002031;
   --tint-highlight: #d2952d;
-  --tint-alt: #388A67;
-  --tint-alt-2: #21b977;
-  --tint-light: #F0F0F3;
+  --tint-1: #388A67;
+  --tint-2: #21b977;
+  --background: #F0F0F3;
 
   --carousel-interval: 5000ms;
 

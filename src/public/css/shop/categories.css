@@ -3,10 +3,9 @@
    ========================= */
 .card.category {
   position: relative;
-  border: 1px solid #eee;
   border-radius: .9rem;
   overflow: hidden;
-  background: #fff;
+  background: var(--overlay);
   transition: box-shadow .2s ease, transform .2s ease;
   display: block;
   /* anchor */
@@ -21,7 +20,7 @@
 
 .card.category:focus-visible {
   outline: 2px solid transparent;
-  box-shadow: 0 0 0 3px rgba(155, 135, 245, .35);
+  box-shadow: 0 0 0 3px var(--primary-1);
 }
 
 /* Square stage like product cards */
@@ -32,7 +31,7 @@
 .category__stage {
   aspect-ratio: 1 / 1;
   width: 100%;
-  background: #fafafa;
+  background: var(--overlay);
   overflow: hidden;
 }
 
@@ -101,7 +100,7 @@
   z-index: 2;
   padding: .5rem .65rem;
   border-radius: .6rem;
-  background: color-mix(in srgb, #ffffff 70%, transparent);
+  background: color-mix(in srgb, var(--background) 70%, transparent);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 
@@ -113,13 +112,13 @@
 
 .category__label {
   font-weight: 700;
-  color: var(--tint-overlay);
+  color: var(--foreground);
   font-size: .95rem;
   line-height: 1.2;
 }
 
 .category__count {
-  color: var(--tint-overlay);
+  color: var(--foreground);
   font-size: .9rem;
 }
 
