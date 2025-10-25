@@ -15,15 +15,16 @@ const THEMES = {
     "--background": "#F0F0F3",
     "--foreground": "#000000",
     "--overlay": "#ffffff",
+
     "--footer-bg": "var(--primary-1)",
     "--footer-fg": "var(--primary-3)",
   },
   dark: {
-    "--primary-1": "#3ca7baff",
-    "--primary-2": "#2a8798ff",
-    "--primary-3": "#1a527fff",
-    "--tint-1": "#be1156ff",
-    "--tint-2": "#ff247fff",
+    "--primary-1": "#696591ff",
+    "--primary-2": "#4a3c6aff",
+    "--primary-3": "#342751ff",
+    "--tint-1": "#388A67",
+    "--tint-2": "#21b977",
     "--tint-3": "#ffffff",
 
     "--carousel-interval": "5000ms",
@@ -36,15 +37,15 @@ const THEMES = {
   },
 };
 
-// Pick theme via ?theme=, cookie "theme", or default
+// allow "auto" (system) in addition to "light"/"dark"
 function pickTheme(req) {
   const q = String(req.query.theme || "").toLowerCase();
-  if (q && THEMES[q]) return q;
+  if (q && (q === "auto" || THEMES[q])) return q;
 
   const fromCookie = String((req.cookies && req.cookies.theme) || "").toLowerCase();
-  if (fromCookie && THEMES[fromCookie]) return fromCookie;
+  if (fromCookie && (fromCookie === "auto" || THEMES[fromCookie])) return fromCookie;
 
-  return "light";
+  return "auto"; // default to system
 }
 
 function makeETag(content) {
@@ -52,36 +53,43 @@ function makeETag(content) {
   return `W/"${content.length.toString(16)}-${h}"`;
 }
 
-// GET /css/root.css  → dynamic :root { --vars }
 router.get("/css/root.css", (req, res) => {
   const themeName = pickTheme(req);
-  // const vars = THEMES[themeName] || THEMES.dark;
-  const vars = THEMES.dark;
 
-  const css =
-    `/* generated ${new Date().toISOString()} theme:${themeName} */\n` +
-    `:root{\n` +
-    Object.entries(vars).map(([k, v]) => `  ${k}: ${v};`).join("\n") +
-    `\n}\n`;
+  let css;
+  if (themeName === "light" || themeName === "dark") {
+    // FORCE a theme
+    const vars = THEMES[themeName];
+    css =
+      `/* generated ${new Date().toISOString()} theme:${themeName} */\n` +
+      `:root{\n` +
+      Object.entries(vars).map(([k, v]) => `  ${k}: ${v};`).join("\n") +
+      `\n}\n`;
+  } else {
+    // AUTO: base = light; override dark when OS prefers dark
+    const light = Object.entries(THEMES.light).map(([k, v]) => `  ${k}: ${v};`).join("\n");
+    const dark = Object.entries(THEMES.dark).map(([k, v]) => `  ${k}: ${v};`).join("\n");
+    css =
+      `/* generated ${new Date().toISOString()} theme:auto (system) */\n` +
+      `:root{\n${light}\n}\n` +
+      `@media (prefers-color-scheme: dark){\n` +
+      `  :root{\n${dark}\n  }\n` +
+      `}\n`;
+  }
 
   const etag = makeETag(css);
-
   res.set("Content-Type", "text/css; charset=utf-8");
   res.set("Cache-Control", "public, max-age=0, must-revalidate");
   res.set("ETag", etag);
-  res.set("Vary", "Cookie"); // different users may get different themes
-
-  if (req.headers["if-none-match"] === etag) {
-    return res.status(304).end();
-  }
+  res.set("Vary", "Cookie"); // different users can force a theme
+  if (req.headers["if-none-match"] === etag) return res.status(304).end();
   res.send(css);
 });
 
-// Optional: POST /api/theme/:name to set a cookie
+// POST /api/theme/auto|light|dark  (store preference)
 router.post("/api/theme/:name", express.json(), (req, res) => {
   const { name } = req.params;
-  if (!THEMES[name]) return res.status(400).json({ error: "Unknown theme" });
-  // not httpOnly so client-side JS can read it if needed
+  if (!(name === "auto" || THEMES[name])) return res.status(400).json({ error: "Unknown theme" });
   res.cookie("theme", name, { sameSite: "Lax", maxAge: 1000 * 60 * 60 * 24 * 180 });
   res.json({ ok: true, theme: name });
 });
