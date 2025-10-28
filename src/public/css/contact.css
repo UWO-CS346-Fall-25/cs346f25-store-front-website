@@ -90,25 +90,6 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--contact-accent) 25%, transparent);
 }
 
-/* Error/success alerts (optional) */
-.alert {
-  padding: .75rem 1rem;
-  border-radius: 10px;
-  margin: 0 0 1rem;
-  border: 1px solid transparent;
-}
-
-.alert--success {
-  background: #e8f5ef;
-  border-color: #b9e1cd;
-  color: #215f44;
-}
-
-.alert--error {
-  background: #fdecea;
-  border-color: #f5c2bf;
-  color: #7a1f19;
-}
 
 /* Accessibility */
 .contact-form :focus-visible {
