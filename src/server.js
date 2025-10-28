@@ -17,10 +17,10 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
   const debug = require('./controllers/debug.js');
 
-  await debug.validateDatabase();
-  debug.system('Database: ', debug.isMockDB ? 'mock' : 'real');
-  debug.system('Environment: ', `${process.env.NODE_ENV || 'development'}`);
-  debug.info('Server up on ', `http://localhost:${PORT}`);
+  await debug.ready();
+  debug.system('Database', debug.isMockDB() ? 'mock' : 'real');
+  debug.system('Environment', `${process.env.NODE_ENV || 'development'}`);
+  debug.info('Server up on', `http://localhost:${PORT}`);
 });
 
 // Handle server errors

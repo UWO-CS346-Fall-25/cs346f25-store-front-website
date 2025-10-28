@@ -1,28 +1,34 @@
-
+// debug.js
 require('dotenv').config();
-
 const cl = require('node-color-log');
-function logMessageColor(level, msg, subMessage, timestamp) {
-  cl.color(level.color).append(`${msg}: `).bold().log(subMessage);
+
+function logMessageColor(level, msg, subMessage) {
+  cl.color(level.color).append(`${msg}: `).bold().log(subMessage ?? "");
 }
+
 const levels = {
   SYSTEM: { name: 'SYSTEM', color: 'cyan' },
   ERROR: { name: 'ERROR', color: 'red' },
   WARN: { name: 'WARN', color: 'yellow' },
   INFO: { name: 'INFO', color: 'green' },
   LOG: { name: 'LOG', color: 'white' },
-}
+};
 
+// ---- DB probe (cached) ----
+let mockDb;
 
-let isMockDB;
-async function validateDatabase(timeoutMs = 3000) {
-  if (isMockDB !== undefined) return isMockDB;
+async function probeDatabase(timeoutMs = 3000) {
+  if (process.env.FORCE_MOCK_DB === 'true') return true; // manual override
+
+  if (mockDb !== undefined) return mockDb;
+
   const db = require('../models/db.js');
+
   const testPromise = (async () => {
-    const client = await db.getClient();
+    const client = await db.getClient();   // rejects on bad host/creds
     try {
-      await client.query('SELECT 1');    // ensures connection actually works
-      isMockDB = false;
+      await client.query('SELECT 1');      // sanity query
+      mockDb = false;
     } finally {
       client.release();
     }
@@ -34,32 +40,40 @@ async function validateDatabase(timeoutMs = 3000) {
 
   try {
     await Promise.race([testPromise, timeout]);
-  } catch (err) {
-    isMockDB = true;
+  } catch {
+    mockDb = true;
   }
-
-  return isMockDB;
+  return mockDb;
 }
 
+// ---- Public singleton API ----
+let readyPromise; // run once, shared across all importers
 
 const debug = {
-  isMockDB: isMockDB,
-  isDebugMode() { return process.env.DEBUG_MODE !== 'false'; },
-  validateDatabase,
-  logLevel(logLevel, msg, subMessage) {
-    if (this.isDebugMode()) {
-      logMessageColor(logLevel, msg, subMessage, new Date());
+  // Call once (e.g., in your app entry). Safe to await multiple times.
+  ready() {
+    if (!readyPromise) {
+      readyPromise = (async () => {
+        mockDb = await probeDatabase();
+        return true;
+      })();
     }
+    return readyPromise;
   },
-  info(msg, subMessage) { this.logLevel(levels.INFO, msg, subMessage); },
-  warn(msg, subMessage) { this.logLevel(levels.WARN, msg, subMessage); },
-  error(msg, subMessage) { this.logLevel(levels.ERROR, msg, subMessage); },
-  system(msg, subMessage) { this.logLevel(levels.SYSTEM, msg, subMessage); },
-  log(msg, subMessage) { this.logLevel(levels.LOG, msg, subMessage); },
+
+  isMockDB() { return !!mockDb; },
+
+  isDebugMode() { return process.env.DEBUG_MODE !== 'false'; },
+
+  logLevel(level, msg, subMessage) {
+    if (this.isDebugMode()) logMessageColor(level, msg, subMessage);
+  },
+
+  info(msg, sub) { this.logLevel(levels.INFO, msg, sub); },
+  warn(msg, sub) { this.logLevel(levels.WARN, msg, sub); },
+  error(msg, sub) { this.logLevel(levels.ERROR, msg, sub); },
+  system(msg, sub) { this.logLevel(levels.SYSTEM, msg, sub); },
+  log(msg, sub) { this.logLevel(levels.LOG, msg, sub); },
 };
 
-
-
 module.exports = debug;
-
-
