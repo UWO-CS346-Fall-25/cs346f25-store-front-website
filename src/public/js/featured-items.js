@@ -1,66 +1,74 @@
 (function () {
   document.querySelectorAll('[data-hscroll] .hscroll__track').forEach((track) => {
-    // Only enable drag scrolling for mouse pointers
-    let isDown = false, startX = 0, startLeft = 0, dragged = false, pid = null;
+    let isDown = false;
+    let startX = 0;
+    let startLeft = 0;
+    let dragDist = 0;
+    const DRAG_THRESHOLD = 10; // px
 
-    const onPointerDown = (e) => {
-      if (e.pointerType !== 'mouse') return; // <-- ignore touch/pen
+    // Mouse down starts possible drag
+    track.addEventListener('mousedown', (e) => {
+      // Only left-click and only on mouse (ignore touchpads emulating mousedown)
+      if (e.button !== 0) return;
       isDown = true;
-      dragged = false;
-      pid = e.pointerId;
-      track.setPointerCapture(pid);
+      dragDist = 0;
       startX = e.clientX;
       startLeft = track.scrollLeft;
       track.classList.add('is-dragging');
-    };
+      // Avoid text selection while dragging
+      document.documentElement.style.userSelect = 'none';
+    });
 
-    const onPointerMove = (e) => {
+    // Move scrolls horizontally if mouse is down
+    track.addEventListener('mousemove', (e) => {
       if (!isDown) return;
       const dx = e.clientX - startX;
-      if (Math.abs(dx) > 3) dragged = true;
+      dragDist = Math.max(dragDist, Math.abs(dx));
       track.scrollLeft = startLeft - dx;
-    };
+      e.preventDefault(); // prevent selecting images/text while dragging
+    });
 
+    // Mouse up ends drag
     const endDrag = () => {
       if (!isDown) return;
       isDown = false;
-      try { track.releasePointerCapture(pid); } catch { }
       track.classList.remove('is-dragging');
-      pid = null;
+      document.documentElement.style.userSelect = '';
+      // do nothing else; we'll decide on click whether to suppress
     };
+    track.addEventListener('mouseleave', endDrag);
+    track.addEventListener('mouseup', endDrag);
 
-    track.addEventListener('pointerdown', onPointerDown);
-    track.addEventListener('pointermove', onPointerMove);
-    track.addEventListener('pointerup', endDrag);
-    track.addEventListener('pointercancel', endDrag);
-    track.addEventListener('pointerleave', endDrag);
-
-    // Prevent clicks after a mouse-drag (don’t affect touch)
+    // Suppress click ONLY if we actually dragged far enough
     track.addEventListener('click', (e) => {
-      if (dragged) { e.preventDefault(); e.stopPropagation(); }
+      if (dragDist <= DRAG_THRESHOLD) return; // treat as a real click
+      // If it was a drag, block the click on links inside the track
+      const a = e.target.closest('a');
+      if (a) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
     }, true);
   });
 })();
 
-
 (function () {
   const AUTOPLAY_MS = 4000;          // time between auto-advances
-  const ENABLE_AUTOPLAY = true;       // toggle autoplay
+  const ENABLE_AUTOPLAY = true;       // global toggle
   const PAUSE_ON_HOVER = true;        // pause when user hovers
-  const PAUSE_ON_FOCUS = true;        // pause when track focused
+  const PAUSE_ON_FOCUS = true;        // pause when focused
   const RESPECT_REDUCED_MOTION = true;
 
   document.querySelectorAll('[data-hscroll]').forEach((wrap) => {
     const track = wrap.querySelector('.hscroll__track');
     const prev = wrap.querySelector('[data-hscroll-prev]');
     const next = wrap.querySelector('[data-hscroll-next]');
-    console.log(track, prev, next);
     if (!track || !prev || !next) return;
 
-    // Make track keyboard-focusable for arrow keys
+    // Make track focusable for keyboard use
     if (!track.hasAttribute('tabindex')) track.setAttribute('tabindex', '0');
 
-    const pageAmount = () => track.clientWidth; // 4/3/2/1 items per view
+    const pageAmount = () => track.clientWidth;
     const maxX = () => track.scrollWidth - track.clientWidth;
 
     const updateButtons = () => {
@@ -69,18 +77,16 @@
       next.disabled = x >= maxX() - 2;
     };
 
-    // ---- Paging with wrap ----
+    // --- Wrap paging ---
     const page = (dir) => {
       const amount = pageAmount();
       const x = track.scrollLeft;
       const end = maxX();
 
       if (dir > 0 && x >= end - 2) {
-        // wrap to start
-        track.scrollTo({ left: 0, behavior: 'smooth' });
+        track.scrollTo({ left: 0, behavior: 'smooth' });  // wrap to start
       } else if (dir < 0 && x <= 2) {
-        // wrap to end
-        track.scrollTo({ left: end, behavior: 'smooth' });
+        track.scrollTo({ left: end, behavior: 'smooth' }); // wrap to end
       } else {
         track.scrollBy({ left: dir * amount, behavior: 'smooth' });
       }
@@ -89,7 +95,7 @@
     prev.addEventListener('click', () => page(-1));
     next.addEventListener('click', () => page(1));
 
-    // ---- Keyboard paging ----
+    // --- Keyboard support ---
     track.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); page(1); }
       if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); page(-1); }
@@ -97,7 +103,7 @@
       if (e.key === 'End') { e.preventDefault(); track.scrollTo({ left: maxX(), behavior: 'smooth' }); }
     });
 
-    // ---- Button state on scroll/resize ----
+    // --- Button updates on scroll/resize ---
     const rafUpdate = () => {
       if (track._raf) cancelAnimationFrame(track._raf);
       track._raf = requestAnimationFrame(updateButtons);
@@ -106,13 +112,17 @@
     window.addEventListener('resize', updateButtons);
     updateButtons();
 
-    // ---- Autoplay with pause/resume ----
+    // --- Autoplay setup ---
     let timer = null;
     const prefersReduced = RESPECT_REDUCED_MOTION &&
-      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 👇 only auto-scroll if this carousel is inside a `.featured` section
+    const shouldAutoplay =
+      ENABLE_AUTOPLAY && wrap.closest('.featured') && !prefersReduced;
 
     const startAutoplay = () => {
-      if (!ENABLE_AUTOPLAY || prefersReduced) return;
+      if (!shouldAutoplay) return;
       stopAutoplay();
       timer = setInterval(() => page(1), AUTOPLAY_MS);
     };
@@ -120,22 +130,24 @@
       if (timer) { clearInterval(timer); timer = null; }
     };
 
-    // Pause on hover/focus (optional)
-    if (PAUSE_ON_HOVER) {
+    // Pause on hover/focus if autoplay is active
+    if (shouldAutoplay && PAUSE_ON_HOVER) {
       wrap.addEventListener('mouseenter', stopAutoplay);
       wrap.addEventListener('mouseleave', startAutoplay);
     }
-    if (PAUSE_ON_FOCUS) {
+    if (shouldAutoplay && PAUSE_ON_FOCUS) {
       track.addEventListener('focusin', stopAutoplay);
       track.addEventListener('focusout', startAutoplay);
     }
 
-    // Pause when tab is hidden
+    // Pause when tab hidden
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stopAutoplay(); else startAutoplay();
+      if (!shouldAutoplay) return;
+      if (document.hidden) stopAutoplay();
+      else startAutoplay();
     });
 
-    // Start it up
+    // Initialize autoplay (only runs for .featured)
     startAutoplay();
   });
 })();

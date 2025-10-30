@@ -2,33 +2,30 @@
   <div class="container nav-inner">
     <a href="/" class="brand" aria-label="Home">
       <!-- Remove width/height attributes; control via CSS so it won't clip -->
-      <img src="/images/RavensTreasures_Logo.png" alt="Raven's Treasures logo" decoding="async">
+      <img src="/images/RavensTreasures_Logo.png" alt="Raven's Treasures logo" decoding="async" loading="eager">
       <span class="brand-title"><%- siteName %></span>
     </a>
 
     <nav id="primary-nav" class="nav" aria-label="Primary">
       <ul class="nav-list" role="list">
-        <li><a href="/">Home</a></li>
-        <li><a href="/contact">Contact</a></li>
+        <%- include('navbar-link', { path: '/' , link_title: 'Home' }) %>
+        <%- include('navbar-link', { path: '/contact' , link_title: 'Contact' }) %>
 
         <% if (isAdmin) { %>
-          <li><a href="/auth/admin">Admin</a></li>
-          <% } %>
-            <% if (false) { %>}
-              <li>
-                <a href="/shop/cart">
-                  Cart<%= cartCount> 0 ? ' (' + cartCount + ')' : '' %>
-                </a>
-              </li>
-              <% } %>
+          <%- include('navbar-link', { path: '/auth/admin' , link_title: 'Admin' }) %>
+        <% } %>
+        <% if (false) { %>
+          <%- include('navbar-link', { path: '/shop/cart' , link_title: 'Cart' + (cartCount> 0 ? ' (' +
+            cartCount + ')' : '') }) %>
+        <% } %>
 
-                <% if (user !=null) { %>
-                  <li><a href="/account">Account</a></li>
-                  <li><a href="/logout">Logout</a></li>
-                  <% } else { %>
-                    <li><a href="/login">Login</a></li>
-                    <li><a href="/signup">Sign up</a></li>
-                    <% } %>
+        <% if (user !=null) { %>
+          <%- include('navbar-link', { path: '/account' , link_title: 'Account' }) %>
+          <%- include('navbar-link', { path: '/logout' , link_title: 'Logout' }) %>
+        <% } else { %>
+          <%- include('navbar-link', { path: '/login' , link_title: 'Login' }) %>
+          <%- include('navbar-link', { path: '/signup' , link_title: 'Sign up' }) %>
+        <% } %>
       </ul>
     </nav>
   </div>

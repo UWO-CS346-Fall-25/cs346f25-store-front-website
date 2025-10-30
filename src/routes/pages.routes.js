@@ -3,6 +3,7 @@ const router = express.Router();
 const csrf = require('csurf');
 const { asyncWrap } = require("express-pretty-errors");
 const { bind } = require('express-page-registry');
+const productManager = require('../controllers/productController.js');
 
 const csrfProtection = csrf({ cookie: false });
 
@@ -11,7 +12,13 @@ bind(router, {
   view: 'home',
   meta: { title: 'Home' },
   middleware: [csrfProtection],
-  getData: (req) => ({ csrfToken: req.csrfToken() })
+  getData: async (req) => ({
+    csrfToken: req.csrfToken(),
+    allProducts: await productManager.getProducts(),
+    featuredProducts: await productManager.getFeatured(),
+    categories: await productManager.getCategories(),
+    newArrivals: await productManager.getNewArrivals(8)
+  })
 });
 
 

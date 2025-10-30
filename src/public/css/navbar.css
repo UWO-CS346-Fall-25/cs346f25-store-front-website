@@ -8,11 +8,11 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: var(--tint-color);
+  background: var(--primary-1);
   /* desktop background */
-  color: var(--tint-overlay);
+  color: var(--foreground);
   /* desktop text */
-  border-bottom: 1px solid #e9e9e9;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, .25);
 }
 
 .site-header .container {
@@ -63,17 +63,18 @@
   text-decoration: none;
   color: inherit;
   border-radius: .4rem;
+  font-size: large;
 }
 
 .nav-list a[aria-current="page"] {
-  font-weight: 600;
-  background: var(--tint-highlight);
+  font-weight: bold;
+  /* color: var(--tint-1); */
+  /* background: var(--tint-highlight); */
 }
 
 
 .nav-list a:hover,
 .nav-list a:focus-visible {
-  background: var(--tint-highlight);
   outline: none;
   transition: background .2s ease, color .2s ease;
 }
@@ -81,9 +82,9 @@
 /* ---------- Mobile overrides (apply tint theme + stacked layout) ---------- */
 @media (max-width: 800px) {
   .site-header {
-    background: var(--tint-color);
-    color: var(--tint-overlay);
-    border-bottom: 1px solid color-mix(in srgb, var(--tint-overlay) 20%, transparent);
+    background: var(--primary-1);
+    color: var(--foreground);
+    border-bottom: 1px solid color-mix(in srgb, var(--foreground) 20%, transparent);
   }
 
   .site-header a,
@@ -94,15 +95,19 @@
 
   .site-header .container {
     display: block;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
     padding: .75rem 0;
   }
 
   .brand {
-    flex-direction: column;
+    flex-direction: row;
+    display: flex;
     align-items: center;
-    gap: .35rem;
-    margin-bottom: .5rem;
-    text-align: center;
+    gap: .6rem;
+    margin-bottom: 0;
+    text-align: left;
   }
 
   /* adjust if you want smaller/larger */
@@ -117,4 +122,30 @@
     gap: .5rem .75rem;
     padding: 0;
   }
+}
+
+header {
+  background-color: #eceaf2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  padding: 0.75rem 2rem;
+}
+
+nav a {
+  position: relative;
+  text-decoration: none;
+}
+
+nav a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -3px;
+  left: 0;
+  background-color: var(--foreground);
+  transition: width 0.3s;
+}
+
+nav a:hover::after {
+  width: 100%;
 }

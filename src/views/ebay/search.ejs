@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { cssFiles: ['shop/categories.css', 'shop/product-card.css' , 'shop/featured-items.css'
+  ], scripts: ['featured-items.js']}) %>
+
+  <body>
+    <%- include('../partials/navbar') %>
+
+      <main id="main-content">
+
+        <h1>eBay results for “<%= ebay.q %>”</h1>
+        <form method="get" action="/ebay/search" class="search-bar">
+          <input name="q" value="<%= ebay.q %>" placeholder="Search eBay…" />
+          <button type="submit">Search</button>
+        </form>
+
+        <ul class="grid">
+          <% ebay.items.forEach(it=> { %>
+            <li class="card">
+              <a href="<%= it.url %>" target="_blank" rel="nofollow sponsored noopener">
+                <img src="<%= it.imageUrl || '/images/placeholder.png' %>" alt="<%= it.title %>">
+                <h3>
+                  <%= it.title %>
+                </h3>
+                <% if (it.price) { %>
+                  <p><strong>
+                      <%= it.price.value %>
+                        <%= it.price.currency %>
+                    </strong></p>
+                  <% } %>
+              </a>
+            </li>
+            <% }) %>
+        </ul>
+
+
+
+
+      </main>
+
+      <!-- TODO: Newsletter? / Footer-->
+      <%- include('../partials/footer') %>
+  </body>
+
+</html>
