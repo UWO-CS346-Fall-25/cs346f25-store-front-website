@@ -17,8 +17,7 @@
         title: "New Arrivals",
         products: newArrivals,
         isFeatured: true}) %>
-
-      <% categories.filter(function(cat) { return cat.products.length > 0 && cat.displayIndex !== 0; }).forEach(function(cat) { %>
+      <% categories.filter(function(cat) { return cat.products.length > 0}).forEach(function(cat) { %>
         <%- include('shop/scrollable-products', {
           title: cat.name ,
           products: cat.products,

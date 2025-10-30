@@ -3,10 +3,16 @@
     <figure class="product__media">
       <!-- square stage -->
       <div class="product__stage">
-        <img class="product__img" src="<%= product?.imageUrl%>"
-          alt="<%= product?.alt || product?.name || 'Product image' %>" loading="lazy" decoding="async">
+      <% if(product.image != undefined) { %>
+        <% if(product.image.path != undefined) { %>
+          <img class="product__img" src="<%= product.image.path %>"
+            alt="<%= product?.alt || product?.name || 'Product image' %>" loading="lazy" decoding="async">
+        <% } else if(product.image.external_url != undefined) { %>
+          <img class="product__img" src="<%= product.image.external_url %>"
+            alt="<%= product?.alt || product?.name || 'Product image' %>" loading="lazy" decoding="async">
+        <% }%>
+      <% }%>
       </div>
-
       <% if (product?.badge) { %>
         <figcaption class="product__badge">
           <%= product.badge %>
@@ -21,7 +27,7 @@
       <p class="product__price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
         <span itemprop="priceCurrency" content="USD">$</span>
         <span itemprop="price">
-          <%= price.toFixed ? price.toFixed(2) : price %>
+          <%= price %>
         </span>
       </p>
     </div>

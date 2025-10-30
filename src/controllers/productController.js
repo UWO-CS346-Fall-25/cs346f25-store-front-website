@@ -27,12 +27,7 @@ const productManager = {
     return products.filter(p => featuredIds.includes(p.id));
   },
   getCategories: async function () {
-    const products = await db.getProducts();
-    const categories = await db.getCategories();
-    return categories.map(cat => ({
-      ...cat,
-      products: products.filter(p => cat.products.includes(p.id))
-    }));
+    return db.getCategories();
   },
   getNewArrivals: async function (count) {
     return await db.getNewArrivals(count);
