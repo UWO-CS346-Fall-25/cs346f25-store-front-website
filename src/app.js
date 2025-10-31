@@ -113,6 +113,7 @@ configure({
 
 app.use('/', require('./routes/root.routes'));
 app.use('/', require('./routes/pages.routes'));
+app.use('/', require('./routes/api.routes'));
 
 const ebayRoutes = require("./routes/ebay.routes.js");
 app.use("/ebay", ebayRoutes);
