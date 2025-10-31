@@ -75,8 +75,14 @@ module.exports = {
   getNewArrivals: async function (count) {
     if (debug.isMockDB()) return mock.getNewArrivals(count);
     const key = `${this.namespace}:newarrivals:${count}`;
+
     return cache.wrap(key, this.ttl, async () => {
       const res = await database.query('SELECT * FROM products ORDER BY created_at DESC LIMIT $1', [count]);
+      for (let r of res.rows) {
+        const prodImg = await database.query('SELECT path, external_url, alt FROM public.product_images WHERE product_id = $1 AND is_primary = true LIMIT 1', [r.id]);
+        prodImg.rows[0].img_url = prodImg.rows[0].path == null ? prodImg.rows[0].external_url : prodImg.rows[0].path;
+        r.image = prodImg.rows[0];
+      }
       return res.rows;
     });
   },
