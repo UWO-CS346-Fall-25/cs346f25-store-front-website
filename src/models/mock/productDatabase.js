@@ -57,10 +57,6 @@ async function getNewArrivals(count) {
 const database = {
   ttl: 60_000,
   namespace: 'productDB',
-  getProducts: async function () {
-    const key = `${this.namespace}:products`;
-    return cache.wrap(key, this.ttl, getProducts);
-  },
   getFeatured: async function () {
     const key = `${this.namespace}:featured`;
     return cache.wrap(key, this.ttl, getFeatured);

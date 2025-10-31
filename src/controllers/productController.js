@@ -22,12 +22,10 @@ const productManager = {
   },
 
   getFeatured: async function () {
-    const products = await db.getProducts();
-    const featuredIds = await db.getFeatured();
-    return products.filter(p => featuredIds.includes(p.id));
+    return await db.getFeatured();
   },
   getCategories: async function () {
-    return db.getCategories();
+    return await db.getCategories();
   },
   getNewArrivals: async function (count) {
     return await db.getNewArrivals(count);

@@ -33,15 +33,6 @@ async function getCategories(products) {
 module.exports = {
   ttl: 60_000,
   namespace: 'productDB',
-  getProducts: async function () {
-    if (debug.isMockDB()) return mock.getProducts();
-    const key = `${this.namespace}:products`;
-
-    return cache.wrap(key, this.ttl, async () => {
-      const res = await database.query('SELECT * FROM products');
-      return res.rows;
-    });
-  },
   getProductWithImage: async function (id) {
     if (debug.isMockDB()) return mock.getProductWithImage();
     const key = `${this.namespace}:product:${id}`;
@@ -64,7 +55,6 @@ module.exports = {
   getCategories: async function () {
     if (debug.isMockDB()) return mock.getCategories();
     const key = `${this.namespace}:categories`;
-    let products = await this.getProducts();
     return cache.wrap(key, this.ttl, async () => {
       const res = await database.query('SELECT * FROM categories where is_active = true order by position');
       for (let r of res.rows) {
