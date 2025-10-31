@@ -39,8 +39,8 @@ module.exports = {
     return cache.wrap(key, this.ttl, async () => {
       const res = await database.query('SELECT * FROM public.products WHERE id = $1', [id]);
       const prodImg = await database.query('SELECT path, external_url, alt FROM public.product_images WHERE product_id = $1 AND is_primary = true LIMIT 1', [id]);
+      prodImg.rows[0].img_url = prodImg.rows[0].path == null ? prodImg.rows[0].external_url : prodImg.rows[0].path;
       res.rows[0].image = prodImg.rows[0];
-      console.log(res.rows[0]);
       return res.rows[0];
     });
   },
@@ -49,6 +49,10 @@ module.exports = {
     const key = `${this.namespace}:featured`;
     return cache.wrap(key, this.ttl, async () => {
       const res = await database.query('SELECT * FROM public.v_featured_products order by position');
+      for (let r of res.rows) {
+        r.img_url = r.image_path == null ? r.image_external_url : r.image_path;
+      }
+      console.log(res.rows);
       return res.rows;
     });
   },
@@ -65,7 +69,6 @@ module.exports = {
         }
         r.products = prods_delta;
       }
-      console.log(res.rows);
       return res.rows;
     });
   },

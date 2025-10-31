@@ -4,13 +4,8 @@
       <!-- square stage -->
       <div class="product__stage">
       <% if(product.image != undefined) { %>
-        <% if(product.image.path != undefined) { %>
-          <img class="product__img" src="<%= product.image.path %>"
+          <img class="product__img" src="<%= product.image.img_url %>"
             alt="<%= product?.alt || product?.name || 'Product image' %>" loading="lazy" decoding="async">
-        <% } else if(product.image.external_url != undefined) { %>
-          <img class="product__img" src="<%= product.image.external_url %>"
-            alt="<%= product?.alt || product?.name || 'Product image' %>" loading="lazy" decoding="async">
-        <% }%>
       <% }%>
       </div>
       <% if (product?.badge) { %>
