@@ -6,12 +6,7 @@ values
   ('Mugs',            'mugs',            'All mugs and cups',           true, 4),
   ('Shirts',          'shirts',          'Tees and apparel',            true, 5),
   ('Bookmarks',       'bookmarks',       'Paper & magnetic bookmarks',  true, 6),
-  ('Cat Accessories', 'cat-accessories', 'Cat-themed extras',           true, 7)
-on conflict (slug) do update
-set name = excluded.name,
-    description = excluded.description,
-    is_active = excluded.is_active,
-    position = excluded.position;
+  ('Cat Accessories', 'cat-accessories', 'Cat-themed extras',           true, 7);
 
 
 

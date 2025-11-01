@@ -31,16 +31,5 @@ select
   'PROD-' || lpad(i::text, 4, '0') as sku,
   null as seo_title,
   null as seo_description
-from series
--- Idempotent: if slug already exists, update core fields
-on conflict (slug) do update
-set name         = excluded.name,
-    description  = excluded.description,
-    price_cents  = excluded.price_cents,
-    currency     = excluded.currency,
-    is_active    = excluded.is_active,
-    status       = excluded.status,
-    sku          = excluded.sku
-;
-
+from series;
 

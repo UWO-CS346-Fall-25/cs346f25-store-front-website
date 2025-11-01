@@ -8,7 +8,4 @@ candidates as (
 )
 insert into public.featured_products (product_id, position, spotlight)
 select id, rn, (rn = 1)  -- make #1 a spotlight
-from candidates
-on conflict (product_id) do update
-  set position  = excluded.position,
-      spotlight = excluded.spotlight;
+from candidates;
