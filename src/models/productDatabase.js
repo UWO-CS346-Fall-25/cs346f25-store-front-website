@@ -5,31 +5,6 @@ const debug = require('../controllers/debug');
 const database = require('./db.js');
 const mock = require('./mock/productDatabase.js');
 
-
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = (Math.random() * (i + 1)) | 0;
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-async function getCategories(products) {
-  const temp = Array.from({ length: products.length }, (_, i) => products[i].id);
-  shuffle(temp);
-  const categoryNames = ['Summer Exclusive', 'Winter Collection', 'Autumn Arrivals', 'Book Covers', 'Art Prints'];
-
-  const perCat = 5;
-  const numCats = Math.ceil(products.length / perCat);
-  return Array.from({ length: numCats }, (_, i) => ({
-    name: categoryNames[i] || `Category ${i + 1}`,
-    products: temp.slice(i * perCat, i * perCat + perCat),
-    count: perCat,
-    displayIndex: (i >= 2 ? 0 : i + 1),
-    slug: `category-${i + 1}`,
-    imageUrl: '/images/RavensTreasures_Logo.jpg',
-  }));
-}
-
 module.exports = {
   ttl: 60_000,
   namespace: 'productDB',
