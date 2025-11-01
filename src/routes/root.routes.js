@@ -20,9 +20,9 @@ const THEMES = {
     "--footer-fg": "var(--primary-3)",
   },
   dark: {
-    "--primary-1": "#696591ff",
-    "--primary-2": "#4a3c6aff",
-    "--primary-3": "#342751ff",
+    "--primary-1": "#817ea4ff",
+    "--primary-2": "#7f76a1ff",
+    "--primary-3": "#655a8eff",
     "--tint-1": "#388A67",
     "--tint-2": "#21b977",
     "--tint-3": "#ffffff",
