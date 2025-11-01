@@ -27,6 +27,10 @@ router.get('/api/current-theme', async (req, res) => {
   const themeData = await require("../models/themeDatabase.js").getCurrentTheme();
   res.json(themeData);
 });
+router.get('/api/themes', async (req, res) => {
+  const themes = await require("../models/themeDatabase.js").getAllThemes();
+  res.json(themes);
+});
 router.get('/api/theme/:name', async (req, res) => {
   const { name } = req.params;
   let themeData = null;
