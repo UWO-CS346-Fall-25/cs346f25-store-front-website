@@ -1,14 +1,16 @@
 
 
 const cache = require('../controllers/cache.js');
-const { get } = require('../app.js');
+const debug = require('../controllers/debug');
 const database = require('./db.js');
+const mock = require('./mock/themeDatabase.js');
 
 
 module.exports = {
   ttl: 60_000 * 10,
   namespace: 'themeDB',
   getCurrentTheme: async function () {
+    if (debug.isMockDB()) return mock.getCurrentTheme();
     const key = `${this.namespace}:currentTheme`;
     return cache.wrap(key, this.ttl, async () => {
       const res = await database.query('SELECT * FROM public.v_site_theme_current');
@@ -16,6 +18,7 @@ module.exports = {
     });
   },
   getThemeByKey: async function (key) {
+    if (debug.isMockDB()) return mock.getThemeByKey(key);
     const cacheKey = `${this.namespace}:theme:${key}`;
     return cache.wrap(cacheKey, this.ttl, async () => {
       const res = await database.query('SELECT * FROM public.site_themes WHERE key = $1', [key]);
@@ -23,6 +26,7 @@ module.exports = {
     });
   },
   getAllThemes: async function () {
+    if (debug.isMockDB()) return mock.getAllThemes();
     const key = `${this.namespace}:allThemes`;
     return cache.wrap(key, this.ttl, async () => {
       const res = await database.query('SELECT * FROM public.site_themes ORDER BY created_at DESC');
@@ -30,6 +34,7 @@ module.exports = {
     });
   },
   getThemeByID(id) {
+    if (debug.isMockDB()) return mock.getThemeByID(id);
     const key = `${this.namespace}:themeByID:${id}`;
     return cache.wrap(key, this.ttl, async () => {
       const res = await database.query('SELECT * FROM public.site_themes WHERE id = $1', [id]);
