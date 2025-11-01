@@ -52,7 +52,6 @@ module.exports = {
       for (let r of res.rows) {
         r.img_url = r.image_path == null ? r.image_external_url : r.image_path;
       }
-      console.log(res.rows);
       return res.rows;
     });
   },

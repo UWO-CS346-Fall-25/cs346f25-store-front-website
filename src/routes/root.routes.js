@@ -2,48 +2,51 @@ const express = require("express");
 const crypto = require("crypto");
 const router = express.Router();
 
-const THEMES = {
-  light: {
-    "--primary-1": "#a9a7be",
-    "--primary-2": "#9b93b7",
-    "--primary-3": "#857aab",
-    "--tint-1": "#388A67",
-    "--tint-2": "#21b977",
-    "--tint-3": "#ffffff",
 
-    "--carousel-interval": "5000ms",
-    "--background": "#F0F0F3",
-    "--foreground": "#000000",
-    "--overlay": "#ffffff",
+function createTheme(themeData) {
+  return {
+    light: {
+      "--primary-1": themeData.light_primary_1 || "#a9a7be",
+      "--primary-2": themeData.light_primary_2 || "#9b93b7",
+      "--primary-3": themeData.light_primary_3 || "#857aab",
+      "--tint-1": themeData.light_tint_1 || "#388A67",
+      "--tint-2": themeData.light_tint_2 || "#21b977",
+      "--tint-3": themeData.light_tint_3 || "#ffffff",
 
-    "--footer-bg": "var(--primary-1)",
-    "--footer-fg": "var(--primary-3)",
-  },
-  dark: {
-    "--primary-1": "#817ea4ff",
-    "--primary-2": "#7f76a1ff",
-    "--primary-3": "#655a8eff",
-    "--tint-1": "#388A67",
-    "--tint-2": "#21b977",
-    "--tint-3": "#ffffff",
+      "--carousel-interval": "5000ms",
+      "--background": "#F0F0F3",
+      "--foreground": "#000000",
+      "--overlay": "#ffffff",
 
-    "--carousel-interval": "5000ms",
-    "--background": "#1c1c1dff",
-    "--foreground": "#ffffff",
-    "--overlay": "#2c2c2fff",
+      "--footer-bg": "var(--primary-1)",
+      "--footer-fg": "var(--primary-3)",
+    },
+    dark: {
+      "--primary-1": themeData.dark_primary_1 || "#817ea4ff",
+      "--primary-2": themeData.dark_primary_2 || "#7f76a1ff",
+      "--primary-3": themeData.dark_primary_3 || "#655a8eff",
+      "--tint-1": themeData.dark_tint_1 || "#388A67",
+      "--tint-2": themeData.dark_tint_2 || "#21b977",
+      "--tint-3": themeData.dark_tint_3 || "#ffffff",
 
-    "--footer-bg": "var(--primary-3)",
-    "--footer-fg": "var(--primary-1)",
-  },
-};
+      "--carousel-interval": "5000ms",
+      "--background": "#1c1c1dff",
+      "--foreground": "#ffffff",
+      "--overlay": "#2c2c2fff",
+
+      "--footer-bg": "var(--primary-3)",
+      "--footer-fg": "var(--primary-1)",
+    },
+  };
+}
 
 // allow "auto" (system) in addition to "light"/"dark"
-function pickTheme(req) {
+function pickTheme(req, themeData) {
   const q = String(req.query.theme || "").toLowerCase();
-  if (q && (q === "auto" || THEMES[q])) return q;
+  if (q && (q === "auto" || themeData[q])) return q;
 
   const fromCookie = String((req.cookies && req.cookies.theme) || "").toLowerCase();
-  if (fromCookie && (fromCookie === "auto" || THEMES[fromCookie])) return fromCookie;
+  if (fromCookie && (fromCookie === "auto" || themeData[fromCookie])) return fromCookie;
 
   return "auto"; // default to system
 }
@@ -53,13 +56,14 @@ function makeETag(content) {
   return `W/"${content.length.toString(16)}-${h}"`;
 }
 
-router.get("/css/root.css", (req, res) => {
-  const themeName = pickTheme(req);
+router.get("/css/root.css", async (req, res) => {
+  const themeData = createTheme(await require("../models/themeDatabase.js").getCurrentTheme());
+  const themeName = pickTheme(req, themeData);
 
   let css;
   if (themeName === "light" || themeName === "dark") {
     // FORCE a theme
-    const vars = THEMES[themeName];
+    const vars = themeData[themeName];
     css =
       `/* generated ${new Date().toISOString()} theme:${themeName} */\n` +
       `:root{\n` +
@@ -67,8 +71,8 @@ router.get("/css/root.css", (req, res) => {
       `\n}\n`;
   } else {
     // AUTO: base = light; override dark when OS prefers dark
-    const light = Object.entries(THEMES.light).map(([k, v]) => `  ${k}: ${v};`).join("\n");
-    const dark = Object.entries(THEMES.dark).map(([k, v]) => `  ${k}: ${v};`).join("\n");
+    const light = Object.entries(themeData.light).map(([k, v]) => `  ${k}: ${v};`).join("\n");
+    const dark = Object.entries(themeData.dark).map(([k, v]) => `  ${k}: ${v};`).join("\n");
     css =
       `/* generated ${new Date().toISOString()} theme:auto (system) */\n` +
       `:root{\n${light}\n}\n` +
@@ -87,9 +91,10 @@ router.get("/css/root.css", (req, res) => {
 });
 
 // POST /api/theme/auto|light|dark  (store preference)
-router.post("/api/theme/:name", express.json(), (req, res) => {
+router.post("/api/theme/:name", express.json(), async (req, res) => {
+  const themeData = createTheme(await require("../models/themeDatabase.js").getCurrentTheme());
   const { name } = req.params;
-  if (!(name === "auto" || THEMES[name])) return res.status(400).json({ error: "Unknown theme" });
+  if (!(name === "auto" || themeData[name])) return res.status(400).json({ error: "Unknown theme" });
   res.cookie("theme", name, { sameSite: "Lax", maxAge: 1000 * 60 * 60 * 24 * 180 });
   res.json({ ok: true, theme: name });
 });
