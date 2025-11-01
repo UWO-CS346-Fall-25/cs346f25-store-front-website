@@ -17,7 +17,7 @@ insert into public.site_themes (
   '#388A67', '#21b977', '#ffffff'
 );
 
--- Halloween (recurs yearly Oct 01 → Nov 02)
+-- Halloween (recurs yearly Oct 01 → Nov 07)
 insert into public.site_themes (
   key, name, description, is_active, is_default,
   recurrence, yearly_start_md, yearly_end_md, timezone,
@@ -27,7 +27,7 @@ insert into public.site_themes (
   dark_tint_1,     dark_tint_2,     dark_tint_3
 ) values (
   'halloween', 'Halloween Theme', 'Spooky seasonal palette', true, false,
-  'yearly', '10-01', '11-02', 'America/Chicago',
+  'yearly', '10-01', '11-07', 'America/Chicago',
   '#f97316', '#ea580c', '#a24424',
   '#22c55e', '#84cc16', '#ffffff',
   '#fb923c', '#f97316', '#97452a',
