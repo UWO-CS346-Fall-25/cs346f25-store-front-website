@@ -23,4 +23,20 @@ router.get('/api/new-arrivals', async (req, res) => {
   res.json(newArrivals);
 });
 
+router.get('/api/current-theme', async (req, res) => {
+  const themeData = await require("../models/themeDatabase.js").getCurrentTheme();
+  res.json(themeData);
+});
+router.get('/api/theme/:name', async (req, res) => {
+  const { name } = req.params;
+  let themeData = null;
+  if (name === 'auto') themeData = await require("../models/themeDatabase.js").getCurrentTheme();
+  else themeData = await require("../models/themeDatabase.js").getThemeByKey(name);
+
+  if (themeData == null) return res.status(400).json({ error: "Unknown theme" });
+  res.json({ ok: true, theme: themeData });
+});
+
+
+
 module.exports = router;
