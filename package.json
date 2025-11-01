@@ -1,7 +1,7 @@
 {
   "name": "cs346-semester-project-template",
   "version": "1.0.0",
-  "description": "CS346 Semester Project Template - Node.js + Express + EJS + PostgreSQL",
+  "description": "Storefront website",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

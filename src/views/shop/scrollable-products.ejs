@@ -21,7 +21,7 @@
         <ul class="hscroll__track" role="list" aria-label="<%= title || 'Items' %>">
           <% products.forEach(function (p) { %>
             <li class="hscroll__item">
-              <%- include('product-card', { product: p, url: p.url, price: p.price }) %>
+              <%- include('product-card', { product: p, url: `/${p.slug}`, price: p.price_cents }) %>
             </li>
             <% }) %>
         </ul>

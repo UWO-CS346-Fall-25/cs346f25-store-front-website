@@ -14,11 +14,13 @@ const app = require('./app');
 const PORT = process.env.PORT || 3000;
 
 // Start server
-app.listen(PORT, () => {
-  require('node-color-log').color('yellow').append(`Environment: `)
-    .bold().log(`${process.env.NODE_ENV || 'development'}`);
-  require('node-color-log').color('green').append(`Server up on `)
-    .bold().log(`http://localhost:${PORT}`);
+app.listen(PORT, async () => {
+  const debug = require('./controllers/debug.js');
+
+  await debug.ready();
+  debug.system('Database', debug.isMockDB() ? 'mock' : 'real');
+  debug.system('Environment', `${process.env.NODE_ENV || 'development'}`);
+  debug.info('Server up on', `http://localhost:${PORT}`);
 });
 
 // Handle server errors

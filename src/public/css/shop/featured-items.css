@@ -10,6 +10,22 @@
   padding: clamp(1.25rem, 3vw, 2.5rem) 0;
 }
 
+.featured .section__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 0;
+  padding-bottom: .5rem;
+}
+
+.featured .section__header h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.2vw, 1.8rem);
+  font-weight: 700;
+  letter-spacing: .2px;
+}
 
 
 /* Track (merged) */
