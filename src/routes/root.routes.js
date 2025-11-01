@@ -90,13 +90,5 @@ router.get("/css/root.css", async (req, res) => {
   res.send(css);
 });
 
-// POST /api/theme/auto|light|dark  (store preference)
-router.post("/api/theme/:name", express.json(), async (req, res) => {
-  const themeData = createTheme(await require("../models/themeDatabase.js").getCurrentTheme());
-  const { name } = req.params;
-  if (!(name === "auto" || themeData[name])) return res.status(400).json({ error: "Unknown theme" });
-  res.cookie("theme", name, { sameSite: "Lax", maxAge: 1000 * 60 * 60 * 24 * 180 });
-  res.json({ ok: true, theme: name });
-});
 
 module.exports = router;
