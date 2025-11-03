@@ -40,6 +40,16 @@ module.exports = {
       return res.rows[0];
     });
   },
+  getImagesForProduct: async function (productId) {
+    const key = `${this.namespace}:productImages:${productId}`;
+    return cache.wrap(key, this.ttl, async () => {
+      const res = await database.query('SELECT path, external_url, alt FROM public.product_images WHERE product_id = $1 ORDER BY is_primary DESC, id ASC', [productId]);
+      for (let r of res.rows) {
+        r.img_url = r.path == null ? r.external_url : r.path;
+      }
+      return res.rows;
+    });
+  },
   getFeatured: async function () {
     if (debug.isMockDB()) return mock.getFeatured();
     const key = `${this.namespace}:featured`;

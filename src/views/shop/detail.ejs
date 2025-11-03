@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('../partials/head', {
-  // Reuse existing card/image styles so visuals match list pages
-  cssFiles: ['shop/product-card.css'],
-  scripts: []
+  cssFiles: ['shop/product-card.css', 'shop/product-gallery.css'],
+  scripts: ['shop/product-gallery.js']
 }) %>
 <body>
   <%- include('../partials/navbar') %>
@@ -25,21 +24,39 @@
         <!-- Main content -->
         <div class="product-detail" style="display:grid; gap:1.25rem;">
           <!-- Media -->
-          <div class="product-detail__media" style="max-width:700px;">
-            <% 
-              const imgUrl = product?.image?.img_url 
-                           || product?.img_url 
-                           || product?.image_url 
-                           || product?.imagePath 
-                           || null;
-              const imgAlt = product?.image?.alt || product?.name || '';
+          <!-- Media: thumbs-only gallery -->
+          <div class="product-detail__media">
+            <%
+              const imgs = (images && images.length)
+                ? images
+                : (product?.images && product.images.length)
+                  ? product.images.map(x => ({ url: x.img_url || x.url, alt: x.alt || product.name }))
+                  : (product?.image?.img_url || product?.img_url || product?.image_url)
+                    ? [{ url: (product.image?.img_url || product.img_url || product.image_url), alt: (product.image?.alt || product.name || '') }]
+                    : [];
+
+              const primaryIndex = Math.min(Math.max(+primaryImageIndex || 0, 0), Math.max(imgs.length - 1, 0));
             %>
-            <% if (imgUrl) { %>
-              <img src="<%= imgUrl %>" alt="<%- imgAlt %>" style="width:100%; height:auto; display:block; border-radius:.5rem;" />
+
+            <% if (imgs.length) { %>
+              <div class="pg-thumbs" role="listbox" aria-label="Product images">
+                <% imgs.forEach(function(img, i) { %>
+                  <button
+                    class="pg-thumb<%= i === primaryIndex ? ' is-selected' : '' %>"
+                    role="option"
+                    aria-selected="<%= i === primaryIndex ? 'true' : 'false' %>"
+                    data-index="<%= i %>"
+                    type="button">
+                    <img src="<%= img.url %>" alt="<%- (img.alt || product?.name || '') + ' thumbnail' %>">
+                  </button>
+                <% }) %>
+              </div>
             <% } else { %>
-              <div class="muted" aria-live="polite">No image available.</div>
+              <div class="muted">No image available.</div>
             <% } %>
           </div>
+
+
 
           <!-- Info -->
           <div class="product-detail__info" aria-describedby="price-block">

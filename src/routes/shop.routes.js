@@ -49,35 +49,39 @@ bind(router, {
   getData: async function (req) {
     const { slug } = req.params;
 
-    // 1) Main product
     const product = await shopController.getProductBySlug(slug);
-    if (!product) {
-      // Let your error template handle this
-      throw new Error('Product not found');
+    if (!product) throw new Error('Product not found');
+
+    // Build images[]: prefer explicit images from controller/model
+    let images = [];
+    try {
+      const rows = await shopController.getImagesForProduct(product.id); // expect [{img_url, alt, is_primary}, ...]
+      images = (rows || []).map(r => ({ url: r.img_url || r.url, alt: r.alt || product.name || '' }));
+    } catch (_) { }
+
+    // Fallbacks: product.images or single product.image/img_url
+    if (!images.length && Array.isArray(product.images) && product.images.length) {
+      images = product.images.map(x => ({ url: x.img_url || x.url, alt: x.alt || product.name || '' }));
+    }
+    if (!images.length && (product?.image?.img_url || product?.img_url || product?.image_url)) {
+      images = [{ url: (product.image?.img_url || product.img_url || product.image_url), alt: product.name || '' }];
     }
 
-    // // 2) Price string (server-side so EJS stays simple)
-    const priceCents = product.price_cents ?? product.priceCents ?? null;
-    const priceStr = (typeof priceCents === 'number')
-      ? `$${(priceCents / 100).toFixed(2)}`
-      : null;
+    // Ensure we have at least one
+    if (!images.length) images = [];
 
-    // // 3) Related products (same category, excluding this product)
+    const priceCents = product.price_cents ?? product.priceCents ?? null;
+    const priceStr = (typeof priceCents === 'number') ? `$${(priceCents / 100).toFixed(2)}` : null;
+
+    // Related (unchanged)
     let related = [];
     try {
       const category = await shopController.getProductCategory(product.id);
       if (category && Array.isArray(category.products)) {
-        // category.products appears to be an array of product IDs per your controller
         const others = category.products.filter(id => id !== product.id).slice(0, 8);
-        // hydrate each related product by id
-        related = await Promise.all(
-          others.map(id => shopController.getProductById(id))
-        );
-        related = related.filter(Boolean);
+        related = (await Promise.all(others.map(id => shopController.getProductById(id)))).filter(Boolean);
       }
-    } catch (_) {
-      // related is optional—ignore issues quietly
-    }
+    } catch (_) { }
 
     return {
       title: product.name,
@@ -86,9 +90,12 @@ bind(router, {
       backUrl: '/',
       product,
       priceStr,
+      images,
+      primaryImageIndex: 0,   // compute based on is_primary if you have it
       related
     };
   }
 });
+
 
 module.exports = router;

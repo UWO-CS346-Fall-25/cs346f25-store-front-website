@@ -36,6 +36,9 @@ const productManager = {
   },
   getNewArrivals: async function (count) {
     return await db.getNewArrivals(count);
+  },
+  getImagesForProduct: async function (productId) {
+    return await db.getImagesForProduct(productId);
   }
 
 };
