@@ -21,6 +21,17 @@ const productManager = {
     return products.find(p => p.slug === slug) || null;
   },
 
+  getCategoryBySlug: async function (slug) {
+    const categories = await db.getCategories();
+    return categories.find(c => c.slug === slug) || null;
+  },
+  getItemsInCategory: async function (categoryId) {
+    const categories = await db.getCategories();
+    const category = categories.find(c => c.id === categoryId);
+    if (!category) return [];
+    return category.products;
+  },
+
   getFeatured: async function () {
     return await db.getFeatured();
   },
