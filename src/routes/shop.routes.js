@@ -9,7 +9,7 @@ const csrfProtection = csrf({ cookie: false });
 bind(router, {
   route: '/category/:slug',
   view: 'shop/list',
-  meta: { title: '' },
+  meta: {},
   middleware: [csrfProtection],
   getData: async function (req) {
 
@@ -28,6 +28,7 @@ bind(router, {
 
     return {
       title: `${slug}`,
+      mainTitle: category.name,
       csrfToken: req.csrfToken(),
       subtitle: `${total} item${total === 1 ? '' : 's'} in "${category.name}"`,
       backUrl: '/',
@@ -39,6 +40,7 @@ bind(router, {
     };
   }
 });
+
 
 
 module.exports = router;
