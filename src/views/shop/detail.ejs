@@ -24,7 +24,6 @@
         <!-- Main content -->
         <div class="product-detail" style="display:grid; gap:1.25rem;">
           <!-- Media -->
-          <!-- Media: thumbs-only gallery -->
           <div class="product-detail__media">
             <%
               const imgs = (images && images.length)
@@ -34,27 +33,28 @@
                   : (product?.image?.img_url || product?.img_url || product?.image_url)
                     ? [{ url: (product.image?.img_url || product.img_url || product.image_url), alt: (product.image?.alt || product.name || '') }]
                     : [];
-
-              const primaryIndex = Math.min(Math.max(+primaryImageIndex || 0, 0), Math.max(imgs.length - 1, 0));
             %>
 
             <% if (imgs.length) { %>
-              <div class="pg-thumbs" role="listbox" aria-label="Product images">
-                <% imgs.forEach(function(img, i) { %>
-                  <button
-                    class="pg-thumb<%= i === primaryIndex ? ' is-selected' : '' %>"
-                    role="option"
-                    aria-selected="<%= i === primaryIndex ? 'true' : 'false' %>"
-                    data-index="<%= i %>"
-                    type="button">
-                    <img src="<%= img.url %>" alt="<%- (img.alt || product?.name || '') + ' thumbnail' %>">
-                  </button>
-                <% }) %>
+              <div class="product-images-window" aria-label="Product images">
+                <div class="pg-thumbs" role="listbox">
+                  <% imgs.forEach(function(img, i) { %>
+                    <button
+                      class="pg-thumb<%= i === 0 ? ' is-selected' : '' %>"
+                      role="option"
+                      aria-selected="<%= i === 0 ? 'true' : 'false' %>"
+                      type="button">
+                      <img src="<%= img.url %>" alt="<%- (img.alt || product?.name || '') + ' thumbnail' %>">
+                    </button>
+                  <% }) %>
+                </div>
               </div>
             <% } else { %>
               <div class="muted">No image available.</div>
             <% } %>
           </div>
+
+
 
 
 
@@ -90,7 +90,7 @@
                 Qty
                 <input type="number" name="quantity" min="1" value="1" style="max-width:6rem;">
               </label>
-              <button class="button" type="submit" style="margin-left:.5rem;">Add to cart</button>
+              <button class="primary button" type="submit" style="margin-left:.5rem;">Add to cart</button>
             </form>
           </div>
         </div>
