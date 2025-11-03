@@ -8,6 +8,27 @@ const mock = require('./mock/productDatabase.js');
 module.exports = {
   ttl: 60_000,
   namespace: 'productDB',
+  getAllProducts: async function () {
+    const key = `${this.namespace}:allProducts`;
+    return cache.wrap(key, this.ttl, async () => {
+      const res = await database.query('SELECT * FROM public.products');
+      return res.rows;
+    });
+  },
+  getProduct: async function (id) {
+    const key = `${this.namespace}:product:${id}`;
+    return cache.wrap(key, this.ttl, async () => {
+      const res = await database.query('SELECT * FROM public.products WHERE id = $1', [id]);
+      return res.rows[0] || null;
+    });
+  },
+  getProductBySlug: async function (slug) {
+    const key = `${this.namespace}:productBySlug:${slug}`;
+    return cache.wrap(key, this.ttl, async () => {
+      const res = await database.query('SELECT * FROM public.products WHERE slug = $1', [slug]);
+      return res.rows[0] || null;
+    });
+  },
   getProductWithImage: async function (id) {
     if (debug.isMockDB()) return mock.getProductWithImage();
     const key = `${this.namespace}:product:${id}`;

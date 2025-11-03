@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', {
+  // Reuse existing card/image styles so visuals match list pages
+  cssFiles: ['shop/product-card.css'],
+  scripts: []
+}) %>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main id="main-content">
+    <section class="section" aria-labelledby="product-title">
+      <div class="container">
+
+        <div class="section__header">
+          <h1 id="product-title" class="section__title">
+            <%= mainTitle || 'Product' %>
+          </h1>
+
+          <% if (typeof backUrl === 'string' && backUrl.length) { %>
+            <a class="link" href="<%= backUrl %>">← Back</a>
+          <% } %>
+        </div>
+
+        <!-- Main content -->
+        <div class="product-detail" style="display:grid; gap:1.25rem;">
+          <!-- Media -->
+          <div class="product-detail__media" style="max-width:700px;">
+            <% 
+              const imgUrl = product?.image?.img_url 
+                           || product?.img_url 
+                           || product?.image_url 
+                           || product?.imagePath 
+                           || null;
+              const imgAlt = product?.image?.alt || product?.name || '';
+            %>
+            <% if (imgUrl) { %>
+              <img src="<%= imgUrl %>" alt="<%- imgAlt %>" style="width:100%; height:auto; display:block; border-radius:.5rem;" />
+            <% } else { %>
+              <div class="muted" aria-live="polite">No image available.</div>
+            <% } %>
+          </div>
+
+          <!-- Info -->
+          <div class="product-detail__info" aria-describedby="price-block">
+            <% if (product?.brand) { %>
+              <p class="muted" style="margin:0 0 .5rem 0;"><%= product.brand %></p>
+            <% } %>
+
+            <% if (priceStr) { %>
+              <p id="price-block" class="price" style="font-size:1.25rem; font-weight:700; margin:.25rem 0 1rem;">
+                <%= priceStr %>
+              </p>
+            <% } %>
+
+            <% if (product?.short_description) { %>
+              <p><%- product.short_description %></p>
+            <% } %>
+
+            <% if (product?.description) { %>
+              <div class="prose">
+                <%- product.description %>
+              </div>
+            <% } %>
+
+            <!-- Add to Cart (optional; safe to keep minimal). -->
+            <form method="post" action="/cart/add" style="margin-top:1rem;">
+              <% if (csrfToken) { %>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <% } %>
+              <input type="hidden" name="product_id" value="<%= product?.id %>">
+              <label>
+                Qty
+                <input type="number" name="quantity" min="1" value="1" style="max-width:6rem;">
+              </label>
+              <button class="button" type="submit" style="margin-left:.5rem;">Add to cart</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Related products -->
+        <% if (related && related.length) { %>
+          <hr style="margin:2rem 0;">
+          <div class="section__header">
+            <h2 class="section__title">Related products</h2>
+          </div>
+
+          <ul class="grid grid--products" role="list" aria-label="Related products">
+            <% related.forEach(function(p) { %>
+              <li class="grid__item">
+                <%- include('product-card', {
+                  product: p,
+                  url: `/product/${p.slug}`,
+                  price: p.price_cents
+                }) %>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
+
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>
