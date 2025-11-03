@@ -12,6 +12,7 @@ insert into public.products (
   name,
   slug,
   description,
+  big_description,
   price_cents,
   currency,
   is_active,
@@ -24,6 +25,7 @@ select
   'Product ' || i as name,
   'product-' || i as slug,
   'This is a description for Product ' || i || '.' as description,
+  'This is a big description for Product ' || i || '. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.' as big_description,
   (500 + floor(random() * 9500))::int as price_cents,  -- $5.00 - $99.99
   'USD' as currency,
   (i % 12 <> 0) as is_active,                           -- every 12th inactive (good for testing filters)

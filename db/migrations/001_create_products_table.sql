@@ -24,6 +24,7 @@ create table if not exists public.products (
   name             text not null,
   slug             citext not null unique, -- case-insensitive unique
   description      text,
+  big_description  text,
 
   -- Price
   price_cents      integer not null check (price_cents >= 0),
