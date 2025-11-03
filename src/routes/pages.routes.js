@@ -14,7 +14,6 @@ bind(router, {
   middleware: [csrfProtection],
   getData: async (req) => ({
     csrfToken: req.csrfToken(),
-    allProducts: await productManager.getProducts(),
     featuredProducts: await productManager.getFeatured(),
     categories: await productManager.getCategories(),
     newArrivals: await productManager.getNewArrivals(8)
