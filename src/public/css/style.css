@@ -246,3 +246,84 @@ textarea:focus {
   outline: 2px solid #9b87f5;
   outline-offset: 2px;
 }
+
+
+.prose {
+  max-width: 70ch;
+  /* keeps lines readable */
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #444;
+  /* or var(--text-color) if you have one */
+}
+
+/* Vertical rhythm: every sibling after the first gets spacing */
+.prose>*+* {
+  margin-top: 0.75rem;
+}
+
+/* Paragraphs */
+.prose p {
+  margin: 0;
+}
+
+/* Headings inside prose */
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin: 1.25rem 0 0.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.prose h2 {
+  font-size: 1.1rem;
+}
+
+.prose h3 {
+  font-size: 1.0rem;
+}
+
+.prose h4 {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+/* Lists */
+.prose ul,
+.prose ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.prose li+li {
+  margin-top: 0.25rem;
+}
+
+/* Links */
+.prose a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.prose a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Emphasis */
+.prose strong {
+  font-weight: 600;
+}
+
+.prose em {
+  font-style: italic;
+}
+
+/* Optional: small notes */
+.prose small {
+  font-size: 0.85em;
+  color: #666;
+}

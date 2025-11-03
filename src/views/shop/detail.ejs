@@ -70,15 +70,11 @@
               </p>
             <% } %>
 
-            <% if (product?.description) { %>
-              <p><%- product.description %></p>
-            <% } %>
-
-            <% if (product?.big_description) { %>
               <div class="prose">
-                <%- product.big_description %>
+                <h2>About this item</h2>
+                <p><em><%- product.description %></em></p>
+                <p><%- product.big_description %></p>
               </div>
-            <% } %>
 
             <!-- Add to Cart (optional; safe to keep minimal). -->
             <form method="post" action="/cart/add" style="margin-top:1rem;">
