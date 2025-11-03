@@ -21,12 +21,11 @@
         <%- include('shop/scrollable-products', {
           title: cat.name ,
           products: cat.products,
-          url: '/shop/category/' + (cat.slug || ''),
+          url: '/category/' + (cat.slug || ''),
           isFeatured: false } ); %>
       <% }); %>
 
       <!-- CATEGORIES -->
-      <%- include('shop/categories') %>
 
       <!-- TODO : About / Story -->
 

@@ -7,7 +7,7 @@ const { bind } = require('express-page-registry');
 const csrfProtection = csrf({ cookie: false });
 
 bind(router, {
-  route: '/shop/category/:slug',
+  route: '/category/:slug',
   view: 'shop/list',
   meta: { title: '' },
   middleware: [csrfProtection],
@@ -30,11 +30,11 @@ bind(router, {
       title: `${slug}`,
       csrfToken: req.csrfToken(),
       subtitle: `${total} item${total === 1 ? '' : 's'} in "${category.name}"`,
-      backUrl: '/shop',
+      backUrl: '/',
       products,
       totalCount: total,
       pageCount,
-      basePath: `/shop/category/${encodeURIComponent(slug)}`,
+      basePath: `/category/${encodeURIComponent(slug)}`,
       query: {} // carry other filters if you add them
     };
   }
