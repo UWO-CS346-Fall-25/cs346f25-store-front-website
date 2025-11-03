@@ -81,11 +81,11 @@
   border-radius: 8px;
   cursor: pointer;
   padding: 0;
-  color: #6b7280;
+  color: var(--foreground);
 }
 
 .password-toggle:hover {
-  color: #3b3f46;
+  color: var(--foreground);
 }
 
 /* Swap icons via aria-pressed */
@@ -116,13 +116,13 @@
 .auth-form textarea:focus,
 .password-toggle:focus-visible {
   outline: none;
-  border-color: #9b87f5;
+  border-color: var(--primary-1);
   box-shadow: 0 0 0 3px rgba(155, 135, 245, .25);
 }
 
 /* Also provide :focus-visible ring for any child controls */
 .auth-form :focus-visible {
-  outline: 2px solid #9b87f5;
+  outline: 2px solid var(--primary-1);
   outline-offset: 2px;
 }
 
@@ -168,8 +168,4 @@ label {
   color: var(--foreground);
   font-weight: 600;
   margin-bottom: .35rem;
-}
-
-h1 {
-  color: var(--tint-1);
 }

@@ -70,13 +70,13 @@
               </p>
             <% } %>
 
-            <% if (product?.short_description) { %>
-              <p><%- product.short_description %></p>
+            <% if (product?.description) { %>
+              <p><%- product.description %></p>
             <% } %>
 
-            <% if (product?.description) { %>
+            <% if (product?.big_description) { %>
               <div class="prose">
-                <%- product.description %>
+                <%- product.big_description %>
               </div>
             <% } %>
 
