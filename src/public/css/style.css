@@ -137,8 +137,23 @@ button.primary.small {
 
 
 button.ghost {
-  border: 1px solid color-mix(in srgb, var(--foreground) 30%, transparent);
-  color: var(--background);
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.25rem;
+  padding: .7rem 2rem;
+  border-radius: .75rem;
+  border: 2px solid var(--tint-1);
+  transition: transform .15s ease, background .2s ease, color .2s ease;
+  background: var(--background);
+  color: var(--tint-1);
+  cursor: pointer;
+}
+
+button.ghost:hover {
+  transform: translateY(-1px);
+  color: var(--tint-2);
+  border: 2px solid var(--tint-2);
 }
 
 /* Reduced motion */

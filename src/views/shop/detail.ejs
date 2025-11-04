@@ -72,7 +72,7 @@
               </div>
 
             <!-- Add to Cart (optional; safe to keep minimal). -->
-            <form method="post" action="/cart/add">
+            <form class="product-actions" method="post" action="/cart/add">
               <% if (csrfToken) { %>
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
               <% } %>
@@ -82,6 +82,7 @@
                 <input id="quantity" type="number" name="quantity" min="1" value="1">
               </label>
               <button id="add-to-cart" class="primary button" type="submit">Add to cart</button>
+              <button id="buy-now" class="ghost button" type="submit">Buy now</button>
             </form>
           </div>
         </div>

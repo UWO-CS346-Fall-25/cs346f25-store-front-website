@@ -1,8 +1,6 @@
 /* Scrollable window that contains all overflow */
 .product-images-window {
   max-width: 100%;
-  border-radius: .75rem;
-  border: 1px solid #e5e5e5;
   padding: .5rem;
   box-sizing: border-box;
 
@@ -33,7 +31,7 @@
   width: calc(var(--thumb-h) * 0.75);
   /* portrait rectangle (3:4) by default */
 
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--background);
   background: transparent;
   padding: 0;
   border-radius: .5rem;
@@ -49,16 +47,16 @@
 /* Selected = square (same height, wider width) */
 .pg-thumb.is-selected {
   width: var(--thumb-h);
-  /* becomes a square */
-  border-color: #888;
   box-shadow: 0 0 0 2px rgba(0, 0, 0, .06) inset;
+  transform: scale(1.03);
 }
+
+
 
 /* Keyboard focus should also look selected */
 .pg-thumb:focus-visible {
   outline: none;
   width: var(--thumb-h);
-  border-color: #888;
   box-shadow: 0 0 0 2px rgba(0, 0, 0, .1) inset;
 }
 
@@ -71,6 +69,7 @@
   display: block;
   border-radius: .45rem;
 }
+
 
 /* Slightly taller thumbs on larger screens if you want */
 @media (min-width: 1024px) {
@@ -98,10 +97,11 @@
 .product-detail {
   display: grid;
   gap: 1.25rem;
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   align-items: flex-start;
   max-width: 1100px;
   margin: 2.5rem auto 4rem;
+  margin-top: 2rem;
   padding: 0 1.5rem;
 }
 
@@ -111,11 +111,6 @@
   }
 }
 
-.price-block {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: .25rem 0 1rem;
-}
 
 .product-detail__info form {
   margin-top: 1rem;
@@ -131,4 +126,43 @@
 
 #related-products-separator {
   margin: 2rem 0;
+}
+
+
+
+.product-detail__info h2 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.6rem, 2.4vw, 2rem);
+}
+
+.price-block {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--overlay);
+}
+
+.product-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.product-actions label {
+  font-size: 0.9rem;
+  color: var(--foreground);
+}
+
+.product-actions input[type="number"] {
+  width: 70px;
+  padding: 0.35rem 0.5rem;
+}
+
+.product-detail__media {
+  background: var(--overlay);
+  border: 1px solid var(--primary-1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 1rem;
 }
