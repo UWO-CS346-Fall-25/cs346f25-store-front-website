@@ -11,14 +11,14 @@
     <section class="section" aria-labelledby="product-title">
       <div class="container">
 
-        <div class="section__header">
+        <div class="section__header--product">
+          <% if (typeof backUrl === 'string' && backUrl.length) { %>
+            <a class="link" href="<%= backUrl %>">← Back</a>
+          <% } %>
           <h1 id="product-title" class="section__title">
             <%= mainTitle || 'Product' %>
           </h1>
 
-          <% if (typeof backUrl === 'string' && backUrl.length) { %>
-            <a class="link" href="<%= backUrl %>">← Back</a>
-          <% } %>
         </div>
 
         <!-- Main content -->
@@ -59,33 +59,34 @@
 
 
           <!-- Info -->
-          <div class="product-detail__info" aria-describedby="price-block">
-
+          <div class="product-details">
             <p id="price-block" class="price">
               <%= util.formatPrice(product) %>
             </p>
 
-              <div class="prose">
-                <h2>About this item</h2>
-                <p><em><%- product.description %></em></p>
-                <p><%- product.big_description %></p>
-              </div>
+            <div class="prose">
+              <h2>About this item</h2>
+              <p><em><%- product.description %></em></p>
+              <p><%- product.big_description %></p>
+            </div>
+          </div>
 
             <!-- Add to Cart (optional; safe to keep minimal). -->
-            <form class="product-actions" method="post" action="/cart/add">
-              <% if (csrfToken) { %>
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-              <% } %>
-              <input type="hidden" name="product_id" value="<%= product?.id %>">
-              <label>
-                Qty
-                <input id="quantity" type="number" name="quantity" min="1" value="1">
-              </label>
-              <button id="add-to-cart" class="primary button" type="submit">Add to cart</button>
-              <button id="buy-now" class="ghost button" type="submit">Buy now</button>
-            </form>
-          </div>
+          <form class="product-actions" method="post" action="/cart/add">
+            <% if (csrfToken) { %>
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <% } %>
+            <input type="hidden" name="product_id" value="<%= product?.id %>">
+            <label>
+              Qty
+              <input id="quantity" type="number" name="quantity" min="1" value="1">
+            </label>
+            <button id="add-to-cart" class="primary button" type="submit">Add to cart</button>
+            <button id="buy-now" class="ghost button" type="submit">Buy now</button>
+          </form>
         </div>
+      </div>
+
 
         <!-- Related products -->
         <% if (related && related.length) { %>
@@ -93,7 +94,7 @@
           <div class="section__header">
             <h2 class="section__title">Related products</h2>
           </div>
-
+          
           <ul class="grid grid--products" role="list" aria-label="Related products">
             <% related.forEach(function(p) { %>
               <li class="grid__item">
@@ -107,7 +108,6 @@
           </ul>
         <% } %>
 
-      </div>
     </section>
   </main>
 
