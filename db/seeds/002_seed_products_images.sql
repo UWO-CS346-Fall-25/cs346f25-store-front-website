@@ -22,7 +22,7 @@ select
   g.n + 1 as position, -- 2 and 3
   false as is_primary
 from public.products p
-cross join generate_series(1, 2) as g(n)
+cross join generate_series(1, 6) as g(n)
 where not exists (
   select 1 from public.product_images pi
   where pi.product_id = p.id and pi.position = g.n + 1
