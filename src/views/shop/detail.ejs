@@ -22,7 +22,7 @@
         </div>
 
         <!-- Main content -->
-        <div class="product-detail" style="display:grid; gap:1.25rem;">
+        <div class="product-detail">
           <!-- Media -->
           <div class="product-detail__media">
             <%
@@ -61,7 +61,7 @@
           <!-- Info -->
           <div class="product-detail__info" aria-describedby="price-block">
 
-            <p id="price-block" class="price" style="font-size:1.25rem; font-weight:700; margin:.25rem 0 1rem;">
+            <p id="price-block" class="price">
               <%= util.formatPrice(product) %>
             </p>
 
@@ -72,23 +72,23 @@
               </div>
 
             <!-- Add to Cart (optional; safe to keep minimal). -->
-            <form method="post" action="/cart/add" style="margin-top:1rem;">
+            <form method="post" action="/cart/add">
               <% if (csrfToken) { %>
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
               <% } %>
               <input type="hidden" name="product_id" value="<%= product?.id %>">
               <label>
                 Qty
-                <input type="number" name="quantity" min="1" value="1" style="max-width:6rem;">
+                <input id="quantity" type="number" name="quantity" min="1" value="1">
               </label>
-              <button class="primary button" type="submit" style="margin-left:.5rem;">Add to cart</button>
+              <button id="add-to-cart" class="primary button" type="submit">Add to cart</button>
             </form>
           </div>
         </div>
 
         <!-- Related products -->
         <% if (related && related.length) { %>
-          <hr style="margin:2rem 0;">
+          <hr id="related-products-separator">
           <div class="section__header">
             <h2 class="section__title">Related products</h2>
           </div>
