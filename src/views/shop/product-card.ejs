@@ -20,9 +20,8 @@
         <%= product?.name || 'Untitled Product' %>
       </h3>
       <p class="product__price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-        <span itemprop="priceCurrency" content="USD">$</span>
         <span itemprop="price">
-          <%= price %>
+          <%= util.formatPrice(product) %>
         </span>
       </p>
     </div>

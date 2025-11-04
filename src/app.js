@@ -107,7 +107,8 @@ configure({
     title: 'Raven\'s Treasures',
     description: "Your one-stop shop for all things Ravens!",
     siteName: "Raven's Treasures",
-    tagline: 'Handmade goods crafted with care.'
+    tagline: 'Handmade goods crafted with care.',
+    util: require('./controllers/util.js')
   }
 });
 

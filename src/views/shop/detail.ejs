@@ -60,15 +60,10 @@
 
           <!-- Info -->
           <div class="product-detail__info" aria-describedby="price-block">
-            <% if (product?.brand) { %>
-              <p class="muted" style="margin:0 0 .5rem 0;"><%= product.brand %></p>
-            <% } %>
 
-            <% if (priceStr) { %>
-              <p id="price-block" class="price" style="font-size:1.25rem; font-weight:700; margin:.25rem 0 1rem;">
-                <%= priceStr %>
-              </p>
-            <% } %>
+            <p id="price-block" class="price" style="font-size:1.25rem; font-weight:700; margin:.25rem 0 1rem;">
+              <%= util.formatPrice(product) %>
+            </p>
 
               <div class="prose">
                 <h2>About this item</h2>

@@ -70,9 +70,6 @@ bind(router, {
     // Ensure we have at least one
     if (!images.length) images = [];
 
-    const priceCents = product.price_cents ?? product.priceCents ?? null;
-    const priceStr = (typeof priceCents === 'number') ? `$${(priceCents / 100).toFixed(2)}` : null;
-
     // Related (unchanged)
     let related = [];
     try {
@@ -89,7 +86,6 @@ bind(router, {
       csrfToken: req.csrfToken(),
       backUrl: '/',
       product,
-      priceStr,
       images,
       primaryImageIndex: 0,   // compute based on is_primary if you have it
       related
