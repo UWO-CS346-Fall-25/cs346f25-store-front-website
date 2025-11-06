@@ -29,7 +29,6 @@ bind(router, {
     return {
       title: `${slug}`,
       mainTitle: category.name,
-      csrfToken: req.csrfToken(),
       subtitle: `${total} item${total === 1 ? '' : 's'} in "${category.name}"`,
       backUrl: '/',
       products,
@@ -83,7 +82,6 @@ bind(router, {
     return {
       title: product.name,
       mainTitle: product.name,
-      csrfToken: req.csrfToken(),
       backUrl: '/',
       product,
       images,

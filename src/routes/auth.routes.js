@@ -1,5 +1,6 @@
 const express = require('express');
 const supabase = require('../models/supabase');
+const { bind } = require('express-page-registry');
 
 function getFlash(req) {
   return req.flash ? { error: req.flash('error')[0] } : {};
@@ -11,7 +12,6 @@ module.exports = function (csrfProtection) {
   // GET /auth/login
   router.get('/login', csrfProtection, (req, res) => {
     res.render('auth/login', {
-      csrfToken: req.csrfToken(),
       flash: getFlash(req),
     });
   });
@@ -33,7 +33,6 @@ module.exports = function (csrfProtection) {
       }
 
       return res.status(401).render('auth/login', {
-        csrfToken: req.csrfToken(),
         flash: { error: 'Invalid email or password' },
       });
     }
@@ -74,6 +73,40 @@ module.exports = function (csrfProtection) {
     res.clearCookie('user-display-name');
     res.redirect('/');
   });
+
+
+  bind(router, {
+    route: '/login',
+    view: 'auth/login',
+    meta: {
+      title: 'Log in',
+      description: 'Access your account to view orders and manage details.'
+    },
+    middleware: [csrfProtection],
+    getData: async (req, _res) => ({
+      // If you use connect-flash, this will feed flash messages to the view
+      flash: {
+        error: req.flash ? req.flash('error') : null
+      }
+      // csrfToken is injected by the binder if present
+    })
+  });
+
+  bind(router, {
+    route: '/signup',
+    view: 'auth/signup',
+    meta: {
+      title: 'Signup',
+      description: 'Create a new account to view orders and manage details.'
+    },
+    middleware: [csrfProtection],
+    getData: async (req, _res) => ({
+      flash: {
+        error: req.flash ? req.flash('error') : null
+      }
+    })
+  });
+
 
   return router;
 };

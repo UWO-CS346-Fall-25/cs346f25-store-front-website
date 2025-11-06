@@ -95,12 +95,26 @@ configure({
     description: "Your one-stop shop for all things Ravens!",
     siteName: "Raven's Treasures",
     tagline: 'Handmade goods crafted with care.',
-    util: require('./controllers/util.js')
+    util: require('./controllers/util.js'),
+
   }
 });
 
-const csrfProtection = csrf({ cookie: false });
+app.use((req, res, next) => {
+  if (typeof req.csrfToken === 'function') {
+    try {
+      res.locals.csrfToken = req.csrfToken();
+    } catch (err) {
+      res.locals.csrfToken = null;
+    }
+  } else {
+    res.locals.csrfToken = null;
+  }
+  next();
+});
 
+
+const csrfProtection = csrf({ cookie: false });
 app.use('/', require('./routes/root.routes'));
 app.use('/', require('./routes/pages.routes'));
 app.use('/', require('./routes/api.routes'));
