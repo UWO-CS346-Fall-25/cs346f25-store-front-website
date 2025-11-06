@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const supabase = require('../lib/supabase');
+const supabase = require('../models/supabase');
 
 const csrf = require('csurf');
 const csrfProtection = csrf();

@@ -10,7 +10,6 @@ async function authMiddleware(req, res, next) {
     return next();
   }
 
-  // Option A: ask Supabase who this is
   const { data, error } = await supabase.auth.getUser(token);
 
   if (error || !data?.user) {
@@ -21,12 +20,11 @@ async function authMiddleware(req, res, next) {
   }
 
   const user = data.user;
-  req.user = user;
-
   const role = user.app_metadata?.role;
+
+  req.user = user;
   req.isAdmin = role === 'admin';
 
-  // handy for templates
   res.locals.currentUser = user;
   res.locals.isAdmin = req.isAdmin;
 

@@ -117,6 +117,7 @@ app.use('/', require('./routes/root.routes'));
 app.use('/', require('./routes/pages.routes'));
 app.use('/', require('./routes/api.routes'));
 app.use('/', require('./routes/shop.routes'));
+app.use('/auth', require('./routes/auth.routes'));
 
 const ebayRoutes = require("./routes/ebay.routes.js");
 app.use("/ebay", ebayRoutes);
