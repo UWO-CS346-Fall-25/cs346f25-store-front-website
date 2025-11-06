@@ -1,9 +1,7 @@
 
 
 const cache = require('../controllers/cache.js');
-const debug = require('../controllers/debug');
 const database = require('./db.js');
-const mock = require('./mock/productDatabase.js');
 
 const NAMESPACE = 'productDB';
 const TTL = 60_000; // TODO: adjust cache TTL as needed (should be higher / can clear cache as needed)
@@ -100,14 +98,14 @@ module.exports = {
   getCategories: async function () {
     const key = `${NAMESPACE}:categories`;
     return cache.wrap(key, this.ttl, async () => {
-      const res = await database.query('SELECT * FROM categories order by position');
+      const res = await database.query('SELECT * FROM public.categories ORDER BY position');
       return res.rows;
     });
   },
   getActiveCategories: async function () {
     const key = `${NAMESPACE}:activeCategories`;
     return cache.wrap(key, this.ttl, async () => {
-      const res = await database.query('SELECT * FROM categories where is_active = true order by position');
+      const res = await database.query('SELECT * FROM public.categories WHERE is_active = true ORDER BY position');
       return res.rows;
     });
   },
@@ -127,7 +125,7 @@ module.exports = {
     const key = `${NAMESPACE}:newarrivals:${count}`;
 
     return cache.wrap(key, this.ttl, async () => {
-      const res = await database.query('SELECT * FROM products ORDER BY created_at DESC LIMIT $1', [count]);
+      const res = await database.query('SELECT * FROM public.products ORDER BY created_at DESC LIMIT $1', [count]);
       return res.rows;
     });
   },
