@@ -89,7 +89,9 @@ app.use((req, res, next) => {
 // const indexRouter = require('./routes/index');
 // app.use('/', indexRouter);
 
+app.use(require('cookie-parser')());
 app.use(require('./middleware/auth-context')());
+app.use(require('./middleware/auth'));
 
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;

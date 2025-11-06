@@ -25,6 +25,7 @@
   "dependencies": {
     "@blackfisk/ebay-api": "^0.1.1",
     "axios": "^1.12.2",
+    "cookie-parser": "^1.4.7",
     "csurf": "^1.11.0",
     "dotenv": "^17.2.3",
     "ebay-api": "^9.2.2",
