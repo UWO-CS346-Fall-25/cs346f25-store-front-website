@@ -18,7 +18,6 @@ module.exports = function (csrfProtection) {
 
   // POST /auth/login
   router.post('/login', csrfProtection, async (req, res) => {
-    console.log('BODY._csrf:', req.body._csrf);
     const { email, password, remember } = req.body;
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -72,39 +71,6 @@ module.exports = function (csrfProtection) {
     res.clearCookie('sb-refresh-token');
     res.clearCookie('user-display-name');
     res.redirect('/');
-  });
-
-
-  bind(router, {
-    route: '/login',
-    view: 'auth/login',
-    meta: {
-      title: 'Log in',
-      description: 'Access your account to view orders and manage details.'
-    },
-    middleware: [csrfProtection],
-    getData: async (req, _res) => ({
-      // If you use connect-flash, this will feed flash messages to the view
-      flash: {
-        error: req.flash ? req.flash('error') : null
-      }
-      // csrfToken is injected by the binder if present
-    })
-  });
-
-  bind(router, {
-    route: '/signup',
-    view: 'auth/signup',
-    meta: {
-      title: 'Signup',
-      description: 'Create a new account to view orders and manage details.'
-    },
-    middleware: [csrfProtection],
-    getData: async (req, _res) => ({
-      flash: {
-        error: req.flash ? req.flash('error') : null
-      }
-    })
   });
 
 
