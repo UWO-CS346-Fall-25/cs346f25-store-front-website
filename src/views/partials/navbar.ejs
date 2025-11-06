@@ -21,7 +21,7 @@
 
         <% if (user !=null) { %>
           <%- include('navbar-link', { path: '/account' , link_title: 'Account' }) %>
-          <%- include('navbar-link', { path: '/logout' , link_title: 'Logout' }) %>
+          <%- include('navbar-logout') %>
         <% } else { %>
           <%- include('navbar-link', { path: '/login' , link_title: 'Login' }) %>
           <%- include('navbar-link', { path: '/signup' , link_title: 'Sign up' }) %>

@@ -1,0 +1,8 @@
+<li>
+  <form action="/auth/logout" method="post" style="display:inline">
+    <% if (csrfToken) { %>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <% } %>
+    <button type="submit" class="link--button">Log out</button>
+  </form>
+</li>

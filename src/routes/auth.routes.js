@@ -70,8 +70,13 @@ module.exports = function (csrfProtection) {
     res.clearCookie('sb-access-token');
     res.clearCookie('sb-refresh-token');
     res.clearCookie('user-display-name');
+    if (req.session) {
+      req.session.user = null;
+    }
+
     res.redirect('/');
   });
+
 
 
   return router;
