@@ -1,5 +1,4 @@
-// middleware/auth.js
-const supabase = require('../lib/supabase');
+const supabase = require('../models/supabase');
 
 async function authMiddleware(req, res, next) {
   const token = req.cookies['sb-access-token'];
@@ -7,6 +6,8 @@ async function authMiddleware(req, res, next) {
   if (!token) {
     req.user = null;
     req.isAdmin = false;
+    res.locals.currentUser = null;
+    res.locals.isAdmin = false;
     return next();
   }
 
@@ -16,6 +17,8 @@ async function authMiddleware(req, res, next) {
     // invalid/expired token
     req.user = null;
     req.isAdmin = false;
+    res.locals.currentUser = null;
+    res.locals.isAdmin = false;
     return next();
   }
 
