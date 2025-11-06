@@ -24,6 +24,7 @@
   "license": "ISC",
   "dependencies": {
     "@blackfisk/ebay-api": "^0.1.1",
+    "@supabase/supabase-js": "^2.79.0",
     "axios": "^1.12.2",
     "cookie-parser": "^1.4.7",
     "csurf": "^1.11.0",

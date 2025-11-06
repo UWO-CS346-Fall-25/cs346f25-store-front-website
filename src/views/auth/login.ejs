@@ -19,7 +19,7 @@
             </div>
             <% } %>
 
-              <form class="auth-form" action="#" method="post" onsubmit="return false;">
+              <form class="auth-form" action="/auth/login" method="post">
                 <% if (csrfToken) { %>
                   <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                   <% } %>
@@ -65,7 +65,7 @@
                       <button class="primary" type="submit">Log in</button>
                     </div>
 
-                    <p class="muted">Don’t have an account? <a class="link" href="/signup">Sign up</a></p>
+                    <p class="muted">Don't have an account? <a class="link" href="/signup">Sign up</a></p>
               </form>
         </div>
       </main>
