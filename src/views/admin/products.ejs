@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', {
+  title: 'Admin · Products',
+  cssFiles: ['admin.css'],
+  scripts: []
+}) %>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main id="main-content">
+    <section class="section" aria-labelledby="admin-products-heading">
+      <div class="container">
+
+        <!-- Page header (matches your .section__header style) -->
+        <div class="section__header admin-page-header">
+          <div>
+            <h1 id="admin-products-heading" class="section__title">
+              Product admin
+            </h1>
+            <p class="muted">
+              Create, update, and retire products shown in your shop.
+            </p>
+          </div>
+
+          <a href="#create-product" class="button primary small">
+            + New product
+          </a>
+        </div>
+
+        <!-- Optional summary chips -->
+        <% const items = products || []; %>
+        <% const activeCount = items.filter(p => p.is_active).length; %>
+        <div class="admin-summary">
+          <div class="admin-summary-card">
+            <p class="admin-summary-label">Total products</p>
+            <p class="admin-summary-value"><%= items.length %></p>
+          </div>
+          <div class="admin-summary-card">
+            <p class="admin-summary-label">Active products</p>
+            <p class="admin-summary-value"><%= activeCount %></p>
+          </div>
+        </div>
+
+        <!-- Product list -->
+        <section aria-label="Current products" class="admin-panel">
+          <% if (items.length) { %>
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Updated</th>
+                    <th class="admin-col-actions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% items.forEach(function (product) { %>
+                    <tr>
+                      <td>
+                        <div class="admin-product-main">
+                          <% if (product.image && product.image.img_url) { %>
+                            <img
+                              class="admin-product-thumb"
+                              src="<%= product.image.img_url %>"
+                              alt="<%= product.name || 'Product image' %>">
+                          <% } %>
+                          <div>
+                            <div class="admin-product-name">
+                              <%= product.name || 'Untitled product' %>
+                            </div>
+                            <% if (product.slug) { %>
+                              <div class="admin-product-meta muted">
+                                <code>/shop/<%= product.slug %></code>
+                              </div>
+                            <% } %>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td>
+                        <% if (typeof util !== 'undefined' && util.formatPrice) { %>
+                          <%= util.formatPrice(product) %>
+                        <% } else { %>
+                          $<%= (product.price_cents || 0) / 100 %>
+                        <% } %>
+                      </td>
+
+                      <td>
+                        <%= product.category_name || product.category || '—' %>
+                      </td>
+
+                      <td>
+                        <% if (product.is_active) { %>
+                          <span class="badge badge--success">Active</span>
+                        <% } else { %>
+                          <span class="badge badge--muted">Hidden</span>
+                        <% } %>
+                      </td>
+
+                      <td>
+                        <span class="muted">
+                          <%= product.updated_at
+                            ? new Date(product.updated_at).toLocaleDateString('en-US')
+                            : '—' %>
+                        </span>
+                      </td>
+
+                      <td>
+                        <div class="admin-actions">
+                          <!-- View on storefront -->
+                          <% if (product.slug) { %>
+                            <a class="link" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
+                              View
+                            </a>
+                          <% } %>
+
+                          <!-- Edit page route (GET) -->
+                          <a class="link" href="/admin/products/<%= product.id %>/edit">
+                            Edit
+                          </a>
+
+                          <!-- Delete (POST/DELETE) -->
+                          <form
+                            method="post"
+                            action="/admin/products/<%= product.id %>/delete"
+                            class="admin-inline-form"
+                            onsubmit="return confirm('Delete this product? This cannot be undone.');">
+                            <% if (csrfToken) { %>
+                              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <% } %>
+                            <!-- If you use method-override, uncomment this:
+                            <input type="hidden" name="_method" value="DELETE">
+                            -->
+                            <button type="submit" class="link link--danger admin-delete-link">
+                              Delete
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <p class="muted">No products yet. Create your first one below.</p>
+          <% } %>
+        </section>
+
+        <!-- Create product form -->
+        <section id="create-product" class="admin-panel admin-create-panel" aria-labelledby="create-product-heading">
+          <h2 id="create-product-heading">Create product</h2>
+          <p class="muted">
+            Add a new item to your storefront. You can edit images and details later.
+          </p>
+
+          <form method="post" action="/admin/products">
+            <% if (csrfToken) { %>
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <% } %>
+
+            <div class="form-row">
+              <div>
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label for="slug">
+                  Slug
+                  <span class="muted">(optional)</span>
+                </label>
+                <input id="slug" name="slug" type="text" placeholder="my-product-slug">
+              </div>
+            </div>
+
+            <div class="form-row form-row--split">
+              <div>
+                <label for="price_cents">Price (USD)</label>
+                <input id="price_cents" name="price" type="number" min="0" step="0.01" inputmode="decimal" required>
+              </div>
+
+              <div>
+                <label for="category">Category</label>
+                <input id="category" name="category" type="text" placeholder="Stickers, Cups, etc.">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label for="image_url">
+                  Image URL
+                  <span class="muted">(optional)</span>
+                </label>
+                <input id="image_url" name="image_url" type="url" placeholder="https://...">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4"
+                  placeholder="Short description for product cards and detail pages"></textarea>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="checkbox-inline">
+                <input type="checkbox" name="is_active" value="true" checked>
+                <span>Show this product in the shop</span>
+              </label>
+            </div>
+
+            <div class="form-row">
+              <button class="primary" type="submit">Create product</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

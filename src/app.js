@@ -108,6 +108,7 @@ app.use('/', require('./routes/pages.routes'));
 app.use('/', require('./routes/pages.auth.routes')(csrfProtection));
 app.use('/', require('./routes/api.routes'));
 app.use('/', require('./routes/shop.routes'));
+app.use('/admin', require('./routes/admin.routes'));
 app.use('/auth', require('./routes/auth.routes')(csrfProtection));
 
 

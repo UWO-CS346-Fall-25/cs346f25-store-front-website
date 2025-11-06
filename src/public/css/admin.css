@@ -1,0 +1,182 @@
+/* Admin page layout tweaks */
+
+.admin-page-header .section__title {
+  margin-bottom: 0.25rem;
+}
+
+.admin-page-header .muted {
+  margin: 0;
+}
+
+/* Summary chips over the table */
+.admin-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-summary-card {
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 15px 35px rgba(15, 26, 43, 0.08);
+  min-width: 150px;
+}
+
+.admin-summary-label {
+  margin: 0 0 0.25rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+}
+
+.admin-summary-value {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* Panels */
+.admin-panel {
+  margin-block: 1.5rem 0;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 20px 45px rgba(15, 26, 43, 0.06);
+}
+
+.admin-panel h2 {
+  margin-top: 0;
+  margin-bottom: 0.25rem;
+}
+
+.admin-panel .muted {
+  margin-top: 0;
+}
+
+/* Product table */
+.admin-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid rgba(15, 26, 43, 0.06);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.admin-table th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.admin-table tbody tr:hover {
+  background: rgba(15, 26, 43, 0.02);
+}
+
+.admin-col-actions {
+  width: 1%;
+  white-space: nowrap;
+}
+
+/* Product cell */
+.admin-product-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-product-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  background: #f3f4f6;
+}
+
+.admin-product-name {
+  font-weight: 600;
+}
+
+.admin-product-meta {
+  font-size: 0.8rem;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.badge--success {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+}
+
+.badge--muted {
+  background: rgba(148, 163, 184, 0.16);
+  color: #475569;
+}
+
+/* Actions */
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-inline-form {
+  display: inline;
+}
+
+.admin-delete-link {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.link--danger {
+  color: #b91c1c;
+}
+
+.link--danger:hover {
+  color: #dc2626;
+}
+
+/* Form layout tweaks for create form */
+.form-row--split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .form-row--split {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-summary {
+    flex-direction: column;
+  }
+}
