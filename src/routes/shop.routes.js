@@ -10,7 +10,7 @@ bind(router, {
   route: '/category/:slug',
   view: 'shop/list',
   meta: {},
-  middleware: [csrfProtection],
+  middleware: [csrfProtection, require('../middleware/csrfLocals')],
   getData: async function (req) {
 
     const { slug } = req.params;
@@ -44,7 +44,7 @@ bind(router, {
   route: '/shop/:slug',
   view: 'shop/detail',
   meta: {},
-  middleware: [csrfProtection],
+  middleware: [csrfProtection, require('../middleware/csrfLocals')],
   getData: async function (req) {
     const { slug } = req.params;
 

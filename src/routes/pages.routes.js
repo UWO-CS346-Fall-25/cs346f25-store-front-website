@@ -5,11 +5,13 @@ const { asyncWrap } = require("express-pretty-errors");
 const { bind } = require('express-page-registry');
 const productManager = require('../controllers/productController.js');
 
+const csrfProtection = csrf({ cookie: false });
 
 bind(router, {
   route: '/',
   view: 'home',
   meta: { title: 'Home' },
+  middleware: [csrfProtection, require('../middleware/csrfLocals')],
   getData: async (req) => ({
     featuredProducts: await productManager.getFeatured(),
     categories: await productManager.getCategories(),
@@ -22,6 +24,7 @@ bind(router, {
   route: '/contact',
   view: 'contact',
   meta: { title: 'Contact' },
+  middleware: [csrfProtection, require('../middleware/csrfLocals')],
   getData: async (req, res) => ({
   })
 });
