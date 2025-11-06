@@ -38,6 +38,7 @@ bind(router, {
     title: 'Log in',
     description: 'Access your account to view orders and manage details.'
   },
+  middleware: [csrfProtection],
   getData: async (req, _res) => ({
     // If you use connect-flash, this will feed flash messages to the view
     flash: {
@@ -54,6 +55,7 @@ bind(router, {
     title: 'Signup',
     description: 'Create a new account to view orders and manage details.'
   },
+  middleware: [csrfProtection],
   getData: async (req, _res) => ({
     flash: {
       error: req.flash ? req.flash('error') : null

@@ -2,12 +2,12 @@ const supabase = require('../models/supabase');
 
 async function authMiddleware(req, res, next) {
   const token = req.cookies['sb-access-token'];
+  res.locals.user = null;
+  res.locals.isAdmin = false;
 
   if (!token) {
     req.user = null;
     req.isAdmin = false;
-    res.locals.currentUser = null;
-    res.locals.isAdmin = false;
     return next();
   }
 
@@ -17,8 +17,6 @@ async function authMiddleware(req, res, next) {
     // invalid/expired token
     req.user = null;
     req.isAdmin = false;
-    res.locals.currentUser = null;
-    res.locals.isAdmin = false;
     return next();
   }
 
@@ -28,7 +26,7 @@ async function authMiddleware(req, res, next) {
   req.user = user;
   req.isAdmin = role === 'admin';
 
-  res.locals.currentUser = user;
+  res.locals.user = user;
   res.locals.isAdmin = req.isAdmin;
 
   next();
