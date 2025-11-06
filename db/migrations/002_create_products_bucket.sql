@@ -26,5 +26,5 @@ using (
 create policy "Admins can write product images"
 on public.product_images for all
 to authenticated
-using (coalesce((auth.jwt() ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
+with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false));

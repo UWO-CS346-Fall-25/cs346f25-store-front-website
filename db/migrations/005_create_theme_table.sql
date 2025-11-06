@@ -106,8 +106,8 @@ begin
   create policy "Admins manage themes"
   on public.site_themes for all
   to authenticated
-  using (coalesce((auth.jwt() ->> 'role') = 'admin', false))
-  with check (coalesce((auth.jwt() ->> 'role') = 'admin', false));
+  using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
+  with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false));
 exception
   when duplicate_object then null;
 end $$;

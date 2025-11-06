@@ -39,8 +39,8 @@ using (
 create policy "Admins manage featured"
 on public.featured_products for all
 to authenticated
-using (coalesce((auth.jwt() ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
+with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false));
 
 
 -- Helper View
