@@ -48,7 +48,6 @@
                 <thead>
                   <tr>
                     <th>Product</th>
-                    <th>Price</th>
                     <th>Category</th>
                     <th>Status</th>
                     <th>Updated</th>
@@ -60,31 +59,23 @@
                     <tr>
                       <td>
                         <div class="admin-product-main">
-                          <% if (product.image && product.image.img_url) { %>
-                            <img
-                              class="admin-product-thumb"
-                              src="<%= product.image.img_url %>"
-                              alt="<%= product.name || 'Product image' %>">
-                          <% } %>
+                          <img
+                            class="admin-product-thumb"
+                            src="<%= product.image.img_url %>"
+                            alt="<%= product.image.alt || 'Product image' %>">
                           <div>
                             <div class="admin-product-name">
                               <%= product.name || 'Untitled product' %>
                             </div>
-                            <% if (product.slug) { %>
-                              <div class="admin-product-meta muted">
-                                <code>/shop/<%= product.slug %></code>
-                              </div>
-                            <% } %>
+                            <div class="admin-product-meta muted">
+                              <% if (typeof util !== 'undefined' && util.formatPrice) { %>
+                                <%= util.formatPrice(product) %>
+                              <% } else { %>
+                                $<%= (product.price_cents || 0) / 100 %>
+                              <% } %>
+                            </div>
                           </div>
                         </div>
-                      </td>
-
-                      <td>
-                        <% if (typeof util !== 'undefined' && util.formatPrice) { %>
-                          <%= util.formatPrice(product) %>
-                        <% } else { %>
-                          $<%= (product.price_cents || 0) / 100 %>
-                        <% } %>
                       </td>
 
                       <td>
