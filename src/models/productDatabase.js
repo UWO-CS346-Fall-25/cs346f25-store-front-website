@@ -10,7 +10,7 @@ const TTL = 60_000; // TODO: adjust cache TTL as needed (should be higher / can 
 
 
 async function bindImages(products) {
-  for (let p of products) {
+  await Promise.all(products.map(async (p) => {
     const key = `${NAMESPACE}:product:${p.id}:images`;
     p.images = await cache.wrap(key, TTL, async () => {
       const res = await database.query('SELECT path, external_url, alt FROM public.product_images WHERE product_id = $1 ORDER BY is_primary DESC, id ASC', [p.id]);
@@ -19,11 +19,13 @@ async function bindImages(products) {
       }
       return res.rows;
     });
-  }
+  }));
 }
+
+
 // takes an array of products and binds 1 primary images to them
 async function bindPrimaryImage(products) {
-  for (let p of products) {
+  await Promise.all(products.map(async (p) => {
     const key = `${NAMESPACE}:product:${p.id}:primaryImage`;
     p.image = await cache.wrap(key, TTL, async () => {
       const prodImg = await database.query('SELECT path, external_url, alt FROM public.product_images WHERE product_id = $1 AND is_primary = true LIMIT 1', [p.id]);
@@ -33,27 +35,27 @@ async function bindPrimaryImage(products) {
         alt: prodImg.rows[0].alt,
       };
     });
-  }
+  }));
 }
 
 async function bindCategories(products) {
-  for (let p of products) {
+  await Promise.all(products.map(async (p) => {
     const key = `${NAMESPACE}:product:${p.id}:categories`;
     p.categories = await cache.wrap(key, TTL, async () => {
       const res = await database.query('SELECT c.id, c.name, c.slug FROM public.categories c JOIN public.product_categories pc ON c.id = pc.category_id WHERE pc.product_id = $1', [p.id]);
       return res.rows;
     });
-  }
+  }));
 }
 
 async function categoryBindProducts(categories) {
-  for (let c of categories) {
+  await Promise.all(categories.map(async (c) => {
     const key = `${NAMESPACE}:category:${c.id}:products`;
     c.products = await cache.wrap(key, TTL, async () => {
       const res = await database.query('SELECT p.* FROM public.products p JOIN public.product_categories pc ON p.id = pc.product_id WHERE pc.category_id = $1', [c.id]);
       return res.rows;
     });
-  }
+  }));
 }
 
 
