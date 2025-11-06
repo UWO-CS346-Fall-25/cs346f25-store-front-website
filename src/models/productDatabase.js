@@ -5,6 +5,17 @@ const debug = require('../controllers/debug');
 const database = require('./db.js');
 const mock = require('./mock/productDatabase.js');
 
+
+async function bindImagesToProducts(res) {
+  for (let r of res.rows) {
+    const prodImg = await database.query('SELECT path, external_url, alt FROM public.product_images WHERE product_id = $1 AND is_primary = true LIMIT 1', [r.id]);
+    prodImg.rows[0].img_url = prodImg.rows[0].path == null ? prodImg.rows[0].external_url : prodImg.rows[0].path;
+    r.image = prodImg.rows[0];
+  }
+  return res;
+}
+
+
 module.exports = {
   ttl: 60_000,
   namespace: 'productDB',
@@ -12,6 +23,14 @@ module.exports = {
     const key = `${this.namespace}:allProducts`;
     return cache.wrap(key, this.ttl, async () => {
       const res = await database.query('SELECT * FROM public.products');
+      return res.rows;
+    });
+  },
+  getAllProductsWithMainImage: async function () {
+    const key = `${this.namespace}:allProductsWithMainImage`;
+    return cache.wrap(key, this.ttl, async () => {
+      const res = await database.query('SELECT * FROM public.products');
+      await bindImagesToProducts(res);
       return res.rows;
     });
   },
@@ -34,9 +53,7 @@ module.exports = {
     const key = `${this.namespace}:product:${id}`;
     return cache.wrap(key, this.ttl, async () => {
       const res = await database.query('SELECT * FROM public.products WHERE id = $1', [id]);
-      const prodImg = await database.query('SELECT path, external_url, alt FROM public.product_images WHERE product_id = $1 AND is_primary = true LIMIT 1', [id]);
-      prodImg.rows[0].img_url = prodImg.rows[0].path == null ? prodImg.rows[0].external_url : prodImg.rows[0].path;
-      res.rows[0].image = prodImg.rows[0];
+      await bindImagesToProducts(res);
       return res.rows[0];
     });
   },
@@ -83,11 +100,7 @@ module.exports = {
 
     return cache.wrap(key, this.ttl, async () => {
       const res = await database.query('SELECT * FROM products ORDER BY created_at DESC LIMIT $1', [count]);
-      for (let r of res.rows) {
-        const prodImg = await database.query('SELECT path, external_url, alt FROM public.product_images WHERE product_id = $1 AND is_primary = true LIMIT 1', [r.id]);
-        prodImg.rows[0].img_url = prodImg.rows[0].path == null ? prodImg.rows[0].external_url : prodImg.rows[0].path;
-        r.image = prodImg.rows[0];
-      }
+      await bindImagesToProducts(res);
       return res.rows;
     });
   },

@@ -122,14 +122,7 @@ const { notFound, errorHandler, health } = require("express-pretty-errors");
 
 app.get("/health", health({ package: require("../package.json") }));
 app.use(notFound());
-app.use(errorHandler({
-  showStack: "dev",
-  cssVars: {
-    accent: "#ef4444",           // red accent
-    light_accent: "#dc2626",     // light-mode accent
-    panel: "#0e0f12"             // darker card in dark mode
-  }
-}));
+app.use(errorHandler({ showStack: "dev", }));
 
 
 // Log registered pages to console

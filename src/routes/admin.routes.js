@@ -12,7 +12,7 @@ bind(router, {
   meta: { title: 'Products' },
   middleware: [csrfProtection, require('../middleware/csrfLocals')],
   getData: async (req) => ({
-    products: await productDB.getAllProducts(),
+    products: await productDB.getAllProductsWithMainImage(),
   })
 });
 
