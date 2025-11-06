@@ -90,7 +90,6 @@ app.use((req, res, next) => {
 // app.use('/', indexRouter);
 
 app.use(require('cookie-parser')());
-app.use(require('./middleware/auth-context')());
 app.use(require('./middleware/auth'));
 
 app.use((req, res, next) => {
