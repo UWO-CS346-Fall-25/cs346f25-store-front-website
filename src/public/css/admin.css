@@ -19,7 +19,7 @@
 .admin-summary-card {
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
-  background: #fff;
+  background: var(--overlay);
   box-shadow: 0 15px 35px rgba(15, 26, 43, 0.08);
   min-width: 150px;
 }
@@ -29,7 +29,7 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #6b7280;
+  color: var(--primary-alt);
 }
 
 .admin-summary-value {
@@ -43,7 +43,7 @@
   margin-block: 1.5rem 0;
   padding: 1.25rem 1.5rem;
   border-radius: 1rem;
-  background: #ffffff;
+  background: var(--overlay);
   box-shadow: 0 20px 45px rgba(15, 26, 43, 0.06);
 }
 
@@ -80,12 +80,12 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #6b7280;
+  color: var(--primary-alt);
   white-space: nowrap;
 }
 
 .admin-table tbody tr:hover {
-  background: rgba(15, 26, 43, 0.02);
+  background: var(--background);
 }
 
 .admin-col-actions {
@@ -105,7 +105,7 @@
   height: 40px;
   border-radius: 0.5rem;
   object-fit: cover;
-  background: #f3f4f6;
+  background: red;
 }
 
 .admin-product-name {
@@ -129,13 +129,13 @@
 }
 
 .badge--success {
-  background: rgba(16, 185, 129, 0.12);
-  color: #047857;
+  background: var(--success-bg);
+  color: var(--success-fg);
 }
 
 .badge--muted {
-  background: rgba(148, 163, 184, 0.16);
-  color: #475569;
+  background: var(--muted-bg);
+  color: var(--muted-fg);
 }
 
 /* Actions */

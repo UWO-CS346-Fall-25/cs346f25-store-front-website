@@ -20,6 +20,14 @@ function createTheme(themeData) {
 
       "--footer-bg": "var(--primary-1)",
       "--footer-fg": "var(--primary-3)",
+      "--primary-alt": "var(--primary-3)",
+      "--tint-alt": "var(--tint-3)",
+
+      "--success-bg": "#21b977",
+      "--success-fg": "#ffffffff",
+      "--error": "#ef4444",
+      "--muted-fg": "#515152ff",
+      "--muted-bg": "#ccccd3ff",
     },
     dark: {
       "--primary-1": themeData.dark_primary_1 || "#817ea4ff",
@@ -36,6 +44,15 @@ function createTheme(themeData) {
 
       "--footer-bg": "var(--primary-3)",
       "--footer-fg": "var(--primary-1)",
+      "--primary-alt": "var(--primary-1)",
+      "--tint-alt": "var(--tint-1)",
+
+      "--success-fg": "#22c55e",
+      "--success-bg": "#10b9811f",
+      "--error-fg": "#ef4444",
+      "--error-bg": "#310c0aff",
+      "--muted-fg": "#000000ff",
+      "--muted-bg": "#454550ff",
     },
   };
 }
