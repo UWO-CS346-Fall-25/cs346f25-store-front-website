@@ -109,10 +109,7 @@ async function getBySlug(slug) {
 async function getFeatured() {
   const key = `${NAMESPACE}:featured`;
   return cache.wrap(key, TTL, async () => {
-    const res = await database.query('SELECT * FROM public.v_featured_products order by position');
-    for (let r of res.rows) {
-      r.url = generateUrl(r.id, r.image_path, r.image_external_url);
-    }
+    const res = await database.query('SELECT p.* FROM public.products p JOIN public.featured_products fp ON p.id = fp.product_id ORDER BY fp.position ASC');
     return res.rows;
   });
 }
