@@ -27,8 +27,12 @@ bind(router, {
   getData: async function (req) {
     const products = await db.bindCategories(await db.bindPrimaryImage(await db.getAll()));
 
+    const error = req.flash ? req.flash('error')[0] : null;
+    const success = req.flash ? req.flash('success')[0] : null;
+
     return {
       products,
+      flash: { error, success },
     };
   }
 });

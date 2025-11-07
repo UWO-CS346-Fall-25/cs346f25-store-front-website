@@ -1,6 +1,5 @@
 const express = require('express');
-const supabase = require('../models/supabase');
-const { bind } = require('express-page-registry');
+const supabaseClient = require('../models/supabase');
 
 function getFlash(req) {
   return req.flash ? { error: req.flash('error')[0] } : {};
@@ -18,6 +17,7 @@ module.exports = function (csrfProtection) {
 
   // POST /auth/login
   router.post('/login', csrfProtection, async (req, res) => {
+    const supabase = supabaseClient(req);
     const { email, password, remember } = req.body;
 
     const { data, error } = await supabase.auth.signInWithPassword({

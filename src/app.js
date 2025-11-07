@@ -75,6 +75,7 @@ app.use(
 // ==============================
 
 
+app.use(require('connect-flash')());
 app.use(require('cookie-parser')());
 app.use(require('./middleware/auth'));
 

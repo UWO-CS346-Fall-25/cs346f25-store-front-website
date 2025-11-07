@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
 const db = require('../models/productDatabase.js');
-const supabase = require('../models/supabase.js');
+const supabaseClient = require('../models/supabase.js');
 
 const csrfProtection = csrf({ cookie: false });
 
@@ -13,7 +13,14 @@ function dollarsToCents(value) {
   return Math.round(n * 100);
 }
 
+function getFlash(req) {
+  return req.flash ? { error: req.flash('error')[0] } : {};
+}
+
+
+
 router.post('/products/create', csrfProtection, async (req, res, next) => {
+  const supabase = supabaseClient(req);
   try {
     const {
       name,
@@ -69,7 +76,18 @@ router.post('/products/create', csrfProtection, async (req, res, next) => {
 
     if (error) {
       console.error('Error inserting product:', error);
-      req.flash?.('error', 'Failed to create product. Please try again.');
+      if (req.flash) {
+        const isRls =
+          error.code === '42501' ||
+          (typeof error.message === 'string' &&
+            /row-level security/i.test(error.message));
+
+        const message = isRls
+          ? 'You do not have permission to create products. Make sure you are logged in as an admin.'
+          : 'Something went wrong creating the product. Please try again.';
+
+        req.flash('error', message);
+      }
       return res.redirect('/admin/products/new');
     }
 

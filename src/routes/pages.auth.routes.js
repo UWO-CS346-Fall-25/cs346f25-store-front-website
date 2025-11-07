@@ -1,5 +1,4 @@
 const express = require('express');
-const supabase = require('../models/supabase');
 const { bind } = require('express-page-registry');
 
 module.exports = function (csrfProtection) {

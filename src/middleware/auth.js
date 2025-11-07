@@ -1,6 +1,7 @@
-const supabase = require('../models/supabase');
+const supabaseClient = require('../models/supabase');
 
 async function authMiddleware(req, res, next) {
+  const supabase = supabaseClient(req);
   const token = req.cookies['sb-access-token'];
   res.locals.user = null;
   res.locals.isAdmin = false;
