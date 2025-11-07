@@ -109,7 +109,7 @@ button {
 }
 
 
-
+.button.primary,
 button.primary {
   display: inline-block;
   text-decoration: none;
@@ -124,22 +124,25 @@ button.primary {
   cursor: pointer;
 }
 
+.button.primary:hover,
 button.primary:hover {
   transform: translateY(-1px);
   background: var(--tint-2);
 }
 
+.button.primary:active,
 button.primary:active {
   transform: translateY(0);
 }
 
+.button.primary.small,
 button.primary.small {
   font-size: 1rem;
   padding: .5rem 1rem;
 }
 
 
-
+.button.ghost,
 button.ghost {
   display: inline-block;
   text-decoration: none;
@@ -154,6 +157,7 @@ button.ghost {
   cursor: pointer;
 }
 
+.button.ghost:hover,
 button.ghost:hover {
   transform: translateY(-1px);
   color: var(--tint-2);
@@ -164,6 +168,7 @@ button.ghost:hover {
 @media (prefers-reduced-motion: reduce) {
 
   .button,
+  button,
   .contact-form input,
   .contact-form textarea {
     transition: none;
