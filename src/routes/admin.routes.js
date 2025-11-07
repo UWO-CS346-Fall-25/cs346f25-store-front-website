@@ -11,9 +11,14 @@ bind(router, {
   view: 'admin/products',
   meta: { title: 'Products' },
   middleware: [csrfProtection, require('../middleware/csrfLocals')],
-  getData: async (req) => ({
-    products: await db.bindPrimaryImage(await db.getAll()),
-  })
+  getData: async function (req) {
+    const products = await db.bindCategories(await db.bindPrimaryImage(await db.getAll()));
+
+    console.log(products);
+    return {
+      products,
+    };
+  }
 });
 
 

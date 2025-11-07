@@ -93,6 +93,11 @@
   white-space: nowrap;
 }
 
+.admin-col-status {
+  width: 1%;
+  white-space: nowrap;
+}
+
 /* Product cell */
 .admin-product-main {
   display: flex;
@@ -141,9 +146,10 @@
 /* Actions */
 .admin-actions {
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   align-items: center;
-  gap: 0.5rem;
+  /* gap: 0.5rem; */
+
 }
 
 .admin-inline-form {

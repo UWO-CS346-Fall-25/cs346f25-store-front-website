@@ -346,3 +346,76 @@ textarea:focus {
   font-size: 0.85em;
   color: #666;
 }
+
+
+
+
+
+
+/* Screen-reader-only helper (if you don't already have one) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Base icon link */
+.link--icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  padding: 0;
+  text-decoration: none;
+  /* let your global .link handle color; if it doesn't, you can set color here */
+  transition:
+    transform 0.15s ease-out,
+    color 0.15s ease-out;
+  overflow: hidden;
+  /* keeps the circle neat */
+}
+
+/* The “circle forming” hover background */
+.link--icon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(15, 23, 42, 0.06);
+  /* soft circle; tweak to match your theme */
+  transform: scale(0);
+  opacity: 0;
+  transition:
+    transform 0.18s ease-out,
+    opacity 0.18s ease-out;
+}
+
+/* On hover/focus: show the circle + a tiny lift */
+.link--icon:hover::before,
+.link--icon:focus-visible::before {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.link--icon:hover,
+.link--icon:focus-visible {
+  transform: translateY(-1px);
+}
+
+/* The icon itself */
+.link__icon {
+  width: 1rem;
+  height: 1rem;
+  z-index: 1;
+  /* sits above the ::before circle */
+  display: block;
+}

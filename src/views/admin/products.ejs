@@ -49,8 +49,6 @@
                   <tr>
                     <th>Product</th>
                     <th>Category</th>
-                    <th>Status</th>
-                    <th>Updated</th>
                     <th class="admin-col-actions">Actions</th>
                   </tr>
                 </thead>
@@ -74,42 +72,42 @@
                                 $<%= (product.price_cents || 0) / 100 %>
                               <% } %>
                             </div>
+                            
+                            <span class="admin-product-meta muted">
+                              <%= product.updated_at
+                                ? new Date(product.updated_at).toLocaleDateString('en-US')
+                                : '—' %>
+                            </span>
                           </div>
                         </div>
                       </td>
 
                       <td>
-                        <%= product.category_name || product.category || '—' %>
+                        <% product.categories.forEach(cat => { %>
+                          <span class="badge badge--info"><%= cat.name %></span>
+                        <% }); %>
                       </td>
 
-                      <td>
+                      <!-- <td>
                         <% if (product.is_active) { %>
                           <span class="badge badge--success">Active</span>
                         <% } else { %>
                           <span class="badge badge--muted">Hidden</span>
                         <% } %>
-                      </td>
+                      </td> -->
 
-                      <td>
-                        <span class="muted">
-                          <%= product.updated_at
-                            ? new Date(product.updated_at).toLocaleDateString('en-US')
-                            : '—' %>
-                        </span>
-                      </td>
 
                       <td>
                         <div class="admin-actions">
                           <!-- View on storefront -->
-                          <% if (product.slug) { %>
-                            <a class="link" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
-                              View
-                            </a>
-                          <% } %>
+                          <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
+                            <span class="sr-only">View</span>
+                            <%- include('../svg/eye-open') %>
+                          </a>
 
-                          <!-- Edit page route (GET) -->
-                          <a class="link" href="/admin/products/<%= product.id %>/edit">
-                            Edit
+                          <a class="link link--icon" href="/admin/products/<%= product.id %>/edit">
+                            <span class="sr-only">Edit</span>
+                            <%- include('../svg/edit') %>
                           </a>
 
                           <!-- Delete (POST/DELETE) -->
@@ -121,11 +119,9 @@
                             <% if (csrfToken) { %>
                               <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                             <% } %>
-                            <!-- If you use method-override, uncomment this:
-                            <input type="hidden" name="_method" value="DELETE">
-                            -->
-                            <button type="submit" class="link link--danger admin-delete-link">
-                              Delete
+                            <button type="submit" class="link link--danger admin-delete-link link--icon">
+                              <span class="sr-only">Edit</span>
+                              <%- include('../svg/trash') %>
                             </button>
                           </form>
                         </div>
