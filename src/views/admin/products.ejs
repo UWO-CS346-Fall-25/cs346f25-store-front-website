@@ -48,6 +48,8 @@
                 <thead>
                   <tr>
                     <th>Product</th>
+                    <th>Price</th>
+                    <th>Last Updated</th>
                     <th>Category</th>
                     <th class="admin-col-actions">Actions</th>
                   </tr>
@@ -65,7 +67,7 @@
                             <div class="admin-product-name">
                               <%= product.name || 'Untitled product' %>
                             </div>
-                            <div class="admin-product-meta muted">
+                            <div class="admin-product-meta muted price">
                               <% if (typeof util !== 'undefined' && util.formatPrice) { %>
                                 <%= util.formatPrice(product) %>
                               <% } else { %>
@@ -73,14 +75,32 @@
                               <% } %>
                             </div>
                             
-                            <span class="admin-product-meta muted">
-                              <%= product.updated_at
-                                ? new Date(product.updated_at).toLocaleDateString('en-US')
-                                : '—' %>
-                            </span>
+                            <% product.categories.forEach(cat => { %>
+                              <span class="badge badge--info category"><%= cat.name %></span>
+                            <% }); %>
                           </div>
                         </div>
                       </td>
+
+                      <td>
+                        <div class="admin-product-meta muted">
+                          <% if (typeof util !== 'undefined' && util.formatPrice) { %>
+                            <%= util.formatPrice(product) %>
+                          <% } else { %>
+                            $<%= (product.price_cents || 0) / 100 %>
+                          <% } %>
+                        </div>
+                      </td>
+
+
+                      <td>
+                        <span class="admin-product-meta muted">
+                          <%= product.updated_at
+                            ? new Date(product.updated_at).toLocaleDateString('en-US')
+                            : '—' %>
+                        </span>
+                      </td>
+
 
                       <td>
                         <% product.categories.forEach(cat => { %>
@@ -88,21 +108,24 @@
                         <% }); %>
                       </td>
 
-                      <!-- <td>
-                        <% if (product.is_active) { %>
-                          <span class="badge badge--success">Active</span>
-                        <% } else { %>
-                          <span class="badge badge--muted">Hidden</span>
-                        <% } %>
-                      </td> -->
-
 
                       <td>
                         <div class="admin-actions">
                           <!-- View on storefront -->
+                          
+                          <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
+                          <% if (product.is_active) { %>
+                            <span class="sr-only">View</span>
+                            <span class="success"><%- include('../svg/eye-open') %> </span>
+                          <% } else { %>
+                            <span class="sr-only">View</span>
+                            <span class="muted"><%- include('../svg/eye-closed') %> </span>
+                          <% } %>
+                          </a>
+
                           <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
                             <span class="sr-only">View</span>
-                            <%- include('../svg/eye-open') %>
+                            <%- include('../svg/view') %>
                           </a>
 
                           <a class="link link--icon" href="/admin/products/<%= product.id %>/edit">

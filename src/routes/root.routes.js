@@ -49,7 +49,7 @@ function createTheme(themeData) {
 
       "--success-fg": "#22c55e",
       "--success-bg": "#10b9811f",
-      "--error-fg": "#ef4444",
+      "--error": "#ef4444",
       "--error-bg": "#310c0aff",
       "--muted-fg": "#000000ff",
       "--muted-bg": "#454550ff",

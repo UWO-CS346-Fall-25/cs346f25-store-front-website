@@ -125,7 +125,7 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.15rem 0.6rem;
+  padding: 0.15rem 1rem .15rem 0;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 500;
@@ -133,23 +133,24 @@
   letter-spacing: 0.08em;
 }
 
-.badge--success {
-  background: var(--success-bg);
-  color: var(--success-fg);
+.badge::before {
+  content: "•";
+  font-weight: bold;
 }
 
-.badge--muted {
-  background: var(--muted-bg);
-  color: var(--muted-fg);
+
+.muted svg {
+  color: var(--error);
 }
 
 /* Actions */
 .admin-actions {
   display: flex;
-  /* flex-wrap: wrap; */
   align-items: center;
-  /* gap: 0.5rem; */
+}
 
+.admin-actions a {
+  color: var(--primary-alt);
 }
 
 .admin-inline-form {
@@ -163,11 +164,11 @@
 }
 
 .link--danger {
-  color: #b91c1c;
+  color: var(--error);
 }
 
 .link--danger:hover {
-  color: #dc2626;
+  color: var(--error);
 }
 
 /* Form layout tweaks for create form */
@@ -177,6 +178,36 @@
   gap: 1rem;
 }
 
+/* Hide category badges on larger screens */
+@media (min-width: 640px) {
+  .category {
+    display: none;
+  }
+}
+
+
+@media (max-width: 768px) {
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    display: none;
+  }
+}
+
+@media (max-width: 950px) {
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    display: none;
+  }
+}
+
+@media (min-width: 950px) {
+  .price {
+    display: none;
+  }
+}
+
 @media (max-width: 640px) {
   .form-row--split {
     grid-template-columns: 1fr;
@@ -184,5 +215,10 @@
 
   .admin-summary {
     flex-direction: column;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    display: none;
   }
 }
