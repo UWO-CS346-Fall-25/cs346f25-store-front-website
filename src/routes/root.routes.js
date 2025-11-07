@@ -11,7 +11,7 @@ function createTheme(themeData) {
       "--primary-3": themeData.light_primary_3 || "#857aab",
       "--tint-1": themeData.light_tint_1 || "#388A67",
       "--tint-2": themeData.light_tint_2 || "#21b977",
-      "--tint-3": themeData.light_tint_3 || "#ffffff",
+      "--tint-3": themeData.light_tint_3 || "#a5e2c8ff",
 
       "--carousel-interval": "5000ms",
       "--background": "#F0F0F3",
@@ -21,7 +21,7 @@ function createTheme(themeData) {
       "--footer-bg": "var(--primary-1)",
       "--footer-fg": "var(--primary-3)",
       "--primary-alt": "var(--primary-3)",
-      "--tint-alt": "var(--tint-3)",
+      "--tint-alt": "var(--tint-1)",
 
       "--success-bg": "#21b977",
       "--success-fg": "#ffffffff",
@@ -35,7 +35,7 @@ function createTheme(themeData) {
       "--primary-3": themeData.dark_primary_3 || "#655a8eff",
       "--tint-1": themeData.dark_tint_1 || "#388A67",
       "--tint-2": themeData.dark_tint_2 || "#21b977",
-      "--tint-3": themeData.dark_tint_3 || "#ffffff",
+      "--tint-3": themeData.dark_tint_3 || "#a5e2c8ff",
 
       "--carousel-interval": "5000ms",
       "--background": "#1c1c1dff",
@@ -45,7 +45,7 @@ function createTheme(themeData) {
       "--footer-bg": "var(--primary-3)",
       "--footer-fg": "var(--primary-1)",
       "--primary-alt": "var(--primary-1)",
-      "--tint-alt": "var(--tint-1)",
+      "--tint-alt": "var(--tint-3)",
 
       "--success-fg": "#22c55e",
       "--success-bg": "#10b9811f",

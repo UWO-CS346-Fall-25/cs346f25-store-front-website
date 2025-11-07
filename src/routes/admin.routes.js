@@ -14,12 +14,28 @@ bind(router, {
   getData: async function (req) {
     const products = await db.bindCategories(await db.bindPrimaryImage(await db.getAll()));
 
-    console.log(products);
     return {
       products,
     };
   }
 });
+bind(router, {
+  route: '/products/new',
+  view: 'admin/products-new',
+  meta: { title: 'Add Product' },
+  middleware: [csrfProtection, require('../middleware/csrfLocals')],
+  getData: async function (req) {
+    const products = await db.bindCategories(await db.bindPrimaryImage(await db.getAll()));
+
+    return {
+      products,
+    };
+  }
+});
+
+
+
+
 
 
 module.exports = router;

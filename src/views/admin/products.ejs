@@ -21,7 +21,7 @@
             </p>
           </div>
 
-          <a href="#create-product" class="button primary small">
+          <a href="/admin/products/new" class="link--button link" id="new-product">
             + New product
           </a>
         </div>
@@ -159,79 +159,6 @@
           <% } %>
         </section>
 
-        <!-- Create product form -->
-        <section id="create-product" class="admin-panel admin-create-panel" aria-labelledby="create-product-heading">
-          <h2 id="create-product-heading">Create product</h2>
-          <p class="muted">
-            Add a new item to your storefront. You can edit images and details later.
-          </p>
-
-          <form method="post" action="/admin/products">
-            <% if (csrfToken) { %>
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <% } %>
-
-            <div class="form-row">
-              <div>
-                <label for="name">Name</label>
-                <input id="name" name="name" type="text" required>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div>
-                <label for="slug">
-                  Slug
-                  <span class="muted">(optional)</span>
-                </label>
-                <input id="slug" name="slug" type="text" placeholder="my-product-slug">
-              </div>
-            </div>
-
-            <div class="form-row form-row--split">
-              <div>
-                <label for="price_cents">Price (USD)</label>
-                <input id="price_cents" name="price" type="number" min="0" step="0.01" inputmode="decimal" required>
-              </div>
-
-              <div>
-                <label for="category">Category</label>
-                <input id="category" name="category" type="text" placeholder="Stickers, Cups, etc.">
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div>
-                <label for="image_url">
-                  Image URL
-                  <span class="muted">(optional)</span>
-                </label>
-                <input id="image_url" name="image_url" type="url" placeholder="https://...">
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div>
-                <label for="description">Description</label>
-                <textarea id="description" name="description" rows="4"
-                  placeholder="Short description for product cards and detail pages"></textarea>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <label class="checkbox-inline">
-                <input type="checkbox" name="is_active" value="true" checked>
-                <span>Show this product in the shop</span>
-              </label>
-            </div>
-
-            <div class="form-row">
-              <button class="primary" type="submit">Create product</button>
-            </div>
-          </form>
-        </section>
-      </div>
-    </section>
   </main>
 
   <%- include('../partials/footer') %>
