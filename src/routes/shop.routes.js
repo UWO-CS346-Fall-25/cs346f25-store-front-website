@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const csrf = require('csurf');
-const shopController = require('../controllers/productController.js');
+const db = require('../models/productDatabase.js');
 const { bind } = require('express-page-registry');
 
 const csrfProtection = csrf({ cookie: false });
@@ -16,12 +16,13 @@ bind(router, {
     const { slug } = req.params;
     const page = Math.max(parseInt(req.query.page || '1', 10), 1);
     const pageSize = 24;
-    const category = await shopController.getCategoryBySlug(slug);
+    const category = await db.getCategory(slug);
     if (!category) {
       throw new Error('Category not found');
     }
+    db.categoryBindProducts([category]);
 
-    let products = (await shopController.getItemsInCategory(category.id));
+    let products = category.products || [];
     products = products.slice((page - 1) * pageSize, page * pageSize);
     const total = products.length;
     const pageCount = Math.max(1, Math.ceil(total / pageSize));
@@ -48,34 +49,21 @@ bind(router, {
   getData: async function (req) {
     const { slug } = req.params;
 
-    const product = await shopController.getProductBySlug(slug);
+    const product = await db.getBySlug(slug);
     if (!product) throw new Error('Product not found');
-
-    // Build images[]: prefer explicit images from controller/model
-    let images = [];
-    try {
-      const rows = await shopController.getImagesForProduct(product.id); // expect [{img_url, alt, is_primary}, ...]
-      images = (rows || []).map(r => ({ url: r.img_url || r.url, alt: r.alt || product.name || '' }));
-    } catch (_) { }
-
-    // Fallbacks: product.images or single product.image/img_url
-    if (!images.length && Array.isArray(product.images) && product.images.length) {
-      images = product.images.map(x => ({ url: x.img_url || x.url, alt: x.alt || product.name || '' }));
-    }
-    if (!images.length && (product?.image?.img_url || product?.img_url || product?.image_url)) {
-      images = [{ url: (product.image?.img_url || product.img_url || product.image_url), alt: product.name || '' }];
-    }
+    await db.bindImages([product]);
+    await db.bindCategories([product]);
+    console.log(product);
 
     // Ensure we have at least one
-    if (!images.length) images = [];
 
     // Related (unchanged)
     let related = [];
     try {
-      const category = await shopController.getProductCategory(product.id);
+      const category = product.categories[0];
       if (category && Array.isArray(category.products)) {
         const others = category.products.filter(id => id !== product.id).slice(0, 8);
-        related = (await Promise.all(others.map(id => shopController.getProductById(id)))).filter(Boolean);
+        related = (await Promise.all(others.map(id => db.getByID(id)))).filter(Boolean);
       }
     } catch (_) { }
 
@@ -84,7 +72,7 @@ bind(router, {
       mainTitle: product.name,
       backUrl: '/',
       product,
-      images,
+      images: product.images || [],
       primaryImageIndex: 0,   // compute based on is_primary if you have it
       related
     };

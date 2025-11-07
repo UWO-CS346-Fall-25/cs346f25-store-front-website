@@ -105,7 +105,7 @@
   height: 40px;
   border-radius: 0.5rem;
   object-fit: cover;
-  background: red;
+  background: var(--muted-bg);
 }
 
 .admin-product-name {

@@ -3,7 +3,7 @@ const router = express.Router();
 const csrf = require('csurf');
 const { asyncWrap } = require("express-pretty-errors");
 const { bind } = require('express-page-registry');
-const productManager = require('../controllers/productController.js');
+const db = require('../models/productDatabase.js');
 
 const csrfProtection = csrf({ cookie: false });
 
@@ -13,9 +13,9 @@ bind(router, {
   meta: { title: 'Home' },
   middleware: [csrfProtection, require('../middleware/csrfLocals')],
   getData: async (req) => ({
-    featuredProducts: await productManager.getFeatured(),
-    categories: await productManager.getCategories(),
-    newArrivals: await productManager.getNewArrivals(8)
+    featuredProducts: await db.getFeatured(),
+    categories: await db.categoryBindProductAndPrimaryImage(await db.getCategories()),
+    newArrivals: await db.bindPrimaryImage(await db.getNewArrivals(8)),
   })
 });
 

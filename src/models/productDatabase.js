@@ -13,11 +13,12 @@ async function bindImages(products) {
     p.images = await cache.wrap(key, TTL, async () => {
       const res = await database.query('SELECT path, external_url, alt FROM public.product_images WHERE product_id = $1 ORDER BY is_primary DESC, id ASC', [p.id]);
       for (let r of res.rows) {
-        r.img_url = r.path == null ? r.external_url : r.path;
+        r.url = r.path == null ? r.external_url : r.path;
       }
       return res.rows;
     });
   }));
+  return products;
 }
 
 
@@ -29,11 +30,12 @@ async function bindPrimaryImage(products) {
       const prodImg = await database.query('SELECT path, external_url, alt FROM public.product_images WHERE product_id = $1 AND is_primary = true LIMIT 1', [p.id]);
       if (prodImg.rows.length === 0) return null;
       return {
-        img_url: prodImg.rows[0].path == null ? prodImg.rows[0].external_url : prodImg.rows[0].path,
+        url: prodImg.rows[0].path == null ? prodImg.rows[0].external_url : prodImg.rows[0].path,
         alt: prodImg.rows[0].alt,
       };
     });
   }));
+  return products;
 }
 
 async function bindCategories(products) {
@@ -44,7 +46,10 @@ async function bindCategories(products) {
       return res.rows;
     });
   }));
+  return products;
 }
+
+
 
 async function categoryBindProducts(categories) {
   await Promise.all(categories.map(async (c) => {
@@ -54,8 +59,110 @@ async function categoryBindProducts(categories) {
       return res.rows;
     });
   }));
+  return categories;
+}
+async function categoryBindProductAndPrimaryImage(categories) {
+  await Promise.all(categories.map(async (c) => {
+    const key = `${NAMESPACE}:category:${c.id}:productsWithPrimaryImage`;
+    c.products = await cache.wrap(key, TTL, async () => {
+      const res = await database.query('SELECT p.* FROM public.products p JOIN public.product_categories pc ON p.id = pc.product_id WHERE pc.category_id = $1', [c.id]);
+      await bindPrimaryImage(res.rows);
+      return res.rows;
+    });
+  }));
+  return categories;
 }
 
+async function getAll() {
+  const key = `${NAMESPACE}:allProducts`;
+  return cache.wrap(key, TTL, async () => {
+    const res = await database.query('SELECT * FROM public.products');
+    return res.rows;
+  });
+}
+async function getByID(id) {
+  const key = `${NAMESPACE}:product:${id}`;
+  return cache.wrap(key, TTL, async () => {
+    const res = await database.query('SELECT * FROM public.products WHERE id = $1', [id]);
+    return res.rows[0] || null;
+  });
+}
+
+async function getBySlug(slug) {
+  const key = `${NAMESPACE}:product:${slug}:slug`;
+  return cache.wrap(key, TTL, async () => {
+    const res = await database.query('SELECT * FROM public.products WHERE slug = $1', [slug]);
+    return res.rows[0] || null;
+  });
+}
+async function getFeatured() {
+  const key = `${NAMESPACE}:featured`;
+  return cache.wrap(key, TTL, async () => {
+    const res = await database.query('SELECT * FROM public.v_featured_products order by position');
+    for (let r of res.rows) {
+      r.url = r.image_path == null ? r.image_external_url : r.image_path;
+    }
+    return res.rows;
+  });
+}
+async function getCategories() {
+  const key = `${NAMESPACE}:categories`;
+  return cache.wrap(key, TTL, async () => {
+    const res = await database.query('SELECT * FROM public.categories ORDER BY position');
+    return res.rows;
+  });
+}
+async function getActiveCategories() {
+  const key = `${NAMESPACE}:activeCategories`;
+  return cache.wrap(key, TTL, async () => {
+    const res = await database.query('SELECT * FROM public.categories WHERE is_active = true ORDER BY position');
+    return res.rows;
+  });
+}
+async function getCategory(idOrSlug) {
+  const key = `${NAMESPACE}:category:${idOrSlug}`;
+  return cache.wrap(key, TTL, async () => {
+    let res;
+    if (isNaN(Number(idOrSlug))) {
+      res = await database.query('SELECT * FROM public.categories WHERE slug = $1', [idOrSlug]);
+    } else {
+      res = await database.query('SELECT * FROM public.categories WHERE id = $1', [idOrSlug]);
+    }
+    return res.rows[0] || null;
+  });
+}
+async function getNewArrivals(count) {
+  const key = `${NAMESPACE}:newarrivals:${count}`;
+
+  return cache.wrap(key, TTL, async () => {
+    const res = await database.query('SELECT * FROM public.products ORDER BY created_at DESC LIMIT $1', [count]);
+    return res.rows;
+  });
+}
+async function uncacheProduct(id, slug = null) {
+  if (!slug) {
+    const res = await database.query('SELECT slug FROM public.products WHERE id = $1', [id]);
+    slug = res.rows[0]?.slug;
+  }
+  const keys = [
+    `${NAMESPACE}:product:${id}`,
+    slug ? `${NAMESPACE}:product:${slug}` : null,
+    `${NAMESPACE}:newarrivals`,
+    `${NAMESPACE}:allProducts`,
+  ].filter(Boolean);
+  keys.forEach(k => cache.clearNamespace(k));
+}
+async function uncacheCategory(id, slug = null) {
+  if (!slug) {
+    const res = await database.query('SELECT slug FROM public.categories WHERE id = $1', [id]);
+    slug = res.rows[0]?.slug;
+  }
+  const keys = [
+    `${NAMESPACE}:category:${id}`,
+    slug ? `${NAMESPACE}:category:${slug}` : null,
+  ].filter(Boolean);
+  keys.forEach(k => cache.clearNamespace(k));
+}
 
 
 module.exports = {
@@ -63,94 +170,18 @@ module.exports = {
   bindPrimaryImage,
   bindCategories,
   categoryBindProducts,
+  categoryBindProductAndPrimaryImage,
 
-  getAll: async function () {
-    const key = `${NAMESPACE}:allProducts`;
-    return cache.wrap(key, TTL, async () => {
-      const res = await database.query('SELECT * FROM public.products');
-      return res.rows;
-    });
-  },
-  getByID: async function (id) {
-    const key = `${NAMESPACE}:product:${id}`;
-    return cache.wrap(key, TTL, async () => {
-      const res = await database.query('SELECT * FROM public.products WHERE id = $1', [id]);
-      return res.rows[0] || null;
-    });
-  },
-  getBySlug: async function (slug) {
-    const key = `${NAMESPACE}:product:${slug}:slug`;
-    return cache.wrap(key, TTL, async () => {
-      const res = await database.query('SELECT * FROM public.products WHERE slug = $1', [slug]);
-      return res.rows[0] || null;
-    });
-  },
-  getFeatured: async function () {
-    const key = `${NAMESPACE}:featured`;
-    return cache.wrap(key, TTL, async () => {
-      const res = await database.query('SELECT * FROM public.v_featured_products order by position');
-      for (let r of res.rows) {
-        r.img_url = r.image_path == null ? r.image_external_url : r.image_path;
-      }
-      return res.rows;
-    });
-  },
-  getCategories: async function () {
-    const key = `${NAMESPACE}:categories`;
-    return cache.wrap(key, TTL, async () => {
-      const res = await database.query('SELECT * FROM public.categories ORDER BY position');
-      return res.rows;
-    });
-  },
-  getActiveCategories: async function () {
-    const key = `${NAMESPACE}:activeCategories`;
-    return cache.wrap(key, TTL, async () => {
-      const res = await database.query('SELECT * FROM public.categories WHERE is_active = true ORDER BY position');
-      return res.rows;
-    });
-  },
-  getCategory: async function (idOrSlug) {
-    const key = `${NAMESPACE}:category:${idOrSlug}`;
-    return cache.wrap(key, TTL, async () => {
-      let res;
-      if (isNaN(Number(idOrSlug))) {
-        res = await database.query('SELECT * FROM public.categories WHERE slug = $1', [idOrSlug]);
-      } else {
-        res = await database.query('SELECT * FROM public.categories WHERE id = $1', [idOrSlug]);
-      }
-      return res.rows[0] || null;
-    });
-  },
-  getNewArrivals: async function (count) {
-    const key = `${NAMESPACE}:newarrivals:${count}`;
+  getAll,
+  getByID,
+  getBySlug,
+  getFeatured,
+  getCategories,
+  getActiveCategories,
+  getCategory,
+  getNewArrivals,
 
-    return cache.wrap(key, TTL, async () => {
-      const res = await database.query('SELECT * FROM public.products ORDER BY created_at DESC LIMIT $1', [count]);
-      return res.rows;
-    });
-  },
-  uncacheProduct: async function (id, slug = null) {
-    if (!slug) {
-      const res = await database.query('SELECT slug FROM public.products WHERE id = $1', [id]);
-      slug = res.rows[0]?.slug;
-    }
-    const keys = [
-      `${NAMESPACE}:product:${id}`,
-      slug ? `${NAMESPACE}:product:${slug}` : null,
-      `${NAMESPACE}:newarrivals`,
-      `${NAMESPACE}:allProducts`,
-    ].filter(Boolean);
-    keys.forEach(k => cache.clearNamespace(k));
-  },
-  uncacheCategory: async function (id, slug = null) {
-    if (!slug) {
-      const res = await database.query('SELECT slug FROM public.categories WHERE id = $1', [id]);
-      slug = res.rows[0]?.slug;
-    }
-    const keys = [
-      `${NAMESPACE}:category:${id}`,
-      slug ? `${NAMESPACE}:category:${slug}` : null,
-    ].filter(Boolean);
-    keys.forEach(k => cache.clearNamespace(k));
-  }
+  uncacheProduct,
+  uncacheCategory,
+
 };

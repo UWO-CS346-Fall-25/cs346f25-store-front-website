@@ -4,7 +4,7 @@
       <!-- square stage -->
       <div class="product__stage">
       <% if(product.image != undefined) { %>
-          <img class="product__img" src="<%= product.image.img_url %>"
+          <img class="product__img" src="<%= product.image.url %>"
             alt="<%= product?.alt || product?.name || 'Product image' %>" loading="lazy" decoding="async">
       <% }%>
       </div>

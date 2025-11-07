@@ -29,9 +29,9 @@
               const imgs = (images && images.length)
                 ? images
                 : (product?.images && product.images.length)
-                  ? product.images.map(x => ({ url: x.img_url || x.url, alt: x.alt || product.name }))
-                  : (product?.image?.img_url || product?.img_url || product?.image_url)
-                    ? [{ url: (product.image?.img_url || product.img_url || product.image_url), alt: (product.image?.alt || product.name || '') }]
+                  ? product.images.map(x => ({ url: x.url || x.url, alt: x.alt || product.name }))
+                  : (product?.image?.url || product?.url || product?.image_url)
+                    ? [{ url: (product.image?.url || product.url || product.image_url), alt: (product.image?.alt || product.name || '') }]
                     : [];
             %>
 
@@ -44,7 +44,7 @@
                       role="option"
                       aria-selected="<%= i === 0 ? 'true' : 'false' %>"
                       type="button">
-                      <img src="<%= img.url %>" alt="<%- (img.alt || product?.name || '') + ' thumbnail' %>">
+                      <img src="<%= img.url %>" alt="<%- img.alt + ' thumbnail' %>">
                     </button>
                   <% }) %>
                 </div>
