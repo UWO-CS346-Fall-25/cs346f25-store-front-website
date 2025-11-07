@@ -43,11 +43,9 @@
         <% } %>
         
         <!-- Form panel -->
-        <section class="admin-panel">
-          <form method="post" action="/admin/products/create" class="admin-form">
-            <% if (csrfToken) { %>
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <% } %>
+        <section class="admin-panel admin-create-panel" aria-labelledby="create-product-heading">
+          <form method="post" action="/admin/products/create" class="admin-form" enctype="multipart/form-data">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <div class="admin-form-grid">
               <!-- Left column: main product info -->
@@ -173,24 +171,21 @@
 
                 <div class="admin-form-group">
                   <h3 class="admin-form-group-title">Images & categories</h3>
-
                   <div class="form-row">
-                    <div>
-                      <label for="image_url">
-                        Image URL
-                        <span class="muted">(optional)</span>
-                      </label>
-                      <input
-                        id="image_url"
-                        name="image_url"
-                        type="url"
-                        placeholder="https://...">
-                      <p class="field-hint muted">
-                        TODO: implement image uploads later
-                      </p>
-                    </div>
-                  </div>
+                    <label for="images">
+                      Photos
+                      <span class="muted">(you can pick multiple or take new ones)</span>
+                    </label>
 
+                    <input
+                      id="images"
+                      name="images"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      capture="environment"
+                    >
+                  </div>
                 </div>
 
                 <div class="admin-form-group">

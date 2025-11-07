@@ -53,7 +53,6 @@ bind(router, {
     if (!product) throw new Error('Product not found');
     await db.bindImages([product]);
     await db.bindCategories([product]);
-    console.log(product);
 
     // Ensure we have at least one
 

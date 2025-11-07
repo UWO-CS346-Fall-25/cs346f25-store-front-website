@@ -2,9 +2,20 @@
 
 const cache = require('../controllers/cache.js');
 const database = require('./db.js');
+const { genericClient } = require('./supabase.js');
+const supabase = genericClient();
 
 const NAMESPACE = 'productDB';
 const TTL = 60_000; // TODO: adjust cache TTL as needed (should be higher / can clear cache as needed)
+
+function generateUrl(pid, path, external_url) {
+  if (path != null) {
+    const { data } = supabase.storage.from('product-images').getPublicUrl(`products/${pid}/${path}`);
+    return data.publicUrl;
+  } else {
+    return external_url;
+  }
+}
 
 
 async function bindImages(products) {
@@ -13,7 +24,7 @@ async function bindImages(products) {
     p.images = await cache.wrap(key, TTL, async () => {
       const res = await database.query('SELECT path, external_url, alt FROM public.product_images WHERE product_id = $1 ORDER BY is_primary DESC, id ASC', [p.id]);
       for (let r of res.rows) {
-        r.url = r.path == null ? r.external_url : r.path;
+        r.url = generateUrl(p.id, r.path, r.external_url);
       }
       return res.rows;
     });
@@ -30,7 +41,7 @@ async function bindPrimaryImage(products) {
       const prodImg = await database.query('SELECT path, external_url, alt FROM public.product_images WHERE product_id = $1 AND is_primary = true LIMIT 1', [p.id]);
       if (prodImg.rows.length === 0) return null;
       return {
-        url: prodImg.rows[0].path == null ? prodImg.rows[0].external_url : prodImg.rows[0].path,
+        url: generateUrl(p.id, prodImg.rows[0].path, prodImg.rows[0].external_url),
         alt: prodImg.rows[0].alt,
       };
     });
@@ -100,7 +111,7 @@ async function getFeatured() {
   return cache.wrap(key, TTL, async () => {
     const res = await database.query('SELECT * FROM public.v_featured_products order by position');
     for (let r of res.rows) {
-      r.url = r.image_path == null ? r.image_external_url : r.image_path;
+      r.url = generateUrl(r.id, r.image_path, r.image_external_url);
     }
     return res.rows;
   });
@@ -150,7 +161,7 @@ async function uncacheProduct(id, slug = null) {
     `${NAMESPACE}:newarrivals`,
     `${NAMESPACE}:allProducts`,
   ].filter(Boolean);
-  keys.forEach(k => cache.clearNamespace(k));
+  keys.forEach(k => cache.clearNS(k));
 }
 async function uncacheCategory(id, slug = null) {
   if (!slug) {
@@ -161,7 +172,7 @@ async function uncacheCategory(id, slug = null) {
     `${NAMESPACE}:category:${id}`,
     slug ? `${NAMESPACE}:category:${slug}` : null,
   ].filter(Boolean);
-  keys.forEach(k => cache.clearNamespace(k));
+  keys.forEach(k => cache.clearNS(k));
 }
 
 
