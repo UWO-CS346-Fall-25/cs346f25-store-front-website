@@ -58,7 +58,8 @@
 }
 
 .nav-list a {
-  display: block;
+  display: inline-flex;
+  gap: 0.35rem;
   padding: .5rem .6rem;
   text-decoration: none;
   color: inherit;
@@ -69,6 +70,7 @@
 .nav-list a[aria-current="page"] {
   font-weight: bold;
 }
+
 
 .link--button {
   display: block;
@@ -100,10 +102,26 @@
     border-bottom: 1px solid color-mix(in srgb, var(--foreground) 20%, transparent);
   }
 
+  .link__icon,
+  .nav-list a svg {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .nav-list a[aria-current="page"] {
+    color: var(--tint-1);
+  }
+
   .site-header a,
   .site-header span,
   .site-header nav {
     color: inherit;
+  }
+
+  .nav-link-text {
+    display: none;
   }
 
   .site-header .container {
