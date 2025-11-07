@@ -8,23 +8,26 @@
 
     <nav id="primary-nav" class="nav" aria-label="Primary">
       <ul class="nav-list" role="list">
-        <%- include('navbar-link', { path: '/' , link_title: 'Home', icon: 'home' }) %>
-        <%- include('navbar-link', { path: '/contact' , link_title: 'Contact', icon: 'home' }) %>
+        <%- include('navbar-link', { path: '/' , link_title: 'Home', icon: 'home', onMobile: true }) %>
 
         <% if (isAdmin) { %>
-          <%- include('navbar-link', { path: '/admin/products' , link_title: 'Admin', icon:'home' }) %>
+          <%- include('navbar-link', { path: '/admin/products' , link_title: 'Admin', icon:'admin', onMobile: true }) %>
+        <% } else { %>
+          <%- include('navbar-link', { path: '/contact' , link_title: 'Contact', icon: 'contact', onMobile: false }) %>
         <% } %>
         <% if (false) { %>
           <%- include('navbar-link', { path: '/shop/cart' , link_title: 'Cart' + (cartCount> 0 ? ' (' +
-            cartCount + ')' : ''), icon:'home' }) %>
+            cartCount + ')' : ''), icon:'home', onMobile: true }) %>
         <% } %>
 
         <% if (user !=null) { %>
-          <%- include('navbar-link', { path: '/account' , link_title: 'Account', icon:'home' }) %>
+          <% if(!isAdmin) { %>
+            <%- include('navbar-link', { path: '/account' , link_title: 'Account', icon:'account', onMobile: true }) %>
+          <% } %>
           <%- include('navbar-logout') %>
         <% } else { %>
-          <%- include('navbar-link', { path: '/login' , link_title: 'Login', icon:'home' }) %>
-          <%- include('navbar-link', { path: '/signup' , link_title: 'Sign up', icon:'home' }) %>
+          <%- include('navbar-link', { path: '/login' , link_title: 'Login', icon:'sign-in', onMobile: true }) %>
+          <%- include('navbar-link', { path: '/signup' , link_title: 'Sign up', icon:'sign-up', onMobile: false }) %>
         <% } %>
       </ul>
     </nav>

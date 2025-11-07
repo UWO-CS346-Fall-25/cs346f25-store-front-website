@@ -82,7 +82,7 @@ app.use(require('./middleware/auth'));
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;
   res.locals.currentUrl = req.originalUrl;
-  res.locals.isPath = (p) => req.path === p;
+  res.locals.isPath = (p) => p.endsWith(req.path);
   next();
 });
 

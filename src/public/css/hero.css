@@ -238,10 +238,3 @@
     block-size: clamp(200px, 55vw, 260px);
   }
 }
-
-
-html,
-body {
-  max-width: 100%;
-  overflow-x: hidden;
-}

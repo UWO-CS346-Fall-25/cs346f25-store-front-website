@@ -1,6 +1,6 @@
-<li>
+<li class="<%- onMobile ? "" : "hide-on-mobile" %>">
   <a href="<%- path %>" class="nav-link"<% if(isPath(path)) { %>aria-current="page"<% } %>>
     <%- include('../svg/' + icon) %>
-    <span class="nav-link-text"><%- link_title %></span>
+    <span class="hide-on-mobile"><%- link_title %></span>
   </a>
 </li>
