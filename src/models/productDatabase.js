@@ -91,6 +91,21 @@ async function getAll() {
     return res.rows;
   });
 }
+async function getActive() {
+  const key = `${NAMESPACE}:activeProducts`;
+  return cache.wrap(key, TTL, async () => {
+    const res = await database.query('SELECT * FROM public.products WHERE is_active = true');
+    return res.rows;
+  });
+}
+async function getVisible() {
+  const key = `${NAMESPACE}:activeProducts`;
+  return cache.wrap(key, TTL, async () => {
+    const res = await database.query('SELECT * FROM public.products WHERE is_active = true AND status= \'active\'');
+    return res.rows;
+  });
+}
+
 async function getByID(id) {
   const key = `${NAMESPACE}:product:${id}`;
   return cache.wrap(key, TTL, async () => {
@@ -109,7 +124,7 @@ async function getBySlug(slug) {
 async function getFeatured() {
   const key = `${NAMESPACE}:featured`;
   return cache.wrap(key, TTL, async () => {
-    const res = await database.query('SELECT p.* FROM public.products p JOIN public.featured_products fp ON p.id = fp.product_id ORDER BY fp.position ASC');
+    const res = await database.query('SELECT p.* FROM public.products p JOIN public.featured_products fp ON p.id = fp.product_id WHERE p.is_active=true AND p.status= \'active\' ORDER BY fp.position ASC');
     return res.rows;
   });
 }
@@ -143,7 +158,7 @@ async function getNewArrivals(count) {
   const key = `${NAMESPACE}:newarrivals:${count}`;
 
   return cache.wrap(key, TTL, async () => {
-    const res = await database.query('SELECT * FROM public.products ORDER BY created_at DESC LIMIT $1', [count]);
+    const res = await database.query('SELECT * FROM public.products WHERE is_active = true AND status= \'active\' ORDER BY created_at DESC LIMIT $1', [count]);
     return res.rows;
   });
 }
@@ -181,6 +196,8 @@ module.exports = {
   categoryBindProductAndPrimaryImage,
 
   getAll,
+  getActive,
+  getVisible,
   getByID,
   getBySlug,
   getFeatured,
