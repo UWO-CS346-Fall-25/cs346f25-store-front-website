@@ -20,7 +20,7 @@ with cats as (
 prods as (
   select id, row_number() over(order by created_at) as rn
   from public.products
-  where is_active = true and status = 'active'
+  where status = 'active'
 )
 insert into public.product_categories (product_id, category_id)
 select p.id, c.id
@@ -36,9 +36,9 @@ with summer as (
 candidates as (
   select id
   from public.products
-  where is_active = true and status = 'active'
+  where status = 'active'
   order by created_at desc
-  limit greatest(1, (select ceil(count(*) * 0.20) from public.products where is_active = true and status='active'))
+  limit greatest(1, (select ceil(count(*) * 0.20) from public.products where status='active'))
 )
 insert into public.product_categories (product_id, category_id)
 select p.id, (select id from summer)

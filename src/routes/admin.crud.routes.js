@@ -32,7 +32,6 @@ router.post(
         price,
         currency,
         status,
-        is_active,
         seo_title,
         seo_description,
         sku,
@@ -49,10 +48,6 @@ router.post(
       const productStatus = status || 'draft';
       const productCurrency = currency || 'USD';
 
-      const active =
-        is_active === 'true' ||
-        is_active === 'on' ||
-        is_active === '1';
 
       // Build row for public.products
       const insertRow = {
@@ -64,7 +59,6 @@ router.post(
         price_cents,
         currency: productCurrency,
         status: productStatus,
-        is_active: active,
         seo_title: seo_title || null,
         seo_description: seo_description || null,
         sku: sku || null,
@@ -161,7 +155,7 @@ router.post(
           return res.redirect('/admin/products');
         }
       }
-      uncacheProduct(productId);
+      await uncacheProduct(productId);
       req.flash?.('success', 'Product created successfully.');
       return res.redirect(`/shop/${product.slug}`);
 
@@ -171,5 +165,129 @@ router.post(
     }
   }
 );
+
+// ====================================================
+// ======================= EDIT =======================
+// ====================================================
+
+// POST /admin/products/:id/edit
+router.post(
+  '/products/:id/edit',
+  uploadProductImages,   // parse multipart + files
+  csrfProtection,        // then check CSRF
+  async (req, res, next) => {
+    const supabase = authClient(req);
+    const id = req.params.id;
+
+    try {
+      const {
+        name,
+        slug,
+        description,
+        big_description,
+        price,
+        currency,
+        status,
+        seo_title,
+        seo_description,
+        sku,
+      } = req.body;
+
+      if (!name || !price) {
+        req.flash?.('error', 'Name and price are required.');
+        return res.redirect(`/admin/products/${id}/edit`);
+      }
+
+      const price_cents = dollarsToCents(price);
+      const productStatus = status || 'draft';
+      const productCurrency = currency || 'USD';
+
+
+      const updateRow = {
+        name,
+        slug: slug && slug.trim().length ? slug.trim() : null,
+        description: description || null,
+        big_description: big_description || null,
+        price_cents,
+        currency: productCurrency,
+        status: productStatus,
+        seo_title: seo_title || null,
+        seo_description: seo_description || null,
+        sku: sku || null,
+      };
+
+      const { data: product, error: updateError } = await supabase
+        .from('products')
+        .update(updateRow)
+        .eq('id', id)
+        .select('*')
+        .maybeSingle();
+
+      if (updateError) {
+        console.error('Error updating product:', updateError);
+        req.flash?.('error', 'Something went wrong saving the product.');
+        return res.redirect(`/admin/products/${id}/edit`);
+      }
+      if (!product) {
+        console.error('No product found to update for id:', id);
+        req.flash?.('error', 'Product not found or you do not have permission to edit it.');
+        return res.redirect('/admin/products');
+      }
+
+      // Handle any new uploads (append to existing product_images)
+      const files = req.files || [];
+      const bucketName = 'product-images';
+      const imageRows = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const ext = (file.originalname && file.originalname.includes('.'))
+          ? file.originalname.substring(file.originalname.lastIndexOf('.'))
+          : '';
+        const filename = `${Date.now()}-${i}${ext}`;
+        const storagePath = `products/${product.id}/${filename}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from(bucketName)
+          .upload(storagePath, file.buffer, {
+            contentType: file.mimetype,
+            upsert: false,
+          });
+
+        if (uploadError) {
+          console.error('Error uploading product image on edit:', uploadError);
+          continue;
+        }
+
+        imageRows.push({
+          product_id: product.id,
+          path: storagePath,
+          // alt / is_primary optional
+        });
+      }
+
+      if (imageRows.length > 0) {
+        const { error: imgError } = await supabase
+          .from('product_images')
+          .insert(imageRows);
+
+        if (imgError) {
+          console.error('Error inserting product_images on edit:', imgError);
+          req.flash?.('error', 'Product saved, but some images failed to upload.');
+          return res.redirect(`/admin/products/${id}/edit`);
+        }
+      }
+
+      req.flash?.('success', 'Product updated successfully.');
+      await uncacheProduct(product.id);
+      return res.redirect('/admin/products');
+    } catch (err) {
+      console.error('Unexpected error editing product:', err);
+      return res.redirect('/admin/products');
+    }
+  }
+);
+
+
 
 module.exports = router;

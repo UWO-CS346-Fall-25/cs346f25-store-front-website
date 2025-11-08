@@ -68,7 +68,6 @@ using (
   exists (
     select 1 from public.products p
     where p.id = product_id
-      and p.is_active = true
       and p.status = 'active'
   )
   and exists (

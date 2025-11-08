@@ -350,3 +350,9 @@
   border: 1px solid rgba(22, 163, 74, 0.5);
   color: #065f46;
 }
+
+
+
+.admin-product--status-draft {
+  background: var(--background) !important;
+}

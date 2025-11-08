@@ -5,6 +5,8 @@
   cssFiles: ['admin.css'],
   scripts: []
 }) %>
+<% const isEdit = !!product; %>
+
 <body>
   <%- include('../partials/navbar') %>
 
@@ -44,7 +46,9 @@
         
         <!-- Form panel -->
         <section class="admin-panel admin-create-panel" aria-labelledby="create-product-heading">
-          <form method="post" action="/admin/products/create" class="admin-form" enctype="multipart/form-data">
+          <form method="post"
+            action="<%= isEdit ? ('/admin/products/' + product.id + '/edit') : '/admin/products/create' %>"
+            class="admin-form" enctype="multipart/form-data">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
             <div class="admin-form-grid">
@@ -64,7 +68,8 @@
                       type="text"
                       required
                       autocomplete="off"
-                      placeholder="Cozy forest raccoon mug">
+                      placeholder="Cozy forest raccoon mug"
+                      value="<%= isEdit ? product.name : '' %>">
                   </div>
                 </div>
 
@@ -79,7 +84,8 @@
                       name="slug"
                       type="text"
                       autocomplete="off"
-                      placeholder="cozy-forest-raccoon-mug">
+                      placeholder="cozy-forest-raccoon-mug"
+                      value="<%= isEdit ? product.slug : '' %>">
                   </div>
                 </div>
 
@@ -95,45 +101,50 @@
                       step="0.01"
                       inputmode="decimal"
                       required
-                      placeholder="24.00">
+                      placeholder="24.00"
+                      value="<%= isEdit ? (product.price_cents / 100).toFixed(2) : '' %>">
                   </div>
 
                   <div>
                     <label for="currency">Currency</label>
                     <select id="currency" name="currency">
-                      <option value="USD" selected>USD</option>
-                      <!-- Add more if needed -->
+                      <option value="USD" <%= product && product.currency === 'USD' ? 'selected' : '' %>>USD</option>
+                      <option value="EUR" <%= product && product.currency === 'EUR' ? 'selected' : '' %>>EUR</option>
+                      <option value="GBP" <%= product && product.currency === 'GBP' ? 'selected' : '' %>>GBP</option>
                     </select>
                   </div>
                 </div>
 
-                <div class="form-row form-row--split">
-                  <div>
-                    <label for="status">Status</label>
-                    <select id="status" name="status">
-                      <option value="draft" selected>Draft</option>
-                      <option value="active">Active</option>
-                      <option value="archived">Archived</option>
-                    </select>
-                    <p class="field-hint muted">
-                      Drafts are hidden unless you activate them.
-                    </p>
-                  </div>
 
-                  <div class="form-field-toggle">
-                    <label class="checkbox-inline">
-                      <input
-                        type="checkbox"
-                        name="is_active"
-                        value="true"
-                        checked>
-                      <span>Show this product in the shop</span>
-                    </label>
-                    <p class="field-hint muted">
-                      You can turn this off to temporarily hide it.
-                    </p>
-                  </div>
-                </div>
+
+            <div class="form-row form-row--split">
+              <div>
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                  <option value="draft" <%= product && product.status === 'draft' ? 'selected' : '' %>>Draft</option>
+                  <option value="active" <%= product && product.status === 'active' ? 'selected' : '' %>>Active</option>
+                  <option value="archived" <%= product && product.status === 'archived' ? 'selected' : '' %>>Archived</option>
+                </select>
+                <p class="field-hint muted">
+                  Drafts are hidden unless you activate them.
+                </p>
+              </div>
+
+              <!-- <div class="form-field-toggle">
+                <label class="checkbox-inline">
+                  <input
+                    type="checkbox"
+                    name="is_active"
+                    value="true"
+                    checked>
+                  <span>Show this product in the shop</span>
+                </label>
+                <p class="field-hint muted">
+                  You can turn this off to temporarily hide it.
+                </p>
+              </div> -->
+            </div>
+
 
                 <div class="form-row">
                   <div>
@@ -142,7 +153,7 @@
                       id="description"
                       name="description"
                       rows="3"
-                      placeholder="Short blurb that appears in product cards and at the top of the detail page."></textarea>
+                      placeholder="Short blurb that appears in product cards and at the top of the detail page."><%= isEdit ? product.description : '' %></textarea>
                   </div>
                 </div>
 
@@ -157,7 +168,7 @@
                       name="big_description"
                       rows="6"
                       class="textarea--monospace"
-                      placeholder="Long-form description, care instructions, story behind the product, etc."></textarea>
+                      placeholder="Long-form description, care instructions, story behind the product, etc."><%= isEdit ? product.big_description : '' %></textarea>
                   </div>
                 </div>
               </div>
@@ -201,6 +212,7 @@
                         id="seo_title"
                         name="seo_title"
                         type="text"
+                        value="<%= isEdit ? product.seo_title : '' %>"
                         placeholder="Custom &quot;Cozy forest raccoon mug&quot; | Raven's Treasures">
                     </div>
                   </div>
@@ -215,7 +227,7 @@
                         id="seo_description"
                         name="seo_description"
                         rows="3"
-                        placeholder="A short summary that appears in search results."></textarea>
+                        placeholder="A short summary that appears in search results."><%= isEdit ? product.seo_description : '' %></textarea>
                     </div>
                   </div>
                 </div>
@@ -234,6 +246,7 @@
                         name="sku"
                         type="text"
                         autocomplete="off"
+                        value="<%= isEdit ? product.sku : '' %>"
                         placeholder="RT-MUG-FOREST-RACCOON">
                     </div>
                   </div>
@@ -241,9 +254,12 @@
               </aside>
             </div>
 
+
+
+
             <div class="form-row admin-form-actions">
               <button class="primary" type="submit">
-                Create
+                <%= isEdit ? 'Update Product' : 'Create Product' %>
               </button>
               <a href="/admin/products" class="button ghost">
                 Cancel

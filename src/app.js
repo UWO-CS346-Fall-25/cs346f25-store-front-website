@@ -126,7 +126,6 @@ app.get("/health", health({ package: require("../package.json") }));
 app.use(notFound());
 app.use(errorHandler({ showStack: "dev", }));
 
-
 // Log registered pages to console
 const rows = registry.all().map(p => ({
   Title: p.meta?.title || '',

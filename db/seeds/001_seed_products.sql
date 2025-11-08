@@ -15,7 +15,6 @@ insert into public.products (
   big_description,
   price_cents,
   currency,
-  is_active,
   status,
   sku,
   seo_title,
@@ -28,7 +27,6 @@ select
   'This is a big description for Product ' || i || '. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.' as big_description,
   (500 + floor(random() * 9500))::int as price_cents,  -- $5.00 - $99.99
   'USD' as currency,
-  (i % 12 <> 0) as is_active,                           -- every 12th inactive (good for testing filters)
   case when i % 8 = 0 then 'draft' else 'active' end as status,
   'PROD-' || lpad(i::text, 4, '0') as sku,
   null as seo_title,
