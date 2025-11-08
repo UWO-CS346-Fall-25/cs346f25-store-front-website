@@ -113,25 +113,33 @@
                         <div class="admin-actions">
                           <!-- View on storefront -->
                           
-                          <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
-                          <% if (product.is_active) { %>
-                            <span class="sr-only">View</span>
-                            <span class="success"><%- include('../svg/eye-open') %> </span>
+                          <% if (product.status == 'active') { %>
+                            <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
+                            <% if (product.is_active) { %>
+                              <span class="sr-only">View</span>
+                              <span class="success"><%- include('../svg/eye-open') %> </span>
+                            <% } else { %>
+                              <span class="sr-only">View</span>
+                              <span class="muted"><%- include('../svg/eye-closed') %> </span>
+                            <% } %>
+                            </a>
+
+                            <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
+                              <span class="sr-only">View</span>
+                              <%- include('../svg/view') %>
+                            </a>
+
+                            <a class="link link--icon" href="/admin/products/<%= product.id %>/edit">
+                              <span class="sr-only">Edit</span>
+                              <%- include('../svg/edit') %>
+                            </a>
                           <% } else { %>
-                            <span class="sr-only">View</span>
-                            <span class="muted"><%- include('../svg/eye-closed') %> </span>
+                            <span class="draft">Draft</span>
+                            <a class="link link--icon" href="/admin/products/<%= product.id %>/edit">
+                              <span class="sr-only">Draft</span>
+                              <%- include('../svg/draft') %>
+                            </a>
                           <% } %>
-                          </a>
-
-                          <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
-                            <span class="sr-only">View</span>
-                            <%- include('../svg/view') %>
-                          </a>
-
-                          <a class="link link--icon" href="/admin/products/<%= product.id %>/edit">
-                            <span class="sr-only">Edit</span>
-                            <%- include('../svg/edit') %>
-                          </a>
 
                           <!-- Delete (POST/DELETE) -->
                           <form

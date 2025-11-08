@@ -357,7 +357,6 @@ textarea:focus {
 
 
 
-/* Screen-reader-only helper (if you don't already have one) */
 .sr-only {
   position: absolute;
   width: 1px;
