@@ -62,7 +62,14 @@ module.exports = function (csrfProtection) {
       sameSite: 'lax',
     });
 
-    res.redirect('/');
+
+    const redirectTo = (req.session && req.session.returnTo) || '/';
+
+    if (req.session) {
+      delete req.session.returnTo; // clean it up so it doesn’t stick around
+    }
+
+    res.redirect(redirectTo);
   });
 
   // POST /auth/logout
