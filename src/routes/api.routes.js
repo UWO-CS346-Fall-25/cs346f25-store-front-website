@@ -1,9 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const csrf = require('csurf');
-const db = require('../models/productDatabase.js');
-
-const csrfProtection = csrf({ cookie: false });
 
 const database = require('../models/productDatabase.js');
 

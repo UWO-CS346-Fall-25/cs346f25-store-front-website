@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
-const db = require('../models/productDatabase.js'); // still fine to keep, even if not used here
 const { authClient } = require('../models/supabase.js');
 const { uploadProductImages } = require('../middleware/uploads');
 const { uncacheProduct } = require('../models/productDatabase.js');
@@ -113,7 +112,7 @@ router.post(
         const filename = `${Date.now()}-${i}${ext}`;
         const storagePath = `products/${productId}/${filename}`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from(bucketName)
           .upload(storagePath, file.buffer, {
             contentType: file.mimetype,
@@ -182,7 +181,7 @@ router.post(
   authRequired,
   uploadProductImages,   // parse multipart + files
   csrfProtection,        // then check CSRF
-  async (req, res, next) => {
+  async (req, res, _next) => {
     const supabase = authClient(req);
     const id = req.params.id;
 
@@ -288,8 +287,7 @@ router.post(
       req.flash?.('success', 'Product updated successfully.');
       await uncacheProduct(product.id);
       return res.redirect('/admin/products');
-    } catch (err) {
-      console.error('Unexpected error editing product:', err);
+    } catch {
       return res.redirect('/admin/products');
     }
   }

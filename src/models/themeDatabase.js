@@ -1,7 +1,6 @@
 
 
 const cache = require('../controllers/cache.js');
-const debug = require('../controllers/debug');
 const database = require('./db.js');
 
 

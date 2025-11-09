@@ -64,7 +64,9 @@ bind(router, {
         const others = category.products.filter(id => id !== product.id).slice(0, 8);
         related = (await Promise.all(others.map(id => db.getByID(id)))).filter(Boolean);
       }
-    } catch (_) { }
+    } catch (err) {
+      console.error('Error fetching related products:', err);
+    }
 
     return {
       title: product.name,

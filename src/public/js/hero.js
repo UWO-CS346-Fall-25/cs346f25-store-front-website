@@ -31,14 +31,12 @@
     bar.style.width = width + '%';
     if (animate) {
       // force reflow to restart animation
-      // eslint-disable-next-line no-unused-expressions
+
       bar.offsetWidth;
       bar.style.animation = `carousel-progress ${duration}ms linear forwards`;
       bar.style.animationPlayState = paused ? 'paused' : 'running';
     }
   }
-
-  let prevIndex = 0;
 
   function render(i) {
     const was = index;
@@ -83,7 +81,6 @@
       }
     });
 
-    prevIndex = was;
   }
 
   // --- scheduling with drift correction ---
@@ -117,11 +114,6 @@
 
   function stopLoop() {
     clearLoop();
-  }
-
-  function restartLoop() {
-    stopLoop();
-    if (!paused && !prefersReduced) startLoop();
   }
 
   // --- interactions ---

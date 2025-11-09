@@ -3,7 +3,6 @@ const router = express.Router();
 const csrf = require('csurf');
 const { bind } = require('express-page-registry');
 const db = require('../models/productDatabase.js');
-const { authClient } = require('../models/supabase.js');
 const { authRequired } = require('../middleware/accountRequired.js');
 
 const csrfProtection = csrf({ cookie: false });
@@ -71,8 +70,7 @@ bind(router, {
         mode: 'edit',
         flash: { error, success },
       };
-    } catch (err) {
-      console.error('Unexpected error loading product for edit:', err);
+    } catch {
       res.redirect('/admin/products');
       return {};
     }
