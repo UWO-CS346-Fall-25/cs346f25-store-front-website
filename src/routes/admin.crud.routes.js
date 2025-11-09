@@ -7,6 +7,11 @@ const { uploadProductImages } = require('../middleware/uploads');
 const { uncacheProduct } = require('../models/productDatabase.js');
 
 const csrfProtection = csrf({ cookie: false });
+const { authRequired } = require('../middleware/accountRequired.js');
+
+// ====================================================
+// ======================= CREATE =====================
+// ====================================================
 
 function dollarsToCents(value) {
   if (value == null || value === '') return 0;
@@ -18,6 +23,7 @@ function dollarsToCents(value) {
 // POST /admin/products/create
 router.post(
   '/products/create',
+  authRequired,
   uploadProductImages,   // 1) parse files and multipart form
   csrfProtection,        // 2) check CSRF token from parsed body
   async (req, res, next) => {
@@ -157,7 +163,7 @@ router.post(
       }
       await uncacheProduct(productId);
       req.flash?.('success', 'Product created successfully.');
-      return res.redirect(`/shop/${product.slug}`);
+      return res.redirect(`/admin/products`);
 
     } catch (err) {
       console.error('Unexpected error creating product:', err);
@@ -173,6 +179,7 @@ router.post(
 // POST /admin/products/:id/edit
 router.post(
   '/products/:id/edit',
+  authRequired,
   uploadProductImages,   // parse multipart + files
   csrfProtection,        // then check CSRF
   async (req, res, next) => {
@@ -287,6 +294,47 @@ router.post(
     }
   }
 );
+
+// ====================================================
+// ====================== DELETE ======================
+// ====================================================
+
+
+router.post('/products/:id/delete', authRequired, csrfProtection, async (req, res) => {
+  const { id } = req.params;
+  const supabase = authClient(req);
+
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .update({
+        status: 'archived',
+        updated_at: new Date().toISOString(), // optional, if you have this column
+      })
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+
+    console.log(error, data);
+    if (req.session) {
+      req.session.flash = {
+        error: (error || !data) ? 'Failed to archive product.' : null,
+        success: data ? 'Product archived successfully.' : null
+      };
+    }
+    await uncacheProduct(id);
+
+    res.redirect('/admin/products');
+  } catch (err) {
+    console.error('Error archiving product:', err);
+
+    if (req.session) {
+      req.session.flash = { error: 'Failed to archive product. Please try again.' };
+    }
+
+    res.redirect('/admin/products');
+  }
+});
 
 
 

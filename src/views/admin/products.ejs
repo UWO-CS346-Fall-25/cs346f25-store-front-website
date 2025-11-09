@@ -26,6 +26,22 @@
           </a>
         </div>
 
+        <% if (flash && (flash.error || flash.success)) { %>
+          <div class="admin-alert-wrapper">
+            <% if (flash.error) { %>
+              <div class="admin-alert admin-alert--error" role="alert">
+                <span><%= flash.error %></span>
+              </div>
+            <% } %>
+            <% if (flash.success) { %>
+              <div class="admin-alert admin-alert--success" role="status">
+                <span><%= flash.success %></span>
+              </div>
+            <% } %>
+          </div>
+        <% } %>
+
+
         <!-- Summary chips -->
         <% const items = products || []; %>
         <% const activeCount = items.filter(p => p.status === 'active').length; %>

@@ -3,7 +3,7 @@
 <%- include('../partials/head', {
   title: 'Admin · New Product',
   cssFiles: ['admin.css'],
-  scripts: []
+  scripts: ['photo-view.js']
 }) %>
 <% const isEdit = !!product; %>
 
@@ -182,21 +182,32 @@
 
                 <div class="admin-form-group">
                   <h3 class="admin-form-group-title">Images & categories</h3>
-                  <div class="form-row">
-                    <label for="images">
-                      Photos
-                      <span class="muted">(you can pick multiple or take new ones)</span>
-                    </label>
+                    <div class="form-row">
+                      <label for="images">
+                        Photos
+                        <span class="muted">(you can pick multiple or take new ones)</span>
+                      </label>
 
-                    <input
-                      id="images"
-                      name="images"
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      capture="environment"
-                    >
-                  </div>
+                      <input
+                        id="images"
+                        name="images"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        capture="environment"
+                      >
+
+                      <!-- Preview bar -->
+                      <div id="image-preview-bar" class="image-preview-bar" aria-live="polite">
+                        <% if (isEdit && product && product.images && product.images.length) { %>
+                          <% product.images.forEach(function (image) { %>
+                            <div class="image-preview-thumb" data-source="existing">
+                              <img src="<%= image.url %>" alt="<%= product.name %> image">
+                            </div>
+                          <% }) %>
+                        <% } %>
+                      </div>
+                    </div>
                 </div>
 
                 <div class="admin-form-group">

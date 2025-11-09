@@ -16,8 +16,13 @@ bind(router, {
   getData: async function (req) {
     const products = await db.bindCategories(await db.bindPrimaryImage(await db.getAll()));
 
+    const flash = req.session?.flash;
+    if (req.session) {
+      delete req.session.flash;
+    }
     return {
       products,
+      flash,
     };
   }
 });
@@ -52,23 +57,14 @@ bind(router, {
     const id = req.params.id;
 
     try {
-      const product = await db.getByID(id);
+      const product_list = [await db.getByID(id)];
 
-      if (!product) {
+      if (!product_list[0]) {
         console.error('Error loading product for edit:', error || 'Not found');
         req.flash?.('error', 'Product not found.');
         return {};
       }
-
-      res.render('admin/products-new', {
-        csrfToken: req.csrfToken(),
-        product,
-        mode: 'edit',
-        flash: {
-          error: req.flash?.('error'),
-          success: req.flash?.('success'),
-        },
-      });
+      const product = (await db.bindImages(product_list))[0];
 
       return {
         product,
