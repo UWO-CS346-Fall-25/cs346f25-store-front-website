@@ -37,25 +37,27 @@ module.exports = function (csrfProtection) {
     }
 
     const { access_token, refresh_token, user } = data.session;
-
     const oneHour = 60 * 60 * 1000;
     const sevenDays = 7 * 24 * 60 * 60 * 1000;
-    const accessMaxAge = remember ? oneHour * 12 : oneHour;
-    const refreshMaxAge = remember ? sevenDays : oneHour * 24;
 
-    res.cookie('sb-access-token', access_token, {
+    const commonCookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: accessMaxAge,
-    });
+    };
 
-    res.cookie('sb-refresh-token', refresh_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: refreshMaxAge,
-    });
+    const accessCookieOptions = { ...commonCookieOptions };
+    const refreshCookieOptions = { ...commonCookieOptions };
+
+    // Only set maxAge if user wants to be remembered
+    if (rememberMe) {
+      accessCookieOptions.maxAge = oneHour * 12; // 12 hours
+      refreshCookieOptions.maxAge = sevenDays;   // 7 days
+    }
+
+    // If rememberMe is false, no maxAge ⇒ session cookie
+    res.cookie('sb-access-token', access_token, accessCookieOptions);
+    res.cookie('sb-refresh-token', refresh_token, refreshCookieOptions);
 
     res.cookie('user-display-name', user.user_metadata?.display_name || '', {
       httpOnly: false,
