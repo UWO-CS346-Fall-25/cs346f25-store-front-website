@@ -46,6 +46,10 @@ a {
   text-decoration: none;
 }
 
+button {
+  font: inherit;
+}
+
 /* Layout container */
 .container {
   width: min(100% - 2rem, 1100px);
@@ -105,13 +109,13 @@ a {
 }
 
 
-
+.button.primary,
 button.primary {
   display: inline-block;
   text-decoration: none;
   font-weight: 600;
   font-size: 1.25rem;
-  padding: .7rem 2rem;
+  padding: .7rem 1rem;
   border-radius: .75rem;
   border: 0;
   transition: transform .15s ease, background .2s ease, color .2s ease;
@@ -120,31 +124,51 @@ button.primary {
   cursor: pointer;
 }
 
+.button.primary:hover,
 button.primary:hover {
   transform: translateY(-1px);
   background: var(--tint-2);
 }
 
+.button.primary:active,
 button.primary:active {
   transform: translateY(0);
 }
 
+.button.primary.small,
 button.primary.small {
   font-size: 1rem;
   padding: .5rem 1rem;
 }
 
 
-
+.button.ghost,
 button.ghost {
-  border: 1px solid color-mix(in srgb, var(--foreground) 30%, transparent);
-  color: var(--background);
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.25rem;
+  padding: .7rem 1rem;
+  border-radius: .75rem;
+  border: 2px solid var(--tint-1);
+  transition: transform .15s ease, background .2s ease, color .2s ease;
+  background: var(--background);
+  color: var(--tint-1);
+  cursor: pointer;
+}
+
+.button.ghost:hover,
+button.ghost:hover {
+  transform: translateY(-1px);
+  color: var(--tint-2);
+  border: 2px solid var(--tint-2);
 }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
 
   .button,
+  button,
   .contact-form input,
   .contact-form textarea {
     transition: none;
@@ -245,4 +269,157 @@ textarea:focus {
 :focus-visible {
   outline: 2px solid #9b87f5;
   outline-offset: 2px;
+}
+
+
+.prose {
+  max-width: 70ch;
+  /* keeps lines readable */
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #444;
+  /* or var(--text-color) if you have one */
+}
+
+/* Vertical rhythm: every sibling after the first gets spacing */
+.prose>*+* {
+  margin-top: 0.75rem;
+}
+
+/* Paragraphs */
+.prose p {
+  margin: 0;
+}
+
+/* Headings inside prose */
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin: 1.25rem 0 0.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.prose h2 {
+  font-size: 1.1rem;
+}
+
+.prose h3 {
+  font-size: 1.0rem;
+}
+
+.prose h4 {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+/* Lists */
+.prose ul,
+.prose ol {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.prose li+li {
+  margin-top: 0.25rem;
+}
+
+/* Links */
+.prose a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.prose a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Emphasis */
+.prose strong {
+  font-weight: 600;
+}
+
+.prose em {
+  font-style: italic;
+}
+
+/* Optional: small notes */
+.prose small {
+  font-size: 0.85em;
+  color: #666;
+}
+
+
+
+
+
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Base icon link */
+.link--icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  padding: 0;
+  text-decoration: none;
+  /* let your global .link handle color; if it doesn't, you can set color here */
+  transition:
+    transform 0.15s ease-out,
+    color 0.15s ease-out;
+  overflow: hidden;
+  /* keeps the circle neat */
+}
+
+/* The “circle forming” hover background */
+.link--icon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(15, 23, 42, 0.06);
+  /* soft circle; tweak to match your theme */
+  transform: scale(0);
+  opacity: 0;
+  transition:
+    transform 0.18s ease-out,
+    opacity 0.18s ease-out;
+}
+
+/* On hover/focus: show the circle + a tiny lift */
+.link--icon:hover::before,
+.link--icon:focus-visible::before {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.link--icon:hover,
+.link--icon:focus-visible {
+  transform: translateY(-1px);
+}
+
+/* The icon itself */
+.link__icon {
+  width: 1rem;
+  height: 1rem;
+  z-index: 1;
+  /* sits above the ::before circle */
+  display: block;
 }

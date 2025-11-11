@@ -47,17 +47,15 @@
    npm install
    ```
 
-3. **Set up environment variables**
+3. **Set up 'Supabase' database**
+   visit `https://supabase.com/` to make a free database
+
+4. **Set up environment variables**
    ```bash
    cp .env.example .env
    # Edit .env with your credentials
    ```
 
-4. **Set up PostgreSQL database**
-   ```bash
-   # Create database (adjust credentials as needed)
-   createdb your_database_name
-   ```
 
 5. **Run migrations**
    ```bash
@@ -68,6 +66,7 @@
    ```bash
    npm run seed
    ```
+NOTE: run `npm run reset` to clear db and repopulate
 
 7. **Start the application**
    ```bash

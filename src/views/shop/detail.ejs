@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', {
+  cssFiles: ['shop/product-card.css', 'shop/product-gallery.css'],
+  scripts: ['shop/product-gallery.js']
+}) %>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main id="main-content">
+    <section class="section" aria-labelledby="product-title">
+      <div class="container">
+
+        <div class="section__header--product">
+          <% if (typeof backUrl === 'string' && backUrl.length) { %>
+            <a class="link" href="<%= backUrl %>">← Back</a>
+          <% } %>
+          <h1 id="product-title" class="section__title">
+            <%= mainTitle || 'Product' %>
+          </h1>
+
+        </div>
+
+        <!-- Main content -->
+        <div class="product-detail">
+          <!-- Media -->
+          <div class="product-detail__media">
+            <%
+              const imgs = (images && images.length)
+                ? images
+                : (product?.images && product.images.length)
+                  ? product.images.map(x => ({ url: x.url || x.url, alt: x.alt || product.name }))
+                  : (product?.image?.url || product?.url || product?.image_url)
+                    ? [{ url: (product.image?.url || product.url || product.image_url), alt: (product.image?.alt || product.name || '') }]
+                    : [];
+            %>
+
+            <% if (imgs.length) { %>
+              <div class="product-images-window" aria-label="Product images">
+                <div class="pg-thumbs" role="listbox">
+                  <% imgs.forEach(function(img, i) { %>
+                    <button
+                      class="pg-thumb<%= i === 0 ? ' is-selected' : '' %>"
+                      role="option"
+                      aria-selected="<%= i === 0 ? 'true' : 'false' %>"
+                      type="button">
+                      <img src="<%= img.url %>" alt="<%- img.alt + ' thumbnail' %>">
+                    </button>
+                  <% }) %>
+                </div>
+              </div>
+            <% } else { %>
+              <div class="muted">No image available.</div>
+            <% } %>
+          </div>
+
+
+
+
+
+          <!-- Info -->
+          <div class="product-details">
+            <p id="price-block" class="price">
+              <%= util.formatPrice(product) %>
+            </p>
+
+            <div class="prose">
+              <h2>About this item</h2>
+              <p><em><%- product.description %></em></p>
+              <p><%- product.big_description %></p>
+            </div>
+          </div>
+
+            <!-- Add to Cart (optional; safe to keep minimal). -->
+          <form class="product-actions" method="post" action="/cart/add">
+            <% if (csrfToken) { %>
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <% } %>
+            <input type="hidden" name="product_id" value="<%= product?.id %>">
+            <label>
+              Qty
+              <input id="quantity" type="number" name="quantity" min="1" value="1">
+            </label>
+            <button id="add-to-cart" class="primary button" type="submit">Add to cart</button>
+            <button id="buy-now" class="ghost button" type="submit">Buy now</button>
+          </form>
+        </div>
+      </div>
+
+
+        <!-- Related products -->
+        <% if (related && related.length) { %>
+          <hr id="related-products-separator">
+          <div class="section__header">
+            <h2 class="section__title">Related products</h2>
+          </div>
+          
+          <ul class="grid grid--products" role="list" aria-label="Related products">
+            <% related.forEach(function(p) { %>
+              <li class="grid__item">
+                <%- include('product-card', {
+                  product: p,
+                  url: `/product/${p.slug}`,
+                  price: p.price_cents
+                }) %>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
+
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

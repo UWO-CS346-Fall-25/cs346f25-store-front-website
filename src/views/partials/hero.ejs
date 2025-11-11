@@ -29,9 +29,9 @@
                 aria-selected="<%= i === 0 ? 'true' : 'false' %>"
                 aria-controls="carousel-slide-<%= i %>"
                 data-slide="<%= i %>"
-                data-src="<%= p.img_url %>"
-                data-alt="<%= p.name || 'Featured product' %>"
-                data-href="/shop/product/<%= p.slug || p.id %>"
+                data-src="<%= p.image.url %>"
+                data-alt="<%= p.image.alt || 'Featured product' %>"
+                data-href="/shop/<%= p.slug || p.id %>"
                 data-caption="<%= p.name || '' %>">
                 <span class="carousel__indicator-bar"></span>
               </button>

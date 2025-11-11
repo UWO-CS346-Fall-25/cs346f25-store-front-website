@@ -9,9 +9,7 @@
   top: 0;
   z-index: 50;
   background: var(--primary-1);
-  /* desktop background */
   color: var(--foreground);
-  /* desktop text */
   box-shadow: 0 5px 30px rgba(0, 0, 0, .25);
 }
 
@@ -57,8 +55,10 @@
   padding: 0;
 }
 
-.nav-list a {
-  display: block;
+.nav-list a,
+.nav-list li {
+  display: inline-flex;
+  gap: 0.35rem;
   padding: .5rem .6rem;
   text-decoration: none;
   color: inherit;
@@ -68,16 +68,39 @@
 
 .nav-list a[aria-current="page"] {
   font-weight: bold;
-  /* color: var(--tint-1); */
-  /* background: var(--tint-highlight); */
+}
+
+.nav-list form {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+
+.link--button {
+  display: inline-flex;
+  padding: .5rem .6rem;
+  text-decoration: none;
+  color: inherit;
+  border-radius: .4rem;
+  font-size: 1rem;
+  background-color: transparent;
+  border: 0;
+  gap: 0.35rem;
 }
 
 
 .nav-list a:hover,
-.nav-list a:focus-visible {
+.nav-list a:focus-visible,
+.link--button:hover,
+.link--button:focus-visible {
   outline: none;
+  background: color-mix(in srgb, var(--foreground) 10%, transparent);
   transition: background .2s ease, color .2s ease;
 }
+
+
 
 /* ---------- Mobile overrides (apply tint theme + stacked layout) ---------- */
 @media (max-width: 800px) {
@@ -87,10 +110,30 @@
     border-bottom: 1px solid color-mix(in srgb, var(--foreground) 20%, transparent);
   }
 
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  .link__icon,
+  .nav-list a svg {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .nav-list a[aria-current="page"] {
+    color: var(--tint-1);
+  }
+
   .site-header a,
   .site-header span,
   .site-header nav {
     color: inherit;
+  }
+
+  .nav-link-text {
+    display: none;
   }
 
   .site-header .container {
@@ -130,12 +173,15 @@ header {
   padding: 0.75rem 2rem;
 }
 
-nav a {
+nav form,
+nav a,
+nav .link--button {
   position: relative;
   text-decoration: none;
 }
 
-nav a::after {
+nav a::after,
+nav .link--button::after {
   content: "";
   position: absolute;
   width: 0%;
@@ -146,6 +192,9 @@ nav a::after {
   transition: width 0.3s;
 }
 
-nav a:hover::after {
+nav a:hover::after,
+nav a:focus-visible::after,
+nav .link--button:hover::after,
+nav .link--button:focus-visible::after {
   width: 100%;
 }

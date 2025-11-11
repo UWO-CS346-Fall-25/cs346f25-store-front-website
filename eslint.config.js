@@ -38,6 +38,13 @@ module.exports = [
         alert: 'readonly',
         confirm: 'readonly',
         prompt: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
+        getComputedStyle: 'readonly',
+        matchMedia: 'readonly',
+        performance: 'readonly',
+        FileReader: 'readonly',
+
       },
     },
   },

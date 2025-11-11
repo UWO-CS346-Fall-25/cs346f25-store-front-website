@@ -24,7 +24,10 @@
   "license": "ISC",
   "dependencies": {
     "@blackfisk/ebay-api": "^0.1.1",
+    "@supabase/supabase-js": "^2.79.0",
     "axios": "^1.12.2",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.7",
     "csurf": "^1.11.0",
     "dotenv": "^17.2.3",
     "ebay-api": "^9.2.2",
@@ -35,6 +38,7 @@
     "express-session": "^1.18.2",
     "helmet": "^8.1.0",
     "morgan": "^1.10.1",
+    "multer": "^2.0.2",
     "node-color-log": "^13.0.3",
     "pg": "^8.16.3"
   },

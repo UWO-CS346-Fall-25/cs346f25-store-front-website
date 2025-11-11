@@ -19,12 +19,12 @@ to anon, authenticated
 using (
   exists (
     select 1 from public.products p
-    where p.id = product_id and p.is_active = true and p.status='active'
+    where p.id = product_id and p.status='active'
   )
 );
 
 create policy "Admins can write product images"
 on public.product_images for all
 to authenticated
-using (coalesce((auth.jwt() ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
+with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false));

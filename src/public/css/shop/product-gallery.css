@@ -1,0 +1,269 @@
+/* Scrollable window that contains all overflow */
+.product-images-window {
+  max-width: 100%;
+  padding: .5rem;
+  box-sizing: border-box;
+
+  /* This is the important part: only this box scrolls */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Thumbnails strip inside the window */
+.pg-thumbs {
+  --thumb-h: 160px;
+  /* thumbnail height; adjust as you like */
+  --thumb-gap: .75rem;
+
+  /* display: flex; */
+  flex-wrap: nowrap;
+  /* all in one row */
+  gap: var(--thumb-gap);
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* Each thumbnail: rectangle by default, same height for all */
+.pg-thumb {
+  flex: 0 0 auto;
+  height: var(--thumb-h);
+  width: calc(var(--thumb-h) * 0.5);
+  /* portrait rectangle (3:4) by default */
+
+  border: 1px solid var(--background);
+  background: transparent;
+  padding: 0;
+  border-radius: .5rem;
+  cursor: pointer;
+  line-height: 0;
+  transition:
+    width 200ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+  will-change: width;
+}
+
+/* Selected = square (same height, wider width) */
+.pg-thumb.is-selected {
+  width: var(--thumb-h);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, .06) inset;
+  transform: scale(1.03);
+}
+
+
+
+/* Keyboard focus should also look selected */
+.pg-thumb:focus-visible {
+  outline: none;
+  width: var(--thumb-h);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, .1) inset;
+}
+
+/* Image covers its box cleanly */
+.pg-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  border-radius: .45rem;
+}
+
+
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pg-thumb {
+    transition: none;
+  }
+}
+
+
+/* Make grid children shrink instead of forcing the page wider */
+.product-detail__media {
+  min-width: 0;
+}
+
+
+
+.product-detail {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  align-items: flex-start;
+  max-width: 1100px;
+  margin: 2.5rem auto 4rem;
+  margin-top: 2rem;
+  padding: 0 1.5rem;
+}
+
+
+form {
+  margin-top: 1rem;
+}
+
+#quantity {
+  max-width: 6rem;
+}
+
+#add-to-cart {
+  margin-left: .5rem;
+}
+
+#related-products-separator {
+  margin: 2rem 0;
+}
+
+
+
+h2 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.6rem, 2.4vw, 2rem);
+}
+
+.price-block {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--overlay);
+}
+
+.product-actions {
+  display: grid;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+#add-to-cart {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+#buy-now {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+.product-actions label {
+  font-size: 0.9rem;
+  color: var(--foreground);
+}
+
+.product-actions input[type="number"] {
+  width: 70px;
+  padding: 0.35rem 0.5rem;
+}
+
+
+.section__header--product {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  /* center the title horizontally */
+  align-items: center;
+}
+
+/* Centered title */
+.section__header--product .section__title {
+  margin: 0;
+  text-align: center;
+}
+
+/* Back link pinned to left on same line */
+.section__header--product .link {
+  position: absolute;
+  left: 0;
+  /* optional: vertically center it */
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.pg-thumbs {
+  display: flex;
+}
+
+
+.product-detail__media {
+  background: var(--overlay);
+  border: 1px solid var(--primary-1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: .5rem;
+}
+
+@media (min-width: 800px) {
+  .product-actions {
+    margin-left: auto;
+    margin-right: auto;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+  }
+}
+
+/* If Small */
+@media (max-width: 800px) {
+  .pg-thumbs {
+    display: flex;
+  }
+
+  .product-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .product-detail__media {
+    background: var(--overlay);
+    border: 1px solid var(--primary-1);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: .5rem;
+  }
+
+}
+
+/* If Big */
+@media (min-width: 1200px) {
+  .pg-thumbs {
+    display: block;
+  }
+
+  .pg-thumbs {
+    --thumb-h: 173px;
+  }
+
+  .pg-thumb {
+    width: var(--thumb-h);
+  }
+
+  .product-detail__media {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 3;
+  }
+
+  .product-actions {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+  }
+
+  .product-detail__media {
+    background: var(--background);
+    border: 0;
+    border-radius: 12px;
+    box-shadow: none;
+    padding: 0;
+  }
+}

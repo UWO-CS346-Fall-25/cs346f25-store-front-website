@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', {
+  title: 'Admin · New Product',
+  cssFiles: ['admin.css'],
+  scripts: ['photo-view.js']
+}) %>
+<% const isEdit = !!product; %>
+
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main id="main-content">
+    <section class="section" aria-labelledby="admin-create-product-heading">
+      <div class="container">
+
+        <!-- Page header -->
+        <div class="section__header admin-page-header">
+          <div>
+            <p class="muted">
+              <a href="/admin/products" class="link">&larr; Back to products</a>
+            </p>
+            <h1 id="admin-create-product-heading" class="section__title">
+              Create product
+            </h1>
+            <p class="muted">
+              Add a new item to your storefront. You can edit images and details later.
+            </p>
+          </div>
+        </div>
+
+        <% if (flash && (flash.error || flash.success)) { %>
+          <div class="admin-alert-wrapper">
+            <% if (flash.error) { %>
+              <div class="admin-alert admin-alert--error" role="alert">
+                <span><%= flash.error %></span>
+              </div>
+            <% } %>
+            <% if (flash.success) { %>
+              <div class="admin-alert admin-alert--success" role="status">
+                <span><%= flash.success %></span>
+              </div>
+            <% } %>
+          </div>
+        <% } %>
+        
+        <!-- Form panel -->
+        <section class="admin-panel admin-create-panel" aria-labelledby="create-product-heading">
+          <form method="post"
+            action="<%= isEdit ? ('/admin/products/' + product.id + '/edit') : '/admin/products/create' %>"
+            class="admin-form" enctype="multipart/form-data">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <div class="admin-form-grid">
+              <!-- Left column: main product info -->
+              <div class="admin-form-column">
+                <h2 class="admin-panel-subtitle">Basics</h2>
+                <p class="muted">
+                  Core details customers will see on product cards and detail pages.
+                </p>
+
+                <div class="form-row">
+                  <div>
+                    <label for="name">Name</label>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      required
+                      autocomplete="off"
+                      placeholder="Cozy forest raccoon mug"
+                      value="<%= isEdit ? product.name : '' %>">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div>
+                    <label for="slug">
+                      Slug
+                      <span class="muted">(optional, auto if left blank)</span>
+                    </label>
+                    <input
+                      id="slug"
+                      name="slug"
+                      type="text"
+                      autocomplete="off"
+                      placeholder="cozy-forest-raccoon-mug"
+                      value="<%= isEdit ? product.slug : '' %>">
+                  </div>
+                </div>
+
+                <div class="form-row form-row--split">
+                  <div>
+                    <label for="price_cents">Price</label>
+                    <!-- keep name="price" if your controller expects decimal dollars -->
+                    <input
+                      id="price_cents"
+                      name="price"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      inputmode="decimal"
+                      required
+                      placeholder="24.00"
+                      value="<%= isEdit ? (product.price_cents / 100).toFixed(2) : '' %>">
+                  </div>
+
+                  <div>
+                    <label for="currency">Currency</label>
+                    <select id="currency" name="currency">
+                      <option value="USD" <%= product && product.currency === 'USD' ? 'selected' : '' %>>USD</option>
+                      <option value="EUR" <%= product && product.currency === 'EUR' ? 'selected' : '' %>>EUR</option>
+                      <option value="GBP" <%= product && product.currency === 'GBP' ? 'selected' : '' %>>GBP</option>
+                    </select>
+                  </div>
+                </div>
+
+
+
+            <div class="form-row form-row--split">
+              <div>
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                  <option value="draft" <%= product && product.status === 'draft' ? 'selected' : '' %>>Draft</option>
+                  <option value="active" <%= product && product.status === 'active' ? 'selected' : '' %>>Active</option>
+                  <option value="archived" <%= product && product.status === 'archived' ? 'selected' : '' %>>Archived</option>
+                </select>
+                <p class="field-hint muted">
+                  Drafts are hidden unless you activate them.
+                </p>
+              </div>
+
+              <!-- <div class="form-field-toggle">
+                <label class="checkbox-inline">
+                  <input
+                    type="checkbox"
+                    name="is_active"
+                    value="true"
+                    checked>
+                  <span>Show this product in the shop</span>
+                </label>
+                <p class="field-hint muted">
+                  You can turn this off to temporarily hide it.
+                </p>
+              </div> -->
+            </div>
+
+
+                <div class="form-row">
+                  <div>
+                    <label for="description">Short description</label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      rows="3"
+                      placeholder="Short blurb that appears in product cards and at the top of the detail page."><%= isEdit ? product.description : '' %></textarea>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div>
+                    <label for="big_description">
+                      Full description
+                      <span class="muted">(optional)</span>
+                    </label>
+                    <textarea
+                      id="big_description"
+                      name="big_description"
+                      rows="6"
+                      class="textarea--monospace"
+                      placeholder="Long-form description, care instructions, story behind the product, etc."><%= isEdit ? product.big_description : '' %></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right column: images, categories, SEO, meta -->
+              <aside class="admin-form-column admin-form-column--side">
+                <h2 class="admin-panel-subtitle">Extras</h2>
+                <p class="muted">
+                  Optional details to help customers find and understand the product.
+                </p>
+
+                <div class="admin-form-group">
+                  <h3 class="admin-form-group-title">Images & categories</h3>
+                    <div class="form-row">
+                      <label for="images">
+                        Photos
+                        <span class="muted">(you can pick multiple or take new ones)</span>
+                      </label>
+
+                      <input
+                        id="images"
+                        name="images"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        capture="environment"
+                      >
+
+                      <!-- Preview bar -->
+                      <div id="image-preview-bar" class="image-preview-bar" aria-live="polite">
+                        <% if (isEdit && product && product.images && product.images.length) { %>
+                          <% product.images.forEach(function (image) { %>
+                            <div class="image-preview-thumb" data-source="existing">
+                              <img src="<%= image.url %>" alt="<%= product.name %> image">
+                            </div>
+                          <% }) %>
+                        <% } %>
+                      </div>
+                    </div>
+                </div>
+
+                <div class="admin-form-group">
+                  <h3 class="admin-form-group-title">SEO</h3>
+
+                  <div class="form-row">
+                    <div>
+                      <label for="seo_title">
+                        SEO title
+                        <span class="muted">(optional)</span>
+                      </label>
+                      <input
+                        id="seo_title"
+                        name="seo_title"
+                        type="text"
+                        value="<%= isEdit ? product.seo_title : '' %>"
+                        placeholder="Custom &quot;Cozy forest raccoon mug&quot; | Raven's Treasures">
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div>
+                      <label for="seo_description">
+                        SEO description
+                        <span class="muted">(optional)</span>
+                      </label>
+                      <textarea
+                        id="seo_description"
+                        name="seo_description"
+                        rows="3"
+                        placeholder="A short summary that appears in search results."><%= isEdit ? product.seo_description : '' %></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="admin-form-group">
+                  <h3 class="admin-form-group-title">Inventory</h3>
+
+                  <div class="form-row">
+                    <div>
+                      <label for="sku">
+                        SKU / product code
+                        <span class="muted">(optional)</span>
+                      </label>
+                      <input
+                        id="sku"
+                        name="sku"
+                        type="text"
+                        autocomplete="off"
+                        value="<%= isEdit ? product.sku : '' %>"
+                        placeholder="RT-MUG-FOREST-RACCOON">
+                    </div>
+                  </div>
+                </div>
+              </aside>
+            </div>
+
+
+
+
+            <div class="form-row admin-form-actions">
+              <button class="primary" type="submit">
+                <%= isEdit ? 'Update Product' : 'Create Product' %>
+              </button>
+              <a href="/admin/products" class="button ghost">
+                Cancel
+              </a>
+            </div>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

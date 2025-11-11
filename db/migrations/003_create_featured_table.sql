@@ -30,7 +30,6 @@ using (
   exists (
     select 1 from public.products p
     where p.id = product_id
-      and p.is_active = true
       and p.status = 'active'
   )
 );
@@ -39,8 +38,8 @@ using (
 create policy "Admins manage featured"
 on public.featured_products for all
 to authenticated
-using (coalesce((auth.jwt() ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
+with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false));
 
 
 -- Helper View
@@ -69,5 +68,5 @@ left join lateral (
   order by i.is_primary desc, i.position asc
   limit 1
 ) pi on true
-where p.is_active = true and p.status = 'active'
+where p.status = 'active'
 order by fp.position asc, fp.spotlight desc;

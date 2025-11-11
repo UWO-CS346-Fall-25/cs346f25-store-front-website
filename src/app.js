@@ -14,6 +14,7 @@ const path = require('path');
 const helmet = require('helmet');
 const session = require('express-session');
 const morgan = require('morgan');
+const csrf = require('csurf');
 
 // Initialize Express app
 const app = express();
@@ -68,33 +69,20 @@ app.use(
   })
 );
 
-// CSRF protection
-// Note: Apply this after session middleware
-// const csrfProtection = csrf({ cookie: false });
-
-// Make CSRF token available to all views
-app.use((req, res, next) => {
-  res.locals.user = req.session.user || null;
-  next();
-});
 
 // ==============================
 // =========== Routes ===========
 // ==============================
 
 
-
-// Import and use your route files here
-// Example:
-// const indexRouter = require('./routes/index');
-// app.use('/', indexRouter);
-
-app.use(require('./middleware/auth-context')());
+app.use(require('connect-flash')());
+app.use(require('cookie-parser')());
+app.use(require('./middleware/auth'));
 
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;
   res.locals.currentUrl = req.originalUrl;
-  res.locals.isPath = (p) => req.path === p;
+  res.locals.isPath = (p) => p.endsWith(req.path);
   next();
 });
 
@@ -107,13 +95,25 @@ configure({
     title: 'Raven\'s Treasures',
     description: "Your one-stop shop for all things Ravens!",
     siteName: "Raven's Treasures",
-    tagline: 'Handmade goods crafted with care.'
+    tagline: 'Handmade goods crafted with care.',
+    util: require('./controllers/util.js'),
+
   }
 });
 
+const csrfProtection = csrf({ cookie: false });
+
+
 app.use('/', require('./routes/root.routes'));
 app.use('/', require('./routes/pages.routes'));
+app.use('/', require('./routes/pages.auth.routes')(csrfProtection));
 app.use('/', require('./routes/api.routes'));
+app.use('/', require('./routes/shop.routes'));
+app.use('/admin', require('./routes/admin.routes'));
+app.use('/auth', require('./routes/auth.routes')(csrfProtection));
+app.use('/admin', require('./routes/admin.crud.routes'));
+
+
 
 const ebayRoutes = require("./routes/ebay.routes.js");
 app.use("/ebay", ebayRoutes);
@@ -124,15 +124,7 @@ const { notFound, errorHandler, health } = require("express-pretty-errors");
 
 app.get("/health", health({ package: require("../package.json") }));
 app.use(notFound());
-app.use(errorHandler({
-  showStack: "dev",
-  cssVars: {
-    accent: "#ef4444",           // red accent
-    light_accent: "#dc2626",     // light-mode accent
-    panel: "#0e0f12"             // darker card in dark mode
-  }
-}));
-
+app.use(errorHandler({ showStack: "dev", }));
 
 // Log registered pages to console
 const rows = registry.all().map(p => ({

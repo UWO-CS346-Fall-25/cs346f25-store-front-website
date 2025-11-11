@@ -24,13 +24,13 @@ create table if not exists public.products (
   name             text not null,
   slug             citext not null unique, -- case-insensitive unique
   description      text,
+  big_description  text,
 
   -- Price
   price_cents      integer not null check (price_cents >= 0),
   currency         char(3) not null default 'USD', -- ISO 4217
 
   -- Product state
-  is_active        boolean not null default true,       -- public visibility toggle
   status           text not null default 'draft' check (status in ('draft','active','archived')),
 
   -- SEO niceties (optional, but handy)
@@ -79,12 +79,12 @@ alter table public.products enable row level security;
 create policy "Public can read active products"
 on public.products for select
 to anon, authenticated
-using (is_active = true and status = 'active');
+using (status = 'active');
 
 -- Example: only users with an 'admin' role claim may write
 -- (Set a JWT custom claim 'role' = 'admin' in your server if you use service role)
 create policy "Admins can write products"
 on public.products for all
 to authenticated
-using (coalesce((auth.jwt() ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
+with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false));

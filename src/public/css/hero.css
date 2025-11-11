@@ -3,16 +3,31 @@
   position: relative;
   background: linear-gradient(to bottom, var(--primary-2), var(--primary-3));
   color: var(--foreground);
-  padding: clamp(1.25rem, 3vw, 2.5rem) 0;
+
+  /* give the whole hero side padding so nothing touches the edges */
+  padding-block: clamp(1.25rem, 3vw, 2.5rem);
+  padding-inline: clamp(1rem, 4vw, 2rem);
 }
 
 /* two-column layout */
 .hero__inner {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  /* text / image */
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   align-items: center;
   gap: clamp(1rem, 3vw, 2rem);
+
+  max-width: 1120px;
+  margin-inline: auto;
+
+  /* padding now lives on .hero */
+  padding-inline: 0;
+  box-sizing: border-box;
+}
+
+
+/* allow columns to shrink */
+.hero__inner>* {
+  min-width: 0;
 }
 
 /* text side */
@@ -30,35 +45,40 @@
 
 /* image side */
 .hero__media {
-  justify-self: end;
+  min-width: 0;
 }
 
-/* Stage now acts as a vertical stack: frame + indicators */
 .hero__stage {
-  inline-size: min(100%, 780px);
+  inline-size: 100%;
+  max-inline-size: 780px;
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
   gap: .5rem;
-  /* space between image and capsules */
-  margin: 0;
+
+  /* this is the padding that will pull the image in from the edges */
+  padding-inline: clamp(.75rem, 3vw, 1.25rem);
+  box-sizing: border-box;
 }
 
-/* Fixed-size, cropped image area */
 .hero__frame {
   block-size: clamp(220px, 38vh, 320px);
-  border-radius: .6rem;
+  width: 100%;
+  max-inline-size: 100%;
+  border-radius: 0.9rem;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
   background: #0000;
-  /* fallback behind transparent PNGs */
 }
 
 .hero__frame img {
   display: block;
   width: 100%;
   height: 100%;
+  max-width: 100%;
   object-fit: cover;
 }
+
 
 /* Empty state */
 .hero__empty {
@@ -194,9 +214,6 @@
     text-align: center;
   }
 
-  .hero__media {
-    justify-self: center;
-  }
 
   .hero__tagline {
     margin-inline: auto;
@@ -214,5 +231,10 @@
   .carousel__indicator {
     inline-size: 36px;
     block-size: 5px;
+  }
+
+  .hero__frame {
+    /* keep it a bit shorter on phones */
+    block-size: clamp(200px, 55vw, 260px);
   }
 }

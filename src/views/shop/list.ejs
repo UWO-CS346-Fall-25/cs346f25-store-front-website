@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', {
+  cssFiles: ['shop/product-card.css'],
+  scripts: []
+}) %>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main id="main-content">
+    <section class="section" aria-labelledby="listing-heading">
+      <div class="container">
+
+        <!-- Header row uses your .section__header styles -->
+        <div class="section__header">
+          <h1 id="listing-heading" class="section__title">
+            <%- (mainTitle || 'Products') %>
+          </h1>
+
+          <% if (typeof backUrl === 'string' && backUrl.length) { %>
+            <a class="link" href="<%= backUrl %>">← Back</a>
+          <% } %>
+        </div>
+
+        <!-- Optional subheading line: shows count / filters chosen -->
+        <% if (typeof subtitle === 'string' && subtitle.length) { %>
+          <p class="muted"><%= subtitle %></p>
+        <% } else if (typeof totalCount === 'number') { %>
+          <p class="muted"><%= totalCount %> item<%= totalCount === 1 ? '' : 's' %></p>
+        <% } %>
+
+        <!-- Product grid (reuses .grid .grid--products from style.css) -->
+        <% if (products && products.length) { %>
+          <ul class="grid grid--products" role="list" aria-label="<%= title || 'Products' %>">
+            <% products.forEach(function(p) { %>
+              <li class="grid__item">
+                <%- include('product-card', {
+                  product: p,
+                  url: `/${p.slug}`,            // adjust if your product URL differs
+                  price: p.price_cents
+                }) %>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p class="muted">No products found.</p>
+        <% } %>
+
+        <!-- Simple pagination (optional). Only shows if pageCount > 1 -->
+        <% if (typeof pageCount === 'number' && pageCount > 1) { %>
+          <nav class="section__footer" aria-label="Pagination" style="margin-top:1.25rem;">
+            <div class="container" style="display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;">
+              <% const linkFor = (n) => {
+                   const q = new URLSearchParams(query || {});
+                   q.set('page', n);
+                   return `${basePath || requestPath || ''}?${q.toString()}`;
+                 };
+              %>
+
+              <% if (page > 1) { %>
+                <a class="button" href="<%= linkFor(page - 1) %>">‹ Prev</a>
+              <% } %>
+
+              <span class="muted" aria-live="polite" aria-atomic="true">
+                Page <%= page %> of <%= pageCount %>
+              </span>
+
+              <% if (page < pageCount) { %>
+                <a class="button" href="<%= linkFor(page + 1) %>">Next ›</a>
+              <% } %>
+            </div>
+          </nav>
+        <% } %>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

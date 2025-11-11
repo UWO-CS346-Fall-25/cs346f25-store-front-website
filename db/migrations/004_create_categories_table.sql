@@ -68,7 +68,6 @@ using (
   exists (
     select 1 from public.products p
     where p.id = product_id
-      and p.is_active = true
       and p.status = 'active'
   )
   and exists (
@@ -82,11 +81,11 @@ using (
 create policy "Admins manage categories"
 on public.categories for all
 to authenticated
-using (coalesce((auth.jwt() ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
+with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false));
 
 create policy "Admins manage product_categories"
 on public.product_categories for all
 to authenticated
-using (coalesce((auth.jwt() ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
+with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false));

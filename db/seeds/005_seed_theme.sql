@@ -27,7 +27,7 @@ insert into public.site_themes (
   dark_tint_1,     dark_tint_2,     dark_tint_3
 ) values (
   'halloween', 'Halloween Theme', 'Spooky seasonal palette', true, false,
-  'yearly', '10-01', '11-07', 'America/Chicago',
+  'yearly', '10-01', '11-03', 'America/Chicago',
   '#f97316', '#ea580c', '#a24424',
   '#22c55e', '#84cc16', '#ffffff',
   '#fb923c', '#f97316', '#97452a',
