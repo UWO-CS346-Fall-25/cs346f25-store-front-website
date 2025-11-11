@@ -119,9 +119,10 @@ button.primary {
   border-radius: .75rem;
   border: 0;
   transition: transform .15s ease, background .2s ease, color .2s ease;
-  background: linear-gradient(135deg,
+  /* background: linear-gradient(135deg,
       var(--tint-1),
-      var(--tint-2));
+      var(--tint-2)); */
+  background: var(--tint-1);
   color: var(--tint-3);
   cursor: pointer;
 }
@@ -131,6 +132,8 @@ button.primary:hover {
   transform: translateY(-1px);
   background: var(--tint-2);
 }
+
+
 
 .button.primary:active,
 button.primary:active {
