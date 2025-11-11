@@ -106,12 +106,12 @@ const csrfProtection = csrf({ cookie: false });
 
 app.use('/', require('./routes/root.routes'));
 app.use('/', require('./routes/pages.routes'));
-app.use('/', require('./routes/pages.auth.routes')(csrfProtection));
 app.use('/', require('./routes/api.routes'));
 app.use('/', require('./routes/shop.routes'));
-app.use('/admin', require('./routes/admin.routes'));
-app.use('/auth', require('./routes/auth.routes')(csrfProtection));
-app.use('/admin', require('./routes/admin.crud.routes'));
+app.use('/admin', require('./routes/admin/admin.routes'));
+app.use('/admin', require('./routes/admin/admin.crud.routes'));
+app.use('/auth', require('./routes/auth/auth.routes')(csrfProtection));
+app.use('/', require('./routes/auth/pages.auth.routes')(csrfProtection));
 
 
 

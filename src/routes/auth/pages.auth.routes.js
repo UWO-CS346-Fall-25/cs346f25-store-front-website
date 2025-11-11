@@ -16,7 +16,7 @@ module.exports = function (csrfProtection) {
       title: 'Log in',
       description: 'Access your account to view orders and manage details.'
     },
-    middleware: [csrfProtection, require('../middleware/csrfLocals')],
+    middleware: [csrfProtection, require('../../middleware/csrfLocals')],
     getData: async (req, _res) => ({
       flash: getFlash(req),
     })
@@ -29,7 +29,7 @@ module.exports = function (csrfProtection) {
       title: 'Signup',
       description: 'Create a new account to view orders and manage details.'
     },
-    middleware: [csrfProtection, require('../middleware/csrfLocals')],
+    middleware: [csrfProtection, require('../../middleware/csrfLocals')],
     getData: async (req, _res) => ({
       flash: getFlash(req),
     })

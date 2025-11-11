@@ -1,5 +1,5 @@
 const express = require('express');
-const { authClient } = require('../models/supabase');
+const { authClient } = require('../../models/supabase');
 
 module.exports = function (csrfProtection) {
   const router = express.Router();
