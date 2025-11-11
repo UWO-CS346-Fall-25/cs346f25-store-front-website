@@ -110,7 +110,6 @@
 
 /* =========================
    Focus & a11y
-   (later rules prioritized)
    ========================= */
 .auth-form input:focus,
 .auth-form textarea:focus,
@@ -126,25 +125,7 @@
   outline-offset: 2px;
 }
 
-/* ====================
 
-.lead {
-  color: var(--foreground);
-  margin-bottom: 1rem;
-}
-
-.muted {
-  color: #6b7280;
-}
-
-.link {
-  color: var(--tint-1);
-  text-decoration: none;
-}
-
-.link:hover {
-  text-decoration: underline;
-}
 
 /* =========================
    Checkbox & actions row
@@ -155,6 +136,7 @@
   gap: .5rem;
   color: var(--foreground);
 }
+
 
 .auth-actions {
   display: flex;
