@@ -9,6 +9,12 @@ module.exports = function (csrfProtection) {
     const supabase = authClient(req);
     const { email, password, remember } = req.body;
 
+    const rememberMe =
+      remember === '1' ||
+      remember === 'on' ||
+      remember === true ||
+      remember === 'true';
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -17,7 +23,7 @@ module.exports = function (csrfProtection) {
     if (error || !data?.session) {
       if (req.flash) {
         req.flash('error', 'Invalid email or password');
-        return res.redirect('/auth/login');
+        return res.redirect('/login');
       }
 
       return res.status(401).render('auth/login', {
@@ -55,6 +61,7 @@ module.exports = function (csrfProtection) {
 
 
     const redirectTo = (req.session && req.session.returnTo) || '/';
+    if (redirectTo === '/login') redirectTo = '/';
 
     if (req.session) {
       delete req.session.returnTo; // clean it up so it doesn’t stick around
@@ -62,6 +69,108 @@ module.exports = function (csrfProtection) {
 
     res.redirect(redirectTo);
   });
+
+
+  // POST /auth/signup
+  router.post('/signup', csrfProtection, async (req, res) => {
+    const supabase = authClient(req);
+    const { name, email, password, terms } = req.body;
+
+    // Terms required (HTML also enforces this, but we double-check server-side)
+    if (!terms) {
+      if (req.flash) {
+        req.flash('error', 'You must agree to the Terms and Privacy Policy.');
+        return res.redirect('/signup');
+      }
+
+      return res.status(400).render('auth/signup', {
+        flash: { error: 'You must agree to the Terms and Privacy Policy.' },
+      });
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          display_name: name,
+        },
+      },
+    });
+
+    if (error) {
+      if (req.flash) {
+        req.flash('error', error.message || 'Unable to create account.');
+        return res.redirect('/signup');
+      }
+
+      return res.status(400).render('auth/signup', {
+        flash: { error: error.message || 'Unable to create account.' },
+      });
+    }
+
+    // Supabase behavior depends on your email confirmation setting:
+    // - If email confirmation disabled : data.session will be present
+    // - If email confirmation enabled : data.session will be null and user must confirm via email
+    const session = data.session;
+
+    // If we got a session, treat this like an immediate login
+    if (session) {
+      const { access_token, refresh_token, user } = session;
+
+      const oneHour = 60 * 60 * 1000;
+      const accessMaxAge = oneHour;
+      const refreshMaxAge = oneHour * 24;
+
+      res.cookie('sb-access-token', access_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: accessMaxAge,
+      });
+
+      res.cookie('sb-refresh-token', refresh_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: refreshMaxAge,
+      });
+
+      res.cookie(
+        'user-display-name',
+        user?.user_metadata?.display_name || '',
+        {
+          httpOnly: false,
+          sameSite: 'lax',
+        }
+      );
+
+      const redirectTo = (req.session && req.session.returnTo) || '/';
+      if (req.session) {
+        delete req.session.returnTo;
+      }
+
+      return res.redirect(redirectTo);
+    }
+
+    // No session : likely email confirmation required
+    if (req.flash) {
+      req.flash(
+        'error',
+        'Account created. Please check your email to confirm your address before logging in.'
+      );
+      return res.redirect('/login');
+    }
+
+    return res.status(200).render('auth/login', {
+      flash: {
+        error:
+          'Account created. Please check your email to confirm your address before logging in.',
+      },
+    });
+  });
+
+
 
   // POST /auth/logout
   router.post('/logout', csrfProtection, (req, res) => {
