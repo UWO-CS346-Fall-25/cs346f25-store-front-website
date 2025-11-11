@@ -1,19 +1,8 @@
 const express = require('express');
 const { authClient } = require('../models/supabase');
 
-function getFlash(req) {
-  return req.flash ? { error: req.flash('error')[0] } : {};
-}
-
 module.exports = function (csrfProtection) {
   const router = express.Router();
-
-  // GET /auth/login
-  router.get('/login', csrfProtection, (req, res) => {
-    res.render('auth/login', {
-      flash: getFlash(req),
-    });
-  });
 
   // POST /auth/login
   router.post('/login', csrfProtection, async (req, res) => {
