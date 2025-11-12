@@ -90,13 +90,3 @@ with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false)
 
 
 
--- returns { open, shipped, delivered } for a user
-create or replace function public.order_summary_counts(p_user_id uuid)
-returns table(open int, shipped int, delivered int)
-language sql security definer
-as $$
-  select
-    (select count(*) from orders where user_id = p_user_id and status in ('processing','packed','awaiting_shipment')) as open,
-    (select count(*) from orders where user_id = p_user_id and status in ('shipped','in_transit')) as shipped,
-    (select count(*) from orders where user_id = p_user_id and status in ('delivered')) as delivered
-$$;
