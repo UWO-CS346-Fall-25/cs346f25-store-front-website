@@ -1,0 +1,254 @@
+/* Layout scaffolding */
+.account {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.account-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .account-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card */
+.card {
+  border: 1px solid rgba(0, 0, 0, .08);
+  border-radius: 12px;
+  background: var(--background, #fff);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .04);
+  display: flex;
+  flex-direction: column;
+}
+
+.card__hd,
+.card__ft {
+  padding: .85rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card__body {
+  padding: 1rem;
+}
+
+.card__title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.muted {
+  color: #6b7280;
+}
+
+/* Profile card */
+.card--profile .card__body {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  background: var(--tint-1, #e5e7eb);
+  color: var(--tint-3, #111827);
+}
+
+.profile-meta p {
+  margin: 0;
+}
+
+.profile-name {
+  font-weight: 600;
+}
+
+.profile-email,
+.profile-phone {
+  color: #6b7280;
+  font-size: .95rem;
+}
+
+/* Orders mini stats */
+.mini-stats {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .5rem;
+}
+
+.mini-stats__value {
+  display: block;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.mini-stats__label {
+  color: #6b7280;
+  font-size: .9rem;
+}
+
+/* Address block */
+.address p {
+  margin: 0;
+}
+
+.badge {
+  display: inline-block;
+  padding: .15rem .5rem;
+  border-radius: 999px;
+  font-size: .8rem;
+  background: rgba(0, 0, 0, .06);
+}
+
+/* Table */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid rgba(0, 0, 0, .08);
+  border-radius: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--background, #fff);
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, .06);
+  white-space: nowrap;
+}
+
+.table thead th {
+  font-size: .9rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Order statuses */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .2rem .55rem;
+  border-radius: 999px;
+  font-size: .85rem;
+}
+
+.status--processing {
+  background: rgba(59, 130, 246, .12);
+  color: #1d4ed8;
+}
+
+.status--shipped {
+  background: rgba(16, 185, 129, .12);
+  color: #065f46;
+}
+
+.status--delivered {
+  background: rgba(34, 197, 94, .12);
+  color: #065f46;
+}
+
+.status--canceled,
+.status--cancelled {
+  background: rgba(239, 68, 68, .12);
+  color: #991b1b;
+}
+
+.status--unknown {
+  background: rgba(107, 114, 128, .12);
+  color: #374151;
+}
+
+/* Empty state */
+.empty {
+  border: 1px dashed rgba(0, 0, 0, .15);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: grid;
+  gap: .75rem;
+  place-items: start;
+}
+
+/* Quick actions */
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .75rem;
+}
+
+@media (max-width: 900px) {
+  .quick-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .quick-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quick-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .75rem;
+  align-items: center;
+  padding: .75rem .9rem;
+  border: 1px solid rgba(0, 0, 0, .08);
+  border-radius: 12px;
+  text-decoration: none;
+  background: var(--background, #fff);
+  color: inherit;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.quick-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, .05);
+}
+
+.quick-item__icon {
+  font-size: 1.25rem;
+}
+
+.quick-item__text h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.quick-item__text p {
+  margin: .1rem 0 0;
+  color: #6b7280;
+}
+
+/* Small link */
+.link--sm {
+  font-size: .95rem;
+}
+
+/* Utilities */
+.spacer {
+  flex: 1;
+}

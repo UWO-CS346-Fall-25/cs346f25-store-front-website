@@ -2,33 +2,90 @@
 
 const express = require('express');
 const router = express.Router();
-const { authRequired } = require('../../middleware/accountRequired.js');
-const { authClient } = require('../../models/supabase');
+const { bind } = require('express-page-registry');
+const { authRequired } = require('../middleware/accountRequired.js');
+const { authClient } = require('../models/supabase');
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: false });
 
-// GET /account (overview)
-router.get('/account', authRequired, csrfProtection, async (req, res, next) => {
-  try {
+
+const fmtCurrency = (cents, currency = 'USD', locale = 'en-US') =>
+  new Intl.NumberFormat(locale, { style: 'currency', currency }).format((cents || 0) / 100);
+
+const statusLabel = (s) => {
+  if (!s) return 'Unknown';
+  const map = {
+    processing: 'Processing',
+    shipped: 'Shipped',
+    delivered: 'Delivered',
+    canceled: 'Canceled',
+    cancelled: 'Canceled', // safety
+    refunded: 'Refunded',
+    on_hold: 'On hold',
+  };
+  return map[s.toLowerCase()] || s;
+};
+
+const isOpenStatus = (s) => ['processing', 'shipped', 'on_hold'].includes(String(s || '').toLowerCase());
+
+
+bind(router, {
+  route: '/account',
+  view: 'account/overview',
+  meta: { title: 'Account Overview' },
+  middleware: [authRequired, csrfProtection, require('../middleware/csrfLocals')],
+  getData: async function (req) {
     const supabase = authClient(req);
     const userId = req.user.id;
+    const flash = req.session?.flash;
 
-    // summary stats for tiles
-    const [{ data: latestOrders }, { data: counts }] = await Promise.all([
-      supabase.from('orders')
-        .select('id, number, status, total_cents, placed_at')
-        .eq('user_id', userId)
-        .order('placed_at', { ascending: false })
-        .limit(5),
-      supabase.rpc('order_summary_counts', { p_user_id: userId })
-    ]);
 
-    res.render('account/overview', {
-      csrfToken: req.csrfToken(),
+    const { data: addresses, error: addrErr } = await supabase
+      .from('addresses')
+      .select('*')
+      .eq('user_id', userId)
+      .order('is_default_shipping', { ascending: false })
+      .order('is_default_billing', { ascending: false })
+      .order('updated_at', { ascending: false })
+      .limit(5);
+
+    const { data: recentOrdersRaw, error: ordersErr } = await supabase
+      .from('orders_view')
+      .select('id, number, status, placed_at, total_cents, currency, carrier, tracking_code, shipping_eta')
+      .eq('user_id', userId)
+      .order('placed_at', { ascending: false })
+      .limit(5);
+
+    const recentOrders = (recentOrdersRaw || []).map((o) => ({
+      ...o,
+      placed_at_display: DateTime.fromISO(o.placed_at).toLocaleString({ month: 'short', day: 'numeric', year: 'numeric' }),
+      total_display: fmtCurrency(o.total_cents, o.currency),
+      status_display: statusLabel(o.status),
+    }));
+
+
+    const { data: counts, error: countsErr } = await supabase
+      .rpc('order_summary_counts', { p_user_id: userId });
+
+    const { open = 0, shipped = 0, delivered = 0 } = counts || {};
+    const orders_total = open + shipped + delivered;
+    const orders_open = open + shipped;
+
+    return {
       user: req.user,
-      latestOrders: latestOrders || [],
-      counts: counts || { open: 0, shipped: 0, delivered: 0 }
-    });
-  } catch (e) { next(e); }
+
+      stats: {
+        orders_total,
+        orders_open,
+        returns: 0, // update if/when you model returns
+      },
+      addresses: addresses,
+      recentOrders,
+      flash,
+    };
+  }
 });
+
 
 // GET /account/orders
 router.get('/account/orders', authRequired, csrfProtection, async (req, res, next) => {
