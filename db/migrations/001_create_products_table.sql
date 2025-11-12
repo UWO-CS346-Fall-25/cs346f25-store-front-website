@@ -81,10 +81,22 @@ on public.products for select
 to anon, authenticated
 using (status = 'active');
 
--- Example: only users with an 'admin' role claim may write
--- (Set a JWT custom claim 'role' = 'admin' in your server if you use service role)
+-- only users with an 'admin' role claim may write
 create policy "Admins can write products"
 on public.products for all
 to authenticated
 using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
 with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false));
+
+
+
+-- returns { open, shipped, delivered } for a user
+create or replace function public.order_summary_counts(p_user_id uuid)
+returns table(open int, shipped int, delivered int)
+language sql security definer
+as $$
+  select
+    (select count(*) from orders where user_id = p_user_id and status in ('processing','packed','awaiting_shipment')) as open,
+    (select count(*) from orders where user_id = p_user_id and status in ('shipped','in_transit')) as shipped,
+    (select count(*) from orders where user_id = p_user_id and status in ('delivered')) as delivered
+$$;
