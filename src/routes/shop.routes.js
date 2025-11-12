@@ -6,6 +6,10 @@ const { bind } = require('express-page-registry');
 
 const csrfProtection = csrf({ cookie: false });
 
+router.get('/shop', async (req, res, next) => {
+  res.redirect('/');
+});
+
 bind(router, {
   route: '/category/:slug',
   view: 'shop/list',
