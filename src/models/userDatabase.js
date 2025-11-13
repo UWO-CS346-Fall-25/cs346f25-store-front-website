@@ -59,107 +59,117 @@ async function getUser(req) {
 async function bindAddresses(user) {
   if (user.error) return user;
 
-  const { data: addresses, error: addrErr } = await user.supabase
-    .from('addresses')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('is_default_shipping', { ascending: false })
-    .order('is_default_billing', { ascending: false })
-    .order('updated_at', { ascending: false })
-    .limit(5);
+  const key = `${NAMESPACE}:${user.id}:addresses`;
+  return await cache.wrap(key, TTL, async () => {
+    const { data: addresses, error: addrErr } = await user.supabase
+      .from('addresses')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('is_default_shipping', { ascending: false })
+      .order('is_default_billing', { ascending: false })
+      .order('updated_at', { ascending: false })
+      .limit(5);
 
-  if (addrErr) {
-    console.error('Error fetching addresses:', addrErr);
-    return { ...user, error: 'Failed to fetch addresses', errorDetail: addrErr };
-  }
-  return { ...user, addresses };
+    if (addrErr) {
+      console.error('Error fetching addresses:', addrErr);
+      return { ...user, error: 'Failed to fetch addresses', errorDetail: addrErr };
+    }
+    return { ...user, addresses };
+  });
 }
 
 async function bindOrders(user, { page = 1, status = '', q = '' }) {
   if (user.error) return user;
+  const key = `${NAMESPACE}:${user.id}:orders:${page}:${status}:${q}`;
 
-  let query = user.supabase
-    .from('orders_view')
-    .select('id, number, status, placed_at, total_cents, currency, carrier, tracking_code, shipping_eta', { count: 'exact' })
-    .eq('user_id', user.id);
-
-  if (status) query = query.eq('status', status);
-  if (q) query = query.ilike('number', `%${q}%`);
-
-  query = query.order('placed_at', { ascending: false });
-
-  const from = (page - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE - 1;
-
-  const { data: rows, error, count } = await query.range(from, to);
-  if (error) {
-    console.error('Error fetching orders:', error);
-    return { ...user, error: 'Failed to fetch orders', errorDetail: error };
-  }
-
-  const items = unifyOrders(rows);
-
-  const total = count || 0;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
-  // Status tab counts (optional: quick chips at top)
-  // Cheap approach: 3 small count queries; fast on typical user-sized datasets.
-  const statusesToCount = ['', 'processing', 'shipped', 'delivered'];
-  const tabCounts = {};
-  await Promise.all(statusesToCount.map(async (s) => {
-    let qc = user.supabase.from('orders_view').select('id', { count: 'exact', head: true })
+  return await cache.wrap(key, TTL, async () => {
+    let query = user.supabase
+      .from('orders_view')
+      .select('id, number, status, placed_at, total_cents, currency, carrier, tracking_code, shipping_eta', { count: 'exact' })
       .eq('user_id', user.id);
-    if (s) qc = qc.eq('status', s);
-    if (q) qc = qc.ilike('number', `%${q}%`);
-    const { count: c } = await qc;
-    tabCounts[s || 'all'] = c || 0;
-  }));
 
-  return {
-    ...user,
-    filters: { page, status, q, pageSize: PAGE_SIZE, total, totalPages, tabCounts },
-    orders: items,
-  };
+    if (status) query = query.eq('status', status);
+    if (q) query = query.ilike('number', `%${q}%`);
+
+    query = query.order('placed_at', { ascending: false });
+
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+
+    const { data: rows, error, count } = await query.range(from, to);
+    if (error) {
+      console.error('Error fetching orders:', error);
+      return { ...user, error: 'Failed to fetch orders', errorDetail: error };
+    }
+
+    const items = unifyOrders(rows);
+
+    const total = count || 0;
+    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+    // Status tab counts (optional: quick chips at top)
+    // Cheap approach: 3 small count queries; fast on typical user-sized datasets.
+    const statusesToCount = ['', 'processing', 'shipped', 'delivered'];
+    const tabCounts = {};
+    await Promise.all(statusesToCount.map(async (s) => {
+      let qc = user.supabase.from('orders_view').select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      if (s) qc = qc.eq('status', s);
+      if (q) qc = qc.ilike('number', `%${q}%`);
+      const { count: c } = await qc;
+      tabCounts[s || 'all'] = c || 0;
+    }));
+
+    return {
+      ...user,
+      filters: { page, status, q, pageSize: PAGE_SIZE, total, totalPages, tabCounts },
+      orders: items,
+    };
+  });
+
 }
 
 async function bindOrderSummary(user) {
   if (user.error) return user;
+  const key = `${NAMESPACE}:${user.id}:orderSummary`;
 
-  const { data: recentOrdersRaw, error: ordersErr } = await user.supabase
-    .from('orders_view')
-    .select('id, number, status, placed_at, total_cents, currency, carrier, tracking_code, shipping_eta')
-    .eq('user_id', user.id)
-    .order('placed_at', { ascending: false })
-    .limit(5);
+  return await cache.wrap(key, TTL, async () => {
+    const { data: recentOrdersRaw, error: ordersErr } = await user.supabase
+      .from('orders_view')
+      .select('id, number, status, placed_at, total_cents, currency, carrier, tracking_code, shipping_eta')
+      .eq('user_id', user.id)
+      .order('placed_at', { ascending: false })
+      .limit(5);
 
-  if (ordersErr) {
-    console.error('Error fetching recent orders:', ordersErr);
-    return { ...user, error: 'Failed to fetch recent orders', errorDetail: ordersErr };
-  }
-  const recentOrders = unifyOrders(recentOrdersRaw);
+    if (ordersErr) {
+      console.error('Error fetching recent orders:', ordersErr);
+      return { ...user, error: 'Failed to fetch recent orders', errorDetail: ordersErr };
+    }
+    const recentOrders = unifyOrders(recentOrdersRaw);
 
-  const { data: counts, error: countsErr } = await user.supabase
-    .rpc('order_summary_counts', { p_user_id: user.id });
-  if (countsErr) {
-    console.error('Error fetching order counts:', countsErr);
-    return { ...user, error: 'Failed to fetch order counts', errorDetail: countsErr };
-  }
+    const { data: counts, error: countsErr } = await user.supabase
+      .rpc('order_summary_counts', { p_user_id: user.id });
+    if (countsErr) {
+      console.error('Error fetching order counts:', countsErr);
+      return { ...user, error: 'Failed to fetch order counts', errorDetail: countsErr };
+    }
 
 
 
-  const { open = 0, shipped = 0, delivered = 0 } = counts[0] || {};
-  const orders_total = open + shipped + delivered;
-  const orders_open = open + shipped;
+    const { open = 0, shipped = 0, delivered = 0 } = counts[0] || {};
+    const orders_total = open + shipped + delivered;
+    const orders_open = open + shipped;
 
-  return {
-    ...user,
-    stats: {
-      orders_total,
-      orders_open,
-      returns: 0,
-    },
-    recentOrders,
-  }
+    return {
+      ...user,
+      stats: {
+        orders_total,
+        orders_open,
+        returns: 0,
+      },
+      recentOrders,
+    }
+  });
 }
 
 
