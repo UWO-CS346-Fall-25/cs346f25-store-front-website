@@ -1,5 +1,6 @@
 const { authClient } = require('./supabase');
 const cache = require('../controllers/cache.js');
+const productDB = require('./productDatabase.js');
 
 const NAMESPACE = 'userDB';
 const TTL = 60_000 * 30; // 30 minutes

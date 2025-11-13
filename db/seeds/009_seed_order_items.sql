@@ -1,87 +1,78 @@
-
 -- ─────────────────────────────────────────────
--- Seed order_items
+-- Seed order_items for existing orders
 -- ─────────────────────────────────────────────
+-- This:
+--   - Picks random active products
+--   - Creates 2 line items per order
+--   - Uses a random quantity (1–3)
+--   - Then recalculates order totals based on order_items
 
-insert into public.order_items (
-  id,
-  order_id,
-  product_id,
-  sku,
-  name,
-  quantity,
-  unit_price_cents
-  -- total_cents is generated
-)
-values
-  -- Admin order #1 items (subtotal 5000)
-  (
-    'dddddddd-dddd-dddd-dddd-ddddddddddd1'::uuid,
-    'cccccccc-cccc-cccc-cccc-ccccccccccc1'::uuid,
-    null,
-    'TSHIRT-BLK-M',
-    'T-Shirt - Black / M',
-    2,
-    1500
-  ),
-  (
-    'dddddddd-dddd-dddd-dddd-ddddddddddd2'::uuid,
-    'cccccccc-cccc-cccc-cccc-ccccccccccc1'::uuid,
-    null,
-    'MUG-WHT-12OZ',
-    'Coffee Mug 12oz - White',
-    1,
-    2000
-  ),
+-- Make a pool of active products to choose from
+with product_pool as (
+  select
+    id,
+    sku,
+    name,
+    price_cents
+  from public.products
+  where status = 'active'
+),
 
-  -- Admin order #2 items (subtotal 4500)
-  (
-    'dddddddd-dddd-dddd-dddd-ddddddddddd3'::uuid,
-    'cccccccc-cccc-cccc-cccc-ccccccccccc2'::uuid,
-    null,
-    'HOODIE-GRY-L',
-    'Hoodie - Gray / L',
-    1,
-    3000
-  ),
-  (
-    'dddddddd-dddd-dddd-dddd-ddddddddddd4'::uuid,
-    'cccccccc-cccc-cccc-cccc-ccccccccccc2'::uuid,
-    null,
-    'STICKER-PACK',
-    'Sticker Pack',
-    3,
-    500
-  ),
+order_pool as (
+  select id
+  from public.orders
+),
 
-  -- User order #1 items (subtotal 2500)
-  (
-    'dddddddd-dddd-dddd-dddd-ddddddddddd5'::uuid,
-    'cccccccc-cccc-cccc-cccc-ccccccccccc3'::uuid,
-    null,
-    'TSHIRT-WHT-S',
-    'T-Shirt - White / S',
-    1,
-    2500
-  ),
-
-  -- User order #2 items (subtotal 4000)
-  (
-    'dddddddd-dddd-dddd-dddd-ddddddddddd6'::uuid,
-    'cccccccc-cccc-cccc-cccc-ccccccccccc4'::uuid,
-    null,
-    'CAP-BLK-ONE',
-    'Cap - Black / One Size',
-    2,
-    1200
-  ),
-  (
-    'dddddddd-dddd-dddd-dddd-ddddddddddd7'::uuid,
-    'cccccccc-cccc-cccc-cccc-ccccccccccc4'::uuid,
-    null,
-    'POSTER-A3',
-    'Poster A3 - Limited Edition',
-    2,
-    800
+-- Insert order items: 2 random products per order
+inserted_items as (
+  insert into public.order_items (
+    order_id,
+    product_id,
+    sku,
+    name,
+    quantity,
+    unit_price_cents
   )
-on conflict (id) do nothing;
+  select
+    o.id as order_id,
+    p.id as product_id,
+    coalesce(p.sku, 'SKU-' || left(p.id::text, 8)) as sku,
+    p.name,
+    (1 + floor(random() * 3))::int as quantity,  -- 1–3 of each product
+    p.price_cents as unit_price_cents
+  from order_pool o
+  cross join lateral (
+    select *
+    from product_pool
+    order by random()
+    limit 2                      -- 2 distinct products per order
+  ) p
+  returning order_id
+),
+
+-- Compute subtotal from inserted items
+subtotals as (
+  select
+    oi.order_id,
+    sum(oi.total_cents) as subtotal
+  from public.order_items oi
+  group by oi.order_id
+)
+
+-- Update orders to reflect the seeded order_items
+update public.orders o
+set
+  subtotal_cents = s.subtotal,
+  shipping_cents = case
+                     when s.subtotal = 0 then 0
+                     else 799            -- flat $7.99 shipping when there is something to ship
+                   end,
+  tax_cents = round(s.subtotal * 0.055)::int,  -- ~5.5% tax
+  total_cents = s.subtotal
+                + case
+                    when s.subtotal = 0 then 0
+                    else 799
+                  end
+                + round(s.subtotal * 0.055)::int
+from subtotals s
+where o.id = s.order_id;
