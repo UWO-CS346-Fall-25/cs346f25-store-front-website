@@ -252,3 +252,85 @@
 .spacer {
   flex: 1;
 }
+
+
+/* Orders toolbar */
+.orders-toolbar {
+  display: grid;
+  gap: .75rem;
+  margin-bottom: .75rem;
+}
+
+@media (min-width: 800px) {
+  .orders-toolbar {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+}
+
+/* Tabs */
+.orders-tabs {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .45rem .7rem;
+  border: 1px solid rgba(0, 0, 0, .1);
+  border-radius: 999px;
+  text-decoration: none;
+  background: var(--background, #fff);
+  color: inherit;
+  transition: background .15s ease, box-shadow .15s ease;
+}
+
+.tab.is-active {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, .06) inset;
+  font-weight: 600;
+}
+
+.chip {
+  background: rgba(0, 0, 0, .06);
+  border-radius: 999px;
+  padding: 0 .4rem;
+  font-size: .85em;
+}
+
+/* Search */
+.orders-search {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.orders-search input[type="search"] {
+  min-width: 220px;
+  padding: .55rem .65rem;
+  border: 1px solid rgba(0, 0, 0, .1);
+  border-radius: 10px;
+}
+
+/* Pager */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: .75rem;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+
+.pager__buttons {
+  display: flex;
+  gap: .5rem;
+}
+
+.pager [aria-disabled="true"] {
+  opacity: .45;
+  pointer-events: none;
+}
