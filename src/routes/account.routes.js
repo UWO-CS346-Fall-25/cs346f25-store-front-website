@@ -47,7 +47,7 @@ bind(router, {
 
 bind(router, {
   route: '/account/orders',
-  view: 'account/order-details',
+  view: 'account/orders',
   meta: { title: 'Orders' },
   middleware: [authRequired, csrfProtection, require('../middleware/csrfLocals')],
   getData: async function (req, res) {
@@ -64,6 +64,30 @@ bind(router, {
   }
 
 });
+
+bind(router, {
+  route: '/account/orders/:orderId',
+  view: 'account/order-details',
+  meta: { title: 'Order Details' },
+  middleware: [authRequired, csrfProtection, require('../middleware/csrfLocals')],
+  getData: async function (req, res) {
+
+    const { orderId } = req.params;
+
+    let user = await userDatabase.getUser(req);
+    user = await userDatabase.bindOrderDetail(user, orderId);
+
+    if (user.notFound) {
+      res.status(404);
+      return res.render('errors/404', { message: 'Order not found', user }); // or however you do 404
+    }
+
+    if (user.error) {
+      return next(user.errorDetail || new Error(user.error));
+    }
+    return user;
+  }
+})
 
 
 

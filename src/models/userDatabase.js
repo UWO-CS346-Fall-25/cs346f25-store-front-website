@@ -1,7 +1,8 @@
 const { authClient } = require('./supabase');
+const cache = require('../controllers/cache.js');
 
 const NAMESPACE = 'userDB';
-const TTL = 60_000 * 2; // 2 minutes
+const TTL = 60_000 * 30; // 30 minutes
 const PAGE_SIZE = 10;
 
 
@@ -173,10 +174,148 @@ async function bindOrderSummary(user) {
 }
 
 
+async function bindOrderDetail(user, orderId) {
+  if (user.error) return user;
+  const key = `${NAMESPACE}:${user.id}:orderDetail:${orderId}`;
+
+  return await cache.wrap(key, TTL, async () => {
+
+    const { supabase, id: userId } = user;
+
+    if (!orderId) {
+      return {
+        ...user,
+        error: 'Order not specified',
+        errorDetail: 'Missing order id parameter',
+      };
+    }
+
+    // 1) Get order row from orders_view (includes shipping/billing + items json)
+    const { data: row, error } = await supabase
+      .from('orders_view')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('id', orderId)
+      .maybeSingle();   // returns null if not found
+
+    if (error) {
+      console.error('Error fetching order detail:', error);
+      return { ...user, error: 'Failed to fetch order', errorDetail: error };
+    }
+
+    if (!row) {
+      return { ...user, error: 'Order not found', errorDetail: 'not_found', notFound: true };
+    }
+
+    const placed_at_display = row.placed_at
+      ? new Date(row.placed_at).toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      })
+      : '';
+
+    const shipping_eta_display = row.shipping_eta
+      ? new Date(row.shipping_eta).toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      })
+      : null;
+
+    const currency = row.currency || 'USD';
+
+    let items = (row.items || []).map((it) => ({
+      ...it,
+      unit_price_display: fmtCurrency(it.unit_price_cents, currency),
+      total_display: fmtCurrency(it.total_cents, currency),
+    }));
+
+
+
+    const productIds = [
+      ...new Set(
+        items
+          .map((it) => it.product_id)
+          .filter((id) => id != null)
+      ),
+    ];
+
+    let productMap = {};
+    if (productIds.length) {
+      const productsRaw = await Promise.all(
+        productIds.map((id) => productDB.getByID(id))
+      );
+      const products = productsRaw.filter(Boolean);
+
+      await productDB.bindPrimaryImage(products);
+
+      productMap = Object.fromEntries(
+        products.map((p) => [p.id, p])
+      );
+    }
+
+    items = items.map((it) => {
+      const p = it.product_id ? productMap[it.product_id] : null;
+
+      const productUrl = p?.slug ? `/shop/${p.slug}` : null;
+
+      return {
+        ...it,
+        product: p
+          ? {
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            url: productUrl,
+            image: p.image || null,
+          }
+          : null,
+      };
+    });
+
+
+
+
+    const order = {
+      id: row.id,
+      number: row.number,
+      status: row.status,
+      status_display: statusLabel(row.status),
+      placed_at: row.placed_at,
+      placed_at_display,
+      subtotal_cents: row.subtotal_cents,
+      shipping_cents: row.shipping_cents,
+      tax_cents: row.tax_cents,
+      total_cents: row.total_cents,
+      currency,
+      subtotal_display: fmtCurrency(row.subtotal_cents, currency),
+      shipping_display: fmtCurrency(row.shipping_cents, currency),
+      tax_display: fmtCurrency(row.tax_cents, currency),
+      total_display: fmtCurrency(row.total_cents, currency),
+      carrier: row.carrier,
+      tracking_code: row.tracking_code,
+      shipping_eta: row.shipping_eta,
+      shipping_eta_display,
+      shipping_address: row.shipping_address || null,
+      billing_address: row.billing_address || null,
+      items,
+    };
+
+    return {
+      ...user,
+      order,
+    };
+  });
+}
+
 module.exports = {
   getUser,
   bindAddresses,
   bindOrders,
   bindOrderSummary,
+  bindOrderDetail,
 };
 

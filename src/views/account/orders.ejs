@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head', { cssFiles: ['account.css'], scripts: [] }) %>
+  <body>
+    <%- include('../partials/navbar') %>
+
+    <main id="main-content">
+      <section class="section" aria-labelledby="orders-title">
+        <div class="container account">
+          <header class="section__header">
+            <h1 id="orders-title">Your orders</h1>
+            <a class="link" href="/account">← Account overview</a>
+          </header>
+
+          <!-- Filters / Tabs -->
+          <form class="orders-toolbar" method="get" action="/account/orders" role="search">
+            <div class="orders-tabs" role="tablist" aria-label="Order status">
+              <% const active = filters.status || 'all'; %>
+              <a class="tab <%= active==='all' ? 'is-active' : '' %>"
+                 href="/account/orders?<%= new URLSearchParams({ q: filters.q || '' }).toString() %>"
+                 role="tab" aria-selected="<%= active==='all' %>">
+                 All <span class="chip"><%= filters.tabCounts.all %></span>
+              </a>
+              <a class="tab <%= active==='processing' ? 'is-active' : '' %>"
+                 href="/account/orders?<%= new URLSearchParams({ status:'processing', q: filters.q || '' }).toString() %>"
+                 role="tab" aria-selected="<%= active==='processing' %>">
+                 Processing <span class="chip"><%= filters.tabCounts.processing %></span>
+              </a>
+              <a class="tab <%= active==='shipped' ? 'is-active' : '' %>"
+                 href="/account/orders?<%= new URLSearchParams({ status:'shipped', q: filters.q || '' }).toString() %>"
+                 role="tab" aria-selected="<%= active==='shipped' %>">
+                 Shipped <span class="chip"><%= filters.tabCounts.shipped %></span>
+              </a>
+              <a class="tab <%= active==='delivered' ? 'is-active' : '' %>"
+                 href="/account/orders?<%= new URLSearchParams({ status:'delivered', q: filters.q || '' }).toString() %>"
+                 role="tab" aria-selected="<%= active==='delivered' %>">
+                 Delivered <span class="chip"><%= filters.tabCounts.delivered %></span>
+              </a>
+            </div>
+
+            <div class="orders-search">
+              <label class="sr-only" for="q">Search by order #</label>
+              <input id="q" name="q" type="search" placeholder="Search by order #"
+                     value="<%= filters.q || '' %>" />
+              <% if (filters.status) { %>
+                <input type="hidden" name="status" value="<%= filters.status %>">
+              <% } %>
+              <button class="button primary" type="submit">Search</button>
+              <% if (filters.q) { %>
+                <a class="button ghost" href="/account/orders<%= filters.status ? ('?'+new URLSearchParams({status:filters.status}).toString()) : '' %>">Clear</a>
+              <% } %>
+            </div>
+          </form>
+
+          <!-- Orders table -->
+          <% if (orders && orders.length) { %>
+            <div class="table-wrap" role="region" aria-label="Orders">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Order</th>
+                    <th scope="col">Placed</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"><span class="sr-only">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% orders.forEach(o => { %>
+                    <tr>
+                      <td><a class="link" href="/account/orders/<%= o.id %>">#<%= o.number %></a></td>
+                      <td><time datetime="<%= o.placed_at %>"><%= o.placed_at_display %></time></td>
+                      <td><%= o.total_display %></td>
+                      <td>
+                        <span class="status status--<%= (o.status || 'unknown').toLowerCase() %>">
+                          <%= o.status_display %>
+                        </span>
+                      </td>
+                      <td><a class="link link--sm" href="/account/orders/<%= o.id %>">View</a></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav class="pager" aria-label="Pagination">
+              <div class="pager__summary">
+                Page <strong><%= filters.page %></strong> of <strong><%= filters.totalPages %></strong>
+                · <%= filters.total %> order<%= filters.total===1 ? '' : 's' %>
+              </div>
+              <div class="pager__buttons">
+                <% const qs = (p) => {
+                     const params = new URLSearchParams();
+                     if (filters.status) params.set('status', filters.status);
+                     if (filters.q) params.set('q', filters.q);
+                     params.set('page', String(p));
+                     return '/account/orders?' + params.toString();
+                   };
+                %>
+                <a class="button ghost" aria-disabled="<%= filters.page<=1 %>" href="<%= filters.page>1 ? qs(filters.page-1) : '#' %>">Prev</a>
+                <a class="button ghost" aria-disabled="<%= filters.page>=filters.totalPages %>" href="<%= filters.page<filters.totalPages ? qs(filters.page+1) : '#' %>">Next</a>
+              </div>
+            </nav>
+          <% } else { %>
+            <div class="empty">
+              <p class="prose">No orders found.</p>
+              <a class="button primary" href="/shop">Shop now</a>
+            </div>
+          <% } %>
+        </div>
+      </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </body>
+</html>
