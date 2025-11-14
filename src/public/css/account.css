@@ -679,3 +679,71 @@
   flex-wrap: wrap;
   align-items: center;
 }
+
+
+/* ---------- Profile page ---------- */
+
+.profile-subtitle {
+  margin: .15rem 0 0;
+  font-size: .95rem;
+  color: var(--muted-fg);
+}
+
+.profile-section {
+  margin-bottom: 1rem;
+  padding: .9rem 1rem;
+  border-radius: 12px;
+  background: var(--overlay);
+  border: 1px solid var(--muted-bg);
+}
+
+.profile-section__title {
+  margin: 0 0 .4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.profile-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.profile-grid {
+  display: grid;
+  gap: .5rem;
+}
+
+@media (min-width: 720px) {
+  .profile-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.profile-email {
+  padding: .5rem .6rem;
+  border-radius: 10px;
+  background: var(--background);
+  border: 1px dashed var(--muted-bg);
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  font-size: .95rem;
+}
+
+.profile-email__hint {
+  font-size: .85rem;
+  color: var(--muted-fg);
+}
+
+.profile-help {
+  margin: .25rem 0 0;
+  font-size: .85rem;
+  color: var(--muted-fg);
+}
+
+.form-label-optional {
+  font-size: .85rem;
+  color: var(--muted-fg);
+}

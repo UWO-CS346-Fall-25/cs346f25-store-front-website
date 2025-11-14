@@ -111,6 +111,7 @@ app.use('/', require('./routes/shop.routes'));
 app.use('/account', require('./routes/account/account.routes'));
 app.use('/account', require('./routes/account/address.routes.js'));
 app.use('/account', require('./routes/account/address.crud.routes.js'));
+app.use('/account', require('./routes/account/profile.routes.js'));
 app.use('/admin', require('./routes/admin/admin.routes'));
 app.use('/admin', require('./routes/admin/admin.crud.routes'));
 app.use('/auth', require('./routes/auth/auth.crud.routes')(csrfProtection));

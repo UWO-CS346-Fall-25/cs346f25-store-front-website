@@ -52,7 +52,12 @@ async function getUser(req) {
     id: req.user.id,
     supabase: authClient(req),
     flash: flash,
-    user: { firstName: req.user.first_name, lastName: req.user.last_name, email: req.user.email },
+    user: {
+      ...req.user.user_metadata,
+      email: req.user.email,
+      role: req.user.role,
+      phone: req.user.phone,
+    },
   };
 }
 
