@@ -7,6 +7,7 @@ const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: false });
 const userDatabase = require('../../models/userDatabase.js');
 const csrfLocals = require('../../middleware/csrfLocals.js');
+const errorManager = require('../../controllers/errorManager.js');
 
 
 // =================================================
@@ -19,10 +20,12 @@ bind(router, {
   meta: { title: 'Edit Address' },
   middleware: [authRequired, csrfProtection, csrfLocals],
   getData: async function (req, res, next) {
-
+    const errors = errorManager(req, res, next, { url: `/account/addresses` });
     const addressId = req.params.id;
     let user = await userDatabase.getUser(req);
-    if (user.error) return next(user.errorDetail || new Error(user.error));
+    errors.applyContext(user);
+
+    if (errors.has()) return errors.throwError();
 
     const { supabase, id: userId } = user;
 
@@ -33,15 +36,9 @@ bind(router, {
       .eq('user_id', userId)
       .maybeSingle();
 
-    if (error) {
-      console.error('Error loading address:', error);
-      return next(error);
-    }
+    if (errors.verify(error)) return errors.throwError();
+    if (!address) return errors.throwError('Address not found.');
 
-    if (!address) {
-      req.session.flash = { error: 'Address not found.' };
-      return res.redirect('/account/addresses');
-    }
     return {
       ...user,
       formAction: `/account/addresses/${addressId}/edit`,
@@ -63,12 +60,14 @@ bind(router, {
   view: 'account/addresses',
   meta: { title: 'Addresses' },
   middleware: [authRequired, csrfProtection, csrfLocals],
-  getData: async function (req) {
+  getData: async function (req, res, next) {
+    const errors = errorManager(req, res, next);
     let user = await userDatabase.getUser(req);
+    errors.applyContext(user);
+    if (errors.has()) return errors.throwCritical();
     user = await userDatabase.bindAddressesList(user);
-    if (user.error) {
-      return next(user.errorDetail || new Error(user.error));
-    }
+    if (user.error) return errors.throwError(user.error);
+
     return user;
   }
 });
@@ -81,10 +80,12 @@ bind(router, {
   view: 'account/address-form',
   middleware: [authRequired, csrfProtection, csrfLocals],
   meta: { title: 'Add New Address' },
-  getData: async function (req) {
+  getData: async function (req, res, next) {
+    const errors = errorManager(req, res, next);
     let user = await userDatabase.getUser(req);
+    if (errors.applyContext(user)) return errors.throwCritical();
 
-    if (user.error) return next(user.errorDetail || new Error(user.error));
+    if (user.error) return errors.throwError(user.error);
 
     return {
       ...user,

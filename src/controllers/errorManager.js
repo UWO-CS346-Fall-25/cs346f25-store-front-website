@@ -11,6 +11,7 @@ function applyContext(object, ctx) {
   if (ctx.error) {
     object.errors.push(ctx.error);
   }
+  return hasErrors(object);
 }
 
 function hasErrors(object) {
