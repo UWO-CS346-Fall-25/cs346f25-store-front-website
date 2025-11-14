@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head', { cssFiles: ['account.css'], scripts: [] }) %>
+  <body>
+    <%- include('../partials/navbar') %>
+
+    <main id="main-content">
+      <section class="section" aria-labelledby="address-form-title">
+        <div class="container container--narrow">
+          <header class="section__header">
+            <h1 id="address-form-title"><%= title %></h1>
+            <a class="link" href="/account/addresses">← Back to addresses</a>
+          </header>
+
+          <% if (flash && flash.error) { %>
+            <div class="alert alert--error" role="alert">
+              <%= flash.error %>
+            </div>
+          <% } %>
+
+          <form class="form form--stacked" method="post" action="<%= formAction %>">
+            <% if (csrfToken) { %>
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <% } %>
+
+            <div class="form-row">
+              <label for="full_name">Full name</label>
+              <input id="full_name" name="full_name" type="text"
+                     value="<%= address?.full_name || '' %>" required>
+              <% if (errors && errors.full_name) { %>
+                <p class="form-error"><%= errors.full_name %></p>
+              <% } %>
+            </div>
+
+            <div class="form-row">
+              <label for="label">Label (optional)</label>
+              <input id="label" name="label" type="text"
+                     placeholder="Home, Work, etc."
+                     value="<%= address?.label || '' %>">
+            </div>
+
+            <div class="form-row">
+              <label for="line1">Address line 1</label>
+              <input id="line1" name="line1" type="text"
+                     value="<%= address?.line1 || '' %>" required>
+              <% if (errors && errors.line1) { %>
+                <p class="form-error"><%= errors.line1 %></p>
+              <% } %>
+            </div>
+
+            <div class="form-row">
+              <label for="line2">Address line 2</label>
+              <input id="line2" name="line2" type="text"
+                     value="<%= address?.line2 || '' %>">
+            </div>
+
+            <div class="form-row form-row--inline">
+              <div>
+                <label for="city">City</label>
+                <input id="city" name="city" type="text"
+                       value="<%= address?.city || '' %>" required>
+                <% if (errors && errors.city) { %>
+                  <p class="form-error"><%= errors.city %></p>
+                <% } %>
+              </div>
+
+              <div>
+                <label for="region">State / Region</label>
+                <input id="region" name="region" type="text"
+                       value="<%= address?.region || '' %>">
+              </div>
+
+              <div>
+                <label for="postal_code">Postal code</label>
+                <input id="postal_code" name="postal_code" type="text"
+                       value="<%= address?.postal_code || '' %>" required>
+                <% if (errors && errors.postal_code) { %>
+                  <p class="form-error"><%= errors.postal_code %></p>
+                <% } %>
+              </div>
+            </div>
+
+            <div class="form-row form-row--inline">
+              <div>
+                <label for="country_code">Country</label>
+                <input id="country_code" name="country_code" type="text"
+                       value="<%= address?.country_code || 'US' %>" required>
+                <% if (errors && errors.country_code) { %>
+                  <p class="form-error"><%= errors.country_code %></p>
+                <% } %>
+              </div>
+
+              <div>
+                <label for="phone">Phone (optional)</label>
+                <input id="phone" name="phone" type="tel"
+                       value="<%= address?.phone || '' %>">
+              </div>
+            </div>
+
+            <fieldset class="form-row form-row--inline">
+              <legend>Defaults</legend>
+              <label class="checkbox">
+                <input type="checkbox" name="is_default_shipping"
+                       <%= address?.is_default_shipping ? 'checked' : '' %>>
+                <span>Default shipping address</span>
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" name="is_default_billing"
+                       <%= address?.is_default_billing ? 'checked' : '' %>>
+                <span>Default billing address</span>
+              </label>
+            </fieldset>
+
+            <div class="form-row form-actions">
+              <button class="button primary" type="submit">
+                <%= isEdit ? 'Save changes' : 'Add address' %>
+              </button>
+              <a class="button ghost" href="/account/addresses">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </body>
+</html>

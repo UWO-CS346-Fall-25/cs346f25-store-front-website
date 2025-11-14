@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head', { cssFiles: ['account.css'], scripts: [] }) %>
+  <body>
+    <%- include('../partials/navbar') %>
+
+    <main id="main-content">
+      <section class="section" aria-labelledby="addresses-title">
+        <div class="container account">
+          <header class="section__header">
+            <h1 id="addresses-title">Your addresses</h1>
+            <div class="section__header-actions">
+              <a class="button primary" href="/account/addresses/new">Add address</a>
+              <a class="link" href="/account">← Back to account</a>
+            </div>
+          </header>
+
+          <% if (flash && flash.error) { %>
+            <div class="alert alert--error" role="alert">
+              <%= flash.error %>
+            </div>
+          <% } %>
+          <% if (flash && flash.success) { %>
+            <div class="alert alert--success" role="status">
+              <%= flash.success %>
+            </div>
+          <% } %>
+
+          <% if (addresses && addresses.length) { %>
+            <ul class="address-list" aria-label="Saved addresses">
+              <% addresses.forEach(a => { 
+                   const isDefault = a.is_default_shipping || a.is_default_billing;
+              %>
+                <li class="address-item <%= isDefault ? 'address-item--default' : '' %>">
+                  <div class="address-item__marker" aria-hidden="true"></div>
+                  <div class="address-item__body">
+                    <div class="address-item__header">
+                      <div>
+                        <div class="address-item__name-row">
+                          <span class="address-item__name"><%= a.full_name %></span>
+                          <% if (a.label) { %>
+                            <span class="badge badge--soft"><%= a.label %></span>
+                          <% } %>
+                        </div>
+                        <% if (a.phone) { %>
+                          <div class="address-item__phone">
+                            <span><%= a.phone %></span>
+                          </div>
+                        <% } %>
+                      </div>
+                      <div class="address-item__badges">
+                        <% if (a.is_default_shipping) { %>
+                          <span class="badge badge--pill">Default shipping</span>
+                        <% } %>
+                        <% if (a.is_default_billing) { %>
+                          <span class="badge badge--pill">Default billing</span>
+                        <% } %>
+                      </div>
+                    </div>
+
+                    <p class="address-item__lines">
+                      <%= a.line1 %><% if (a.line2) { %>, <%= a.line2 %><% } %><br>
+                      <%= a.city %><% if (a.region) { %>, <%= a.region %><% } %> <%= a.postal_code %><br>
+                      <%= a.country_code %>
+                    </p>
+
+                    <div class="address-item__actions">
+                      <a class="button ghost small" href="/account/addresses/<%= a.id %>/edit">Edit</a>
+
+                      <form method="post" action="/account/addresses/<%= a.id %>/delete" class="address-inline-form" onsubmit="return confirm('Delete this address?');">
+                        <% if (csrfToken) { %>
+                          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <% } %>
+                        <button type="submit" class="button ghost small">Delete</button>
+                      </form>
+
+                      <% if (!a.is_default_shipping) { %>
+                        <form method="post" action="/account/addresses/<%= a.id %>/default-shipping" class="address-inline-form">
+                          <% if (csrfToken) { %>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <% } %>
+                          <button type="submit" class="button ghost small">
+                            Set as shipping
+                          </button>
+                        </form>
+                      <% } %>
+
+                      <% if (!a.is_default_billing) { %>
+                        <form method="post" action="/account/addresses/<%= a.id %>/default-billing" class="address-inline-form">
+                          <% if (csrfToken) { %>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <% } %>
+                          <button type="submit" class="button ghost small">
+                            Set as billing
+                          </button>
+                        </form>
+                      <% } %>
+                    </div>
+                  </div>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <div class="empty">
+              <p class="prose">You don’t have any saved addresses yet.</p>
+              <a class="button primary" href="/account/addresses/new">Add address</a>
+            </div>
+          <% } %>
+        </div>
+      </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </body>
+</html>

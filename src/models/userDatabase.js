@@ -80,6 +80,29 @@ async function bindAddresses(user) {
   });
 }
 
+// userDB.js
+async function bindAddressesList(user) {
+  if (user.error) return user;
+
+  const { supabase, id } = user;
+
+  const { data: addresses, error } = await supabase
+    .from('addresses')
+    .select('*')
+    .eq('user_id', id)
+    .order('is_default_shipping', { ascending: false })
+    .order('is_default_billing', { ascending: false })
+    .order('updated_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching addresses:', error);
+    return { ...user, error: 'Failed to fetch addresses', errorDetail: error };
+  }
+
+  return { ...user, addresses };
+}
+
+
 async function bindOrders(user, { page = 1, status = '', q = '' }) {
   if (user.error) return user;
   const key = `${NAMESPACE}:${user.id}:orders:${page}:${status}:${q}`;
@@ -315,6 +338,7 @@ async function bindOrderDetail(user, orderId) {
 module.exports = {
   getUser,
   bindAddresses,
+  bindAddressesList,
   bindOrders,
   bindOrderSummary,
   bindOrderDetail,
