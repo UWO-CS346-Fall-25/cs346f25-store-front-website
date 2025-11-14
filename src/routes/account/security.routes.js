@@ -4,6 +4,7 @@ const userDatabase = require('../../models/userDatabase');
 const { genericClient, masterClient } = require('../../models/supabase');
 const { bind } = require('express-page-registry');
 const { authRequired } = require('../../middleware/accountRequired.js');
+const errorManager = require('../../controllers/errorManager.js');
 
 
 // =================================================
@@ -15,11 +16,12 @@ bind(router, {
   meta: { title: 'Login & security' },
   middleware: [authRequired],
   getData: async function (req, res) {
+    const flash = req.session?.flash || {};
     let ctx = await userDatabase.getUser(req);
     const email = ctx.user.email || '';
     return {
       ...ctx,
-      errors: null,
+      errors: flash.errorList || {},
       security: { email }
     };
   }
@@ -31,9 +33,11 @@ bind(router, {
 // =============== Change password =================
 // =================================================
 router.post('/security/password', authRequired, async (req, res, next) => {
+  const errors = errorManager(req, res, next, { url: '/account/security' });
   try {
     let ctx = await userDatabase.getUser(req);
-    if (ctx.error) return next(ctx.errorDetail || new Error(ctx.error));
+    errors.applyContext(ctx);
+    if (errors.has()) return errors.throwCritical();
 
     const email = ctx.user.email;
     const userId = ctx.id;
@@ -43,29 +47,9 @@ router.post('/security/password', authRequired, async (req, res, next) => {
     const newPassword = (body.newPassword || '').trim();
     const confirmPassword = (body.confirmPassword || '').trim();
 
-    const errors = {};
-    if (!currentPassword) errors.currentPassword = 'Current password is required';
-    if (!newPassword) errors.newPassword = 'New password is required';
-    if (newPassword && newPassword.length < 8) {
-      errors.newPassword = 'New password must be at least 8 characters';
-    }
-    if (!confirmPassword) errors.confirmPassword = 'Please confirm your new password';
-    if (newPassword && confirmPassword && newPassword !== confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
-    }
+    errors.passwordChecker({ newAccount: false, currentPassword, newPassword, confirmPassword });
 
-    if (Object.keys(errors).length) {
-      console.log(errors);
-      req.session.flash = { error: Object.values(errors)[0] };
-      return res.redirect('/account/security');
-      // return res.status(400).render('account/security', {
-      //   ...ctx,
-      //   security: { email },
-      //   errors,
-      //   title: 'Login & security',
-      //   siteName: "Raven's Treasures",
-      // });
-    }
+    if (errors.has()) return errors.throwError();
 
     // 1) Verify current password using generic (anon) client
     const supabaseAuth = genericClient(); // new client with anon key
@@ -73,33 +57,15 @@ router.post('/security/password', authRequired, async (req, res, next) => {
       email,
       password: currentPassword,
     });
-
-    if (signInError) {
-      console.error('Password verify failed:', signInError);
-      errors.currentPassword = 'Current password is incorrect';
-      return res.status(400).render('account/security', {
-        ...ctx,
-        security: { email },
-        errors,
-        title: 'Login & security',
-        siteName: "Raven's Treasures",
-      });
-    }
+    if (errors.verify(signInError, 'currentPassword')) return errors.throwError();
 
     // 2) Update password via admin client
-    const { error: updateErr } = await adminClient.auth.admin.updateUserById(userId, {
+    const { error: updateErr } = await masterClient.auth.admin.updateUserById(userId, {
       password: newPassword,
     });
+    if (errors.verify(updateErr)) return errors.throwError();
 
-    if (updateErr) {
-      console.error('Error updating password:', updateErr);
-      req.session.flash = { error: 'Could not update password. Please try again.' };
-      return res.redirect('/account/security');
-    }
-
-    req.session.flash = { success: 'Password updated successfully.' };
-    console.log("Successfull");
-    res.redirect('/account/security');
+    return errors.throwSuccess('Password updated successfully.');
   } catch (err) {
     next(err);
   }

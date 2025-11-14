@@ -97,7 +97,6 @@ configure({
     siteName: "Raven's Treasures",
     tagline: 'Handmade goods crafted with care.',
     util: require('./controllers/util.js'),
-
   }
 });
 
