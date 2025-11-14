@@ -85,10 +85,12 @@ router.post('/addresses/new', async (req, res, next) => {
 // =================================================
 
 router.post('/addresses/:id/edit', async (req, res, next) => {
+  const errors = errorManager(req, res, next, { url: `/account/addresses/${req.params.id}/edit` });
   try {
     const addressId = req.params.id;
     let user = await userDatabase.getUser(req);
-    if (user.error) return next(user.errorDetail || new Error(user.error));
+    errors.applyContext(user);
+    if (errors.has()) return errors.throwCritical();
 
     const { supabase, id: userId } = user;
 
@@ -106,23 +108,12 @@ router.post('/addresses/:id/edit', async (req, res, next) => {
       is_default_billing: !!req.body.is_default_billing,
     };
 
-    const errors = {};
-    if (!payload.full_name) errors.full_name = 'Full name is required';
-    if (!payload.line1) errors.line1 = 'Address line 1 is required';
-    if (!payload.city) errors.city = 'City is required';
-    if (!payload.postal_code) errors.postal_code = 'Postal code is required';
-    if (!payload.country_code) errors.country_code = 'Country is required';
-
-    if (Object.keys(errors).length) {
-      return res.status(400).render('account/address-form', {
-        ...user,
-        title: 'Edit address',
-        formAction: `/account/addresses/${addressId}/edit`,
-        isEdit: true,
-        address: { id: addressId, ...payload },
-        errors,
-      });
-    }
+    if (!payload.full_name) errors.addError('Full name is required', 'full_name');
+    if (!payload.line1) errors.addError('Address line 1 is required', 'line1');
+    if (!payload.city) errors.addError('City is required', 'city');
+    if (!payload.postal_code) errors.addError('Postal code is required', 'postal_code');
+    if (!payload.country_code) errors.addError('Country is required', 'country_code');
+    if (errors.has()) return errors.throwError();
 
     const { error } = await supabase
       .from('addresses')
@@ -130,11 +121,7 @@ router.post('/addresses/:id/edit', async (req, res, next) => {
       .eq('id', addressId)
       .eq('user_id', userId);
 
-    if (error) {
-      console.error('Error updating address:', error);
-      req.session.flash = { error: 'Could not update address.' };
-      return res.redirect('/account/addresses');
-    }
+    if (errors.verify(error)) return errors.throwError();
 
     // Fix defaults
     if (payload.is_default_shipping) {
@@ -153,8 +140,7 @@ router.post('/addresses/:id/edit', async (req, res, next) => {
         .neq('id', addressId);
     }
 
-    req.session.flash = { success: 'Address updated.' };
-    res.redirect('/account/addresses');
+    return errors.throwSuccess('Address updated.', '/account/addresses');
   } catch (err) {
     next(err);
   }
@@ -167,10 +153,12 @@ router.post('/addresses/:id/edit', async (req, res, next) => {
 // ================ Delete address =================
 // =================================================
 router.post('/addresses/:id/delete', async (req, res, next) => {
+  const errors = errorManager(req, res, next, { url: `/account/addresses` });
   try {
     const addressId = req.params.id;
     let user = await userDatabase.getUser(req);
-    if (user.error) return next(user.errorDetail || new Error(user.error));
+    errors.applyContext(user);
+    if (errors.has()) return errors.throwError();
 
     const { supabase, id: userId } = user;
 
@@ -180,17 +168,10 @@ router.post('/addresses/:id/delete', async (req, res, next) => {
       .eq('id', addressId)
       .eq('user_id', userId);
 
-    if (error) {
-      console.error('Error deleting address:', error);
-      // Likely FK violation if used in orders
-      req.session.flash = {
-        error: 'This address cannot be deleted because it is attached to an order.',
-      };
-      return res.redirect('/account/addresses');
-    }
+    if (errors.verify(error)) return errors.throwError('This address cannot be deleted because it is attached to an order.');
 
-    req.session.flash = { success: 'Address deleted.' };
-    res.redirect('/account/addresses');
+
+    return errors.throwSuccess('Address deleted.');
   } catch (err) {
     next(err);
   }
@@ -202,10 +183,12 @@ router.post('/addresses/:id/delete', async (req, res, next) => {
 // ========== Set default shipping  =================
 // ==================================================
 router.post('/addresses/:id/default-shipping', async (req, res, next) => {
+  const errors = errorManager(req, res, next, { url: `/account/addresses` });
   try {
     const addressId = req.params.id;
     let user = await userDatabase.getUser(req);
-    if (user.error) return next(user.errorDetail || new Error(user.error));
+    errors.applyContext(user);
+    if (errors.has()) return errors.throwError();
 
     const { supabase, id: userId } = user;
 
@@ -221,8 +204,7 @@ router.post('/addresses/:id/default-shipping', async (req, res, next) => {
       .eq('user_id', userId)
       .neq('id', addressId);
 
-    req.session.flash = { success: 'Default shipping address updated.' };
-    res.redirect('/account/addresses');
+    return errors.throwSuccess('Default shipping address updated.');
   } catch (err) {
     next(err);
   }
@@ -234,10 +216,12 @@ router.post('/addresses/:id/default-shipping', async (req, res, next) => {
 // =========== Set default billing ==================
 // ==================================================
 router.post('/addresses/:id/default-billing', async (req, res, next) => {
+  const errors = errorManager(req, res, next, { url: `/account/addresses` });
   try {
     const addressId = req.params.id;
     let user = await userDatabase.getUser(req);
-    if (user.error) return next(user.errorDetail || new Error(user.error));
+    errors.applyContext(user);
+    if (errors.has()) return errors.throwError();
 
     const { supabase, id: userId } = user;
 
@@ -253,8 +237,7 @@ router.post('/addresses/:id/default-billing', async (req, res, next) => {
       .eq('user_id', userId)
       .neq('id', addressId);
 
-    req.session.flash = { success: 'Default billing address updated.' };
-    res.redirect('/account/addresses');
+    return errors.throwSuccess('Default billing address updated.');
   } catch (err) {
     next(err);
   }
