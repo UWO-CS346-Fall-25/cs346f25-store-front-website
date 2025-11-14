@@ -59,7 +59,7 @@ bind(router, {
 
     if (user.notFound) {
       res.status(404);
-      return res.render('errors/404', { message: 'Order not found', user }); // or however you do 404
+      return res.render('errors/404', { message: 'Order not found', user });
     }
 
     if (user.error) {
@@ -67,7 +67,7 @@ bind(router, {
     }
     return user;
   }
-})
+});
 
 
 

@@ -43,7 +43,7 @@ router.post('/addresses/new', async (req, res, next) => {
     if (Object.keys(errors).length) {
       return res.status(400).render('account/address-form', {
         ...user,
-        pageTitle: 'Add address',
+        title: 'Add address',
         formAction: '/account/addresses/new',
         isEdit: false,
         address: payload,
@@ -129,7 +129,7 @@ router.post('/addresses/:id/edit', async (req, res, next) => {
     if (Object.keys(errors).length) {
       return res.status(400).render('account/address-form', {
         ...user,
-        pageTitle: 'Edit address',
+        title: 'Edit address',
         formAction: `/account/addresses/${addressId}/edit`,
         isEdit: true,
         address: { id: addressId, ...payload },

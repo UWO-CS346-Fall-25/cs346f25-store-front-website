@@ -747,3 +747,73 @@
   font-size: .85rem;
   color: var(--muted-fg);
 }
+
+
+/* ---------- Security page ---------- */
+
+.security-subtitle {
+  margin: .15rem 0 0;
+  font-size: .95rem;
+  color: var(--muted-fg);
+}
+
+.security-section {
+  margin-bottom: 1rem;
+  padding: .9rem 1rem;
+  border-radius: 12px;
+  background: var(--overlay);
+  border: 1px solid var(--muted-bg);
+}
+
+.security-section__header {
+  display: flex;
+  justify-content: space-between;
+  gap: .5rem;
+  align-items: center;
+  margin-bottom: .4rem;
+}
+
+.security-section__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.security-section__subtitle {
+  margin: .1rem 0 0;
+  font-size: .85rem;
+  color: var(--muted-fg);
+}
+
+.security-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.security-email {
+  padding: .5rem .6rem;
+  border-radius: 10px;
+  background: var(--background);
+  border: 1px dashed var(--muted-bg);
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+
+.security-email__value {
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.security-email__hint {
+  font-size: .85rem;
+  color: var(--muted-fg);
+}
+
+.security-help {
+  margin: .2rem 0 0;
+  font-size: .85rem;
+  color: var(--muted-fg);
+}
