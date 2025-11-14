@@ -1,22 +1,32 @@
 # 🛍️ Storefront Website – To-Do List## Important
+## General Next Steps
+* [ ] Complete Account pages
+* [ ] Apply Stripe buying products
+* [ ] Add Account info into admin dashboard
+* [ ] Add Stock properties to products
+* [ ] Cleanup Account pages styling
+* [ ] View / Modify order fulfilment
+* [ ] CHAT GPT integration into order creations
+
+
 ## ✅ Customer-Facing Pages
 ### 🏠 Home
-* [ ] Create hero banner with brand name and tagline
-* [ ] Add featured products section
-* [ ] Add "Shop Now" button linking to store
-* [ ] Include quick links (About, Contact, etc.)
+* [x] Create hero banner with brand name and tagline
+* [x] Add featured products section
+* [x] Add "Shop Now" button linking to store
+* [x] Include quick links (About, Contact, etc.)
 
 ### 🛒 Shop / Products
-* [ ] Product grid layout
+* [x] Product grid layout
 * [ ] Filter by category / price / availability
 * [ ] Sorting options (Newest, Popular, Price)
 * [ ] Add search bar
 
 ### 📦 Product Details
-* [ ] Product title, images, and description
-* [ ] Price, variants (size, color, etc.)
-* [ ] "Add to Cart" & "Buy Now" buttons
-* [ ] Related or recommended products
+* [x] Product title, images, and description
+* [x] Price, variants (size, color, etc.)
+* [x] "Add to Cart" & "Buy Now" buttons
+* [x] Related or recommended products
 
 ### 🧾 Cart / Checkout
 * [ ] Shopping cart page
@@ -36,15 +46,15 @@
 * [ ] Terms of Service
 
 ### 👤 Account
-* [ ] Login / Signup / Logout pages
-* [ ] View order history
+* [x] Login / Signup / Logout pages
+* [x] View order history
 * [ ] Wishlist (optional)
-* [ ] Saved addresses / payment methods
+* [x] Saved addresses / payment methods
 
 
 ## 🔧 Admin / Backend Pages (Private)
 * [ ] Dashboard overview (sales, stock, analytics)
-* [ ] Product management (add / edit / delete)
+* [x] Product management (add / edit / delete)
 * [ ] Orders management (status updates, fulfillment)
 * [ ] Customer database
 * [ ] Analytics charts
