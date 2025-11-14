@@ -3,16 +3,18 @@
 const express = require('express');
 const router = express.Router();
 const userDatabase = require('../../models/userDatabase.js');
-
+const errorManager = require('../../controllers/errorManager.js');
 
 // =================================================
 // ============== Create address ===================
 // =================================================
 
 router.post('/addresses/new', async (req, res, next) => {
+  const errors = errorManager(req, res, next, { url: '/account/addresses/new' });
   try {
     let user = await userDatabase.getUser(req);
-    if (user.error) return next(user.errorDetail || new Error(user.error));
+    errors.applyContext(user);
+    if (errors.has()) return errors.throwCritical();
 
     const supabase = user.supabase;
     const userId = user.id;
@@ -33,23 +35,13 @@ router.post('/addresses/new', async (req, res, next) => {
       is_default_billing: !!req.body.is_default_billing,
     };
 
-    const errors = {};
-    if (!payload.full_name) errors.full_name = 'Full name is required';
-    if (!payload.line1) errors.line1 = 'Address line 1 is required';
-    if (!payload.city) errors.city = 'City is required';
-    if (!payload.postal_code) errors.postal_code = 'Postal code is required';
-    if (!payload.country_code) errors.country_code = 'Country is required';
 
-    if (Object.keys(errors).length) {
-      return res.status(400).render('account/address-form', {
-        ...user,
-        title: 'Add address',
-        formAction: '/account/addresses/new',
-        isEdit: false,
-        address: payload,
-        errors,
-      });
-    }
+    if (!payload.full_name) errors.addError('Full name is required', 'full_name');
+    if (!payload.line1) errors.addError('Address line 1 is required', 'line1');
+    if (!payload.city) errors.addError('City is required', 'city');
+    if (!payload.postal_code) errors.addError('Postal code is required', 'postal_code');
+    if (!payload.country_code) errors.addError('Country is required', 'country_code');
+    if (errors.has()) return errors.throwError();
 
     // Insert new address
     const { data: rows, error } = await supabase
@@ -58,11 +50,7 @@ router.post('/addresses/new', async (req, res, next) => {
       .select('*')
       .single();
 
-    if (error) {
-      console.error('Error creating address:', error);
-      req.session.flash = { error: 'Could not create address.' };
-      return res.redirect('/account/addresses');
-    }
+    if (errors.verify(error)) return errors.throwError();
 
     // If defaults set, clear others for this user
     const id = rows.id;
@@ -83,8 +71,7 @@ router.post('/addresses/new', async (req, res, next) => {
         .neq('id', id);
     }
 
-    req.session.flash = { success: 'Address added.' };
-    res.redirect('/account/addresses');
+    return errors.throwSuccess('Address added.', '/account/addresses');
   } catch (err) {
     next(err);
   }

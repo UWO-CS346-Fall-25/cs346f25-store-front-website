@@ -8,6 +8,7 @@ const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: false });
 const userDatabase = require('../../models/userDatabase.js');
 const csrfLocals = require('../../middleware/csrfLocals.js');
+const errorManager = require('../../controllers/errorManager.js');
 
 
 bind(router, {
@@ -16,7 +17,7 @@ bind(router, {
   meta: { title: 'Account Profile' },
   middleware: [authRequired, csrfProtection, csrfLocals],
   getData: async function (req) {
-
+    const flash = req.session?.flash || {};
     let ctx = await userDatabase.getUser(req);
     if (ctx.error) return next(ctx.errorDetail || new Error(ctx.error));
 
@@ -33,7 +34,7 @@ bind(router, {
     return {
       ...ctx,
       profile,
-      errors: null,
+      errors: flash.errorList || {},
     }
   }
 });
@@ -41,9 +42,11 @@ bind(router, {
 
 
 router.post('/profile', authRequired, async (req, res, next) => {
+  const errors = errorManager(req, res, next, { url: '/account/profile' });
   try {
     let user = await userDatabase.getUser(req);
-    if (user.error) return next(user.errorDetail || new Error(user.error));
+    errors.applyContext(user);
+    if (errors.has()) return errors.throwCritical();
 
     const supabase = require('../../models/supabase.js').masterClient();
     const body = req.body || {};
@@ -56,18 +59,11 @@ router.post('/profile', authRequired, async (req, res, next) => {
       newsletter: !!body.newsletter,
     };
 
-    const errors = {};
     // Make names optional or required as you prefer:
-    if (!profile.firstName) errors.firstName = 'First name is required';
-    if (!profile.lastName) errors.lastName = 'Last name is required';
+    if (!profile.firstName) errors.addError('First name is required', 'firstName');
+    if (!profile.lastName) errors.addError('Last name is required', 'lastName');
 
-    if (Object.keys(errors).length) {
-      return res.status(400).render('account/profile', {
-        ...user,
-        profile,
-        errors,
-      });
-    }
+    if (errors.has()) return errors.throwError();
 
     // Update auth user metadata in Supabase
     // Adjust keys here to match how you want to store them in user_metadata
@@ -81,11 +77,7 @@ router.post('/profile', authRequired, async (req, res, next) => {
       },
     });
 
-    if (updateErr) {
-      console.error('Error updating profile metadata:', updateErr);
-      req.session.flash = { error: 'Could not update profile.' };
-      return res.redirect('/account/profile');
-    }
+    if (errors.verify(updateErr, 'profileUpdate')) return errors.throwError();
 
     // Optionally: also update any local session copy of req.user
     if (req.user) {
@@ -95,9 +87,7 @@ router.post('/profile', authRequired, async (req, res, next) => {
       req.user.phone = profile.phone;
       req.user.newsletter_opt_in = profile.newsletter;
     }
-
-    req.session.flash = { success: 'Profile updated.' };
-    res.redirect('/account/profile');
+    return errors.throwSuccess('Profile updated.');
   } catch (err) {
     next(err);
   }

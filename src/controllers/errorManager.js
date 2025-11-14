@@ -54,12 +54,12 @@ function verify(object, error, key = null) {
   }
   return false;
 }
-function throwSuccess(object, message) {
+function throwSuccess(object, message, route = null) {
   if (hasErrors(object)) {
     return throwError(object);
   }
   object.session.flash = { success: message || 'Operation completed successfully.', errorList: object.errorsMap };
-  return object.res.redirect(object.url || '/');
+  return object.res.redirect(route || object.url || '/');
 }
 
 
@@ -79,7 +79,8 @@ function generate(req, res, next, { url } = {}) {
   ctx.throwCritical = () => throwCritical(ctx);
   ctx.throwError = (message) => throwError(ctx, message);
   ctx.verify = (error, key = null) => verify(ctx, error, key);
-  ctx.throwSuccess = (message) => throwSuccess(ctx, message);
+  ctx.throwSuccess = (message, route = null) => throwSuccess(ctx, message, route);
+  ctx.addError = (message, mapKey = null) => addError(ctx, message, mapKey);
 
   return ctx;
 }
