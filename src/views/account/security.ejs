@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head', { cssFiles: ['account.css'], scripts: [] }) %>
+  <body>
+    <%- include('../partials/navbar') %>
+
+    <main id="main-content">
+      <section class="section" aria-labelledby="security-title">
+        <div class="container container--narrow">
+          <header class="section__header">
+            <div>
+              <h1 id="security-title"><%= title || 'Login & security' %></h1>
+              <p class="security-subtitle">
+                Manage how you sign in and keep your account secure.
+              </p>
+            </div>
+            <a class="link" href="/account">← Back to account</a>
+          </header>
+
+          <% if (flash && flash.error) { %>
+            <div class="alert alert--error" role="alert">
+              <%= flash.error %>
+            </div>
+          <% } %>
+          <% if (flash && flash.success) { %>
+            <div class="alert alert--success" role="status">
+              <%= flash.success %>
+            </div>
+          <% } %>
+
+          <!-- Email card -->
+          <section class="security-section" aria-labelledby="sec-email-h">
+            <div class="security-section__header">
+              <div>
+                <h2 id="sec-email-h" class="security-section__title">Email</h2>
+                <p class="security-section__subtitle">
+                  This is your account email and where we send order updates.
+                </p>
+              </div>
+            </div>
+            <div class="security-section__body">
+              <div class="security-email">
+                <span class="security-email__value"><%= security.email %></span>
+                <span class="security-email__hint">
+                  Email changes will be managed here in the future.
+                </span>
+              </div>
+              <!-- Later: add a "Change email" flow / link -->
+            </div>
+          </section>
+
+          <!-- Password card -->
+          <section class="security-section" aria-labelledby="sec-password-h">
+            <div class="security-section__header">
+              <div>
+                <h2 id="sec-password-h" class="security-section__title">Password</h2>
+                <p class="security-section__subtitle">
+                  Choose a strong password to help keep your account safe.
+                </p>
+              </div>
+            </div>
+
+            <div class="security-section__body">
+              <form class="form form--stacked" method="post" action="/account/security/password">
+                <% if (csrfToken) { %>
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <% } %>
+
+                <div class="form-row">
+                  <label for="currentPassword">Current password</label>
+                  <input id="currentPassword" name="currentPassword" type="password" autocomplete="current-password">
+                  <% if (errors && errors.currentPassword) { %>
+                    <p class="form-error"><%= errors.currentPassword %></p>
+                  <% } %>
+                </div>
+
+                <div class="form-row">
+                  <label for="newPassword">New password</label>
+                  <input id="newPassword" name="newPassword" type="password" autocomplete="new-password">
+                  <% if (errors && errors.newPassword) { %>
+                    <p class="form-error"><%= errors.newPassword %></p>
+                  <% } %>
+                  <p class="security-help">
+                    At least 8 characters. Use a mix of letters, numbers, and symbols if you can.
+                  </p>
+                </div>
+
+                <div class="form-row">
+                  <label for="confirmPassword">Confirm new password</label>
+                  <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password">
+                  <% if (errors && errors.confirmPassword) { %>
+                    <p class="form-error"><%= errors.confirmPassword %></p>
+                  <% } %>
+                </div>
+
+                <div class="form-row form-actions">
+                  <button class="button primary" type="submit">Update password</button>
+                  <a class="button ghost" href="/account">Cancel</a>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </body>
+</html>

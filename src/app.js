@@ -23,11 +23,17 @@ const app = express();
 app.use(
   helmet({
     contentSecurityPolicy: {
+      useDefaults: false,
       directives: {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         scriptSrc: ["'self'"],
         imgSrc: ["'self'", 'data:', 'https:'],
+        formAction: ["'self'", "https://checkout.stripe.com"],
+        baseUri: ["'self'"],
+        fontSrc: ["'self'", "https:", "data:"],
+        frameAncestors: ["'self'"],
+        objectSrc: ["'none'"],
       },
     },
   })
@@ -97,7 +103,6 @@ configure({
     siteName: "Raven's Treasures",
     tagline: 'Handmade goods crafted with care.',
     util: require('./controllers/util.js'),
-
   }
 });
 
@@ -106,12 +111,23 @@ const csrfProtection = csrf({ cookie: false });
 
 app.use('/', require('./routes/root.routes'));
 app.use('/', require('./routes/pages.routes'));
-app.use('/', require('./routes/pages.auth.routes')(csrfProtection));
 app.use('/', require('./routes/api.routes'));
 app.use('/', require('./routes/shop.routes'));
-app.use('/admin', require('./routes/admin.routes'));
-app.use('/auth', require('./routes/auth.routes')(csrfProtection));
-app.use('/admin', require('./routes/admin.crud.routes'));
+
+app.use('/', require('./routes/shop/cart.routes'));
+app.use('/', require('./routes/shop/stripe.routes.js'));
+app.use('/webhooks', require('./routes/shop/stripe.webhooks.routes.js'));
+
+app.use('/account', require('./routes/account/account.routes'));
+app.use('/account', require('./routes/account/address.routes.js'));
+app.use('/account', require('./routes/account/address.crud.routes.js'));
+app.use('/account', require('./routes/account/profile.routes.js'));
+app.use('/account', require('./routes/account/security.routes.js'));
+
+app.use('/admin', require('./routes/admin/admin.routes'));
+app.use('/admin', require('./routes/admin/admin.crud.routes'));
+app.use('/auth', require('./routes/auth/auth.crud.routes')(csrfProtection));
+app.use('/', require('./routes/auth/auth.routes')(csrfProtection));
 
 
 

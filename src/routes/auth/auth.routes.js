@@ -1,6 +1,11 @@
 const express = require('express');
 const { bind } = require('express-page-registry');
 
+function getFlash(req) {
+  return req.flash ? { error: req.flash('error')[0] } : {};
+}
+
+
 module.exports = function (csrfProtection) {
   const router = express.Router();
 
@@ -11,13 +16,9 @@ module.exports = function (csrfProtection) {
       title: 'Log in',
       description: 'Access your account to view orders and manage details.'
     },
-    middleware: [csrfProtection, require('../middleware/csrfLocals')],
+    middleware: [csrfProtection, require('../../middleware/csrfLocals')],
     getData: async (req, _res) => ({
-      // If you use connect-flash, this will feed flash messages to the view
-      flash: {
-        error: req.flash ? req.flash('error') : null
-      }
-      // csrfToken is injected by the binder if present
+      flash: getFlash(req),
     })
   });
 
@@ -28,11 +29,9 @@ module.exports = function (csrfProtection) {
       title: 'Signup',
       description: 'Create a new account to view orders and manage details.'
     },
-    middleware: [csrfProtection, require('../middleware/csrfLocals')],
+    middleware: [csrfProtection, require('../../middleware/csrfLocals')],
     getData: async (req, _res) => ({
-      flash: {
-        error: req.flash ? req.flash('error') : null
-      }
+      flash: getFlash(req),
     })
   });
 

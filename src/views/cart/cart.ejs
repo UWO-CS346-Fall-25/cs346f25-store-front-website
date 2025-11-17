@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head', {
+    cssFiles: ['shop/product-card.css', 'shop/cart.css'],
+    scripts: []
+  }) %>
+  <body>
+    <%- include('../partials/navbar') %>
+
+    <main id="main-content">
+      <section class="section" aria-labelledby="cart-title">
+        <div class="container">
+          <header class="section__header">
+            <h1 id="cart-title" class="section__title">Your cart</h1>
+          </header>
+
+          <% if (flash && flash.error) { %>
+            <div class="alert alert--error" role="alert">
+              <%= flash.error %>
+            </div>
+          <% } %>
+          <% if (flash && flash.success) { %>
+            <div class="alert alert--success" role="status">
+              <%= flash.success %>
+            </div>
+          <% } %>
+
+          <% if (!items || !items.length) { %>
+            <div class="empty">
+              <p class="prose">Your cart is empty.</p>
+              <a class="button primary" href="/shop">Browse products</a>
+            </div>
+          <% } else { %>
+            <div class="cart-layout">
+              <!-- Items -->
+              <div class="cart-items">
+                <form method="post" action="/cart/update">
+                  <% if (csrfToken) { %>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <% } %>
+
+                  <div class="table-wrap" role="region" aria-label="Cart items">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Item</th>
+                          <th scope="col">Price</th>
+                          <th scope="col">Qty</th>
+                          <th scope="col">Total</th>
+                          <th scope="col"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% items.forEach(item => { %>
+                          <tr>
+                            <td>
+                              <div class="cart-item-main">
+                                <% if (item.image) { %>
+                                  <a href="/product/<%= item.slug %>" class="cart-item-thumb">
+                                    <img
+                                      src="<%= item.image.url %>"
+                                      alt="<%= item.image.alt || item.name %>"
+                                      loading="lazy">
+                                  </a>
+                                <% } %>
+                                <div class="cart-item-text">
+                                  <a href="/product/<%= item.slug %>" class="link">
+                                    <%= item.name %>
+                                  </a>
+                                </div>
+                              </div>
+                            </td>
+                            <td><%= item.priceDisplay %></td>
+                            <td>
+                              <input
+                                type="number"
+                                name="quantities[<%= item.productId %>]"
+                                min="0"
+                                value="<%= item.quantity %>"
+                                class="cart-qty-input">
+                            </td>
+                            <td><%= item.lineTotalDisplay %></td>
+                            <td>
+                              <form method="post" action="/cart/remove" class="inline-form">
+                                <% if (csrfToken) { %>
+                                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <% } %>
+                                <input type="hidden" name="product_id" value="<%= item.productId %>">
+                                <button type="submit" class="button ghost small">Remove</button>
+                              </form>
+                            </td>
+                          </tr>
+                        <% }) %>
+                      </tbody>
+
+                    </table>
+                  </div>
+
+                  <div class="form-row form-actions">
+                    <button class="button ghost" type="submit">
+                      Update cart
+                    </button>
+                    <a class="button link" href="/shop">Continue shopping</a>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Summary -->
+              <aside class="cart-summary" aria-label="Order summary">
+                <div class="card">
+                  <div class="card__hd">
+                    <h2 class="card__title">Summary</h2>
+                  </div>
+                  <div class="card__body">
+                    <dl class="summary-list">
+                      <div class="summary-row summary-row--total">
+                        <dt>Subtotal</dt>
+                        <dd><strong><%= subtotalDisplay %></strong></dd>
+                      </div>
+                    </dl>
+                    <p class="prose small">
+                      Taxes and shipping are calculated at checkout.
+                    </p>
+                  </div>
+                  <div class="card__ft">
+                    <form method="post" action="/checkout">
+                      <% if (csrfToken) { %>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                      <% } %>
+                      <button class="button primary" type="submit">
+                        Checkout
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          <% } %>
+        </div>
+      </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </body>
+</html>

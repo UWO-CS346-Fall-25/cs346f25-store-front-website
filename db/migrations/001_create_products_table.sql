@@ -81,10 +81,12 @@ on public.products for select
 to anon, authenticated
 using (status = 'active');
 
--- Example: only users with an 'admin' role claim may write
--- (Set a JWT custom claim 'role' = 'admin' in your server if you use service role)
+-- only users with an 'admin' role claim may write
 create policy "Admins can write products"
 on public.products for all
 to authenticated
 using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
 with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false));
+
+
+

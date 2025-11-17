@@ -59,7 +59,7 @@
 .nav-list li {
   display: inline-flex;
   gap: 0.35rem;
-  padding: .5rem .6rem;
+  padding: .5rem .3rem;
   text-decoration: none;
   color: inherit;
   border-radius: .4rem;
@@ -103,7 +103,7 @@
 
 
 /* ---------- Mobile overrides (apply tint theme + stacked layout) ---------- */
-@media (max-width: 800px) {
+@media (max-width: 950px) {
   .site-header {
     background: var(--primary-1);
     color: var(--foreground);

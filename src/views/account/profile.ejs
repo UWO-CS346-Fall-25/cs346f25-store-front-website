@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head', { cssFiles: ['account.css'], scripts: [] }) %>
+  <body>
+    <%- include('../partials/navbar') %>
+
+    <main id="main-content">
+      <section class="section" aria-labelledby="profile-title">
+        <div class="container container--narrow">
+          <header class="section__header">
+            <div>
+              <h1 id="profile-title"><%= title || 'Profile' %></h1>
+              <p class="profile-subtitle">
+                Manage your basic account details and newsletter preferences.
+              </p>
+            </div>
+            <a class="link" href="/account">← Back to account</a>
+          </header>
+
+          <% if (flash && flash.error) { %>
+            <div class="alert alert--error" role="alert">
+              <%= flash.error %>
+            </div>
+          <% } %>
+          <% if (flash && flash.success) { %>
+            <div class="alert alert--success" role="status">
+              <%= flash.success %>
+            </div>
+          <% } %>
+
+          <form class="form form--stacked" method="post" action="/account/profile">
+            <% if (csrfToken) { %>
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <% } %>
+
+            <!-- Name section -->
+            <div class="profile-section">
+              <h2 class="profile-section__title">Name</h2>
+              <div class="profile-section__body profile-grid">
+                <div class="form-row">
+                  <label for="firstName">First name</label>
+                  <input id="firstName" name="firstName" type="text"
+                         value="<%= profile.firstName || '' %>" required>
+                  <% if (errors && errors.firstName) { %>
+                    <p class="form-error"><%= errors.firstName %></p>
+                  <% } %>
+                </div>
+
+                <div class="form-row">
+                  <label for="lastName">Last name</label>
+                  <input id="lastName" name="lastName" type="text"
+                         value="<%= profile.lastName || '' %>" required>
+                  <% if (errors && errors.lastName) { %>
+                    <p class="form-error"><%= errors.lastName %></p>
+                  <% } %>
+                </div>
+
+                <div class="form-row">
+                  <label for="displayName">Display name <span class="form-label-optional">(optional)</span></label>
+                  <input id="displayName" name="displayName" type="text"
+                         placeholder="What we call you in emails"
+                         value="<%= profile.displayName || '' %>">
+                </div>
+              </div>
+            </div>
+
+            <!-- Contact section -->
+            <div class="profile-section">
+              <h2 class="profile-section__title">Contact</h2>
+              <div class="profile-section__body profile-grid">
+                <div class="form-row">
+                  <label>Email</label>
+                  <div class="profile-email">
+                    <span><%= profile.email %></span>
+                    <!-- Later: link this to /account/security when you build it -->
+                    <span class="profile-email__hint">Email changes are managed in Security.</span>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <label for="phone">Phone <span class="form-label-optional">(optional)</span></label>
+                  <input id="phone" name="phone" type="tel"
+                         value="<%= profile.phone || '' %>">
+                </div>
+              </div>
+            </div>
+
+            <!-- Preferences / newsletter -->
+            <div class="profile-section">
+              <h2 class="profile-section__title">Preferences</h2>
+              <div class="profile-section__body">
+                <label class="checkbox">
+                  <input type="checkbox" name="newsletter" <%= profile.newsletter ? 'checked' : '' %>>
+                  <span>
+                    Send me email updates about new products, sales, and news.
+                  </span>
+                </label>
+                <p class="profile-help">
+                  You can unsubscribe at any time using the link in our emails.
+                </p>
+              </div>
+            </div>
+
+            <div class="form-row form-actions">
+              <button class="button primary" type="submit">Save changes</button>
+              <a class="button ghost" href="/account">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </body>
+</html>

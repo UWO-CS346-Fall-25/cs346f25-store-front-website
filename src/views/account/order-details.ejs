@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head', { cssFiles: ['account.css'], scripts: [] }) %>
+  <body>
+    <%- include('../partials/navbar') %>
+
+    <main id="main-content">
+      <section class="section" aria-labelledby="order-title">
+        <div class="container account">
+          <header class="section__header">
+            <div>
+              <h1 id="order-title">Order #<%= order.number %></h1>
+              <p class="order-subtitle">
+                Placed on <%= order.placed_at_display %>
+              </p>
+            </div>
+            <div class="order-header-actions">
+              <span class="status status--<%= (order.status || 'unknown').toLowerCase() %>">
+                <%= order.status_display %>
+              </span>
+              <a class="link" href="/account/orders">← Back to orders</a>
+            </div>
+          </header>
+
+          <div class="order-layout">
+            <!-- Left column: timeline + shipping/billing -->
+            <div class="order-main">
+              <!-- Timeline -->
+              <section aria-labelledby="timeline-h">
+                <h2 id="timeline-h" class="order-h2">Status</h2>
+
+                <% const s = (order.status || '').toLowerCase(); %>
+                <% const stepPlaced = true; %>
+                <% const stepShipped = ['packed','awaiting_shipment','shipped','in_transit','delivered'].includes(s); %>
+                <% const stepDelivered = ['delivered'].includes(s); %>
+
+                <ol class="timeline">
+                  <li class="timeline__item timeline__item--done">
+                    <div class="timeline__title">Order placed</div>
+                    <div class="timeline__meta"><%= order.placed_at_display %></div>
+                  </li>
+
+                  <li class="timeline__item <%= stepShipped ? (stepDelivered ? 'timeline__item--done' : 'timeline__item--current') : '' %>">
+                    <div class="timeline__title">Shipped</div>
+                    <div class="timeline__meta">
+                      <% if (order.carrier && order.tracking_code) { %>
+                        <span><%= order.carrier %> · <%= order.tracking_code %></span>
+                      <% } else { %>
+                        <span><%= stepShipped ? 'Package has left our facility.' : 'Preparing your shipment.' %></span>
+                      <% } %>
+                    </div>
+                  </li>
+
+                  <li class="timeline__item <%= stepDelivered ? 'timeline__item--done' : '' %>">
+                    <div class="timeline__title">Delivered</div>
+                    <div class="timeline__meta">
+                      <% if (order.shipping_eta_display) { %>
+                        Estimated by <%= order.shipping_eta_display %>
+                      <% } else { %>
+                        Delivery date not available yet.
+                      <% } %>
+                    </div>
+                  </li>
+                </ol>
+
+                <% if (order.carrier && order.tracking_code) { %>
+                  <p class="timeline-track">
+                    Track your package with <strong><%= order.carrier %></strong> using code
+                    <code><%= order.tracking_code %></code>.
+                  </p>
+                <% } %>
+              </section>
+
+              <!-- Addresses -->
+              <section class="order-addresses" aria-label="Addresses">
+                <div class="card">
+                  <div class="card__hd">
+                    <h2 class="card__title">Shipping address</h2>
+                  </div>
+                  <div class="card__body">
+                    <% if (order.shipping_address) { 
+                         const a = order.shipping_address; %>
+                      <p><%= a.full_name %></p>
+                      <% if (a.label) { %><p class="badge"><%= a.label %></p><% } %>
+                      <p><%= a.line1 %></p>
+                      <% if (a.line2) { %><p><%= a.line2 %></p><% } %>
+                      <p><%= a.city %>, <%= a.region || '' %> <%= a.postal_code %></p>
+                      <p><%= a.country_code %></p>
+                      <% if (a.phone) { %><p>Phone: <%= a.phone %></p><% } %>
+                    <% } else { %>
+                      <p class="muted">No shipping address on file.</p>
+                    <% } %>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card__hd">
+                    <h2 class="card__title">Billing address</h2>
+                  </div>
+                  <div class="card__body">
+                    <% if (order.billing_address) { 
+                         const b = order.billing_address; %>
+                      <p><%= b.full_name %></p>
+                      <% if (b.label) { %><p class="badge"><%= b.label %></p><% } %>
+                      <p><%= b.line1 %></p>
+                      <% if (b.line2) { %><p><%= b.line2 %></p><% } %>
+                      <p><%= b.city %>, <%= b.region || '' %> <%= b.postal_code %></p>
+                      <p><%= b.country_code %></p>
+                      <% if (b.phone) { %><p>Phone: <%= b.phone %></p><% } %>
+                    <% } else { %>
+                      <p class="muted">No billing address on file.</p>
+                    <% } %>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Right column: totals summary -->
+            <aside class="order-sidebar" aria-label="Order summary">
+              <div class="card order-summary-card">
+                <div class="card__hd">
+                  <h2 class="card__title">Order summary</h2>
+                </div>
+                <div class="card__body">
+                  <dl class="summary-list">
+                    <div class="summary-row">
+                      <dt>Subtotal</dt>
+                      <dd><%= order.subtotal_display %></dd>
+                    </div>
+                    <div class="summary-row">
+                      <dt>Shipping</dt>
+                      <dd><%= order.shipping_display %></dd>
+                    </div>
+                    <div class="summary-row">
+                      <dt>Tax</dt>
+                      <dd><%= order.tax_display %></dd>
+                    </div>
+                    <div class="summary-row summary-row--total">
+                      <dt>Total</dt>
+                      <dd><strong><%= order.total_display %></strong></dd>
+                    </div>
+                  </dl>
+                </div>
+                <div class="card__ft">
+                  <a class="button ghost" href="/shop">Reorder items</a>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          <!-- Items table -->
+          <section class="order-items" aria-labelledby="items-h">
+            <div class="section__header">
+              <h2 id="items-h">Items in this order</h2>
+            </div>
+
+            <% if (order.items && order.items.length) { %>
+              <div class="table-wrap" role="region" aria-label="Order items">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Item</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Price</th>
+                      <th scope="col">Total</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <% order.items.forEach(it => { %>
+                      <tr>
+                        <td class="order-item-main">
+                          <% if (it.product && it.product.image) { %>
+                            <a class="order-item-thumb" href="<%= it.product.url || '#' %>">
+                              <img
+                                src="<%= it.product.image.url %>"
+                                alt="<%= it.product.image.alt || it.name %>"
+                                loading="lazy"
+                              >
+                            </a>
+                          <% } %>
+
+                          <div class="order-item-main__text">
+                            <% if (it.product && it.product.url) { %>
+                              <a href="<%= it.product.url %>" class="link"><%= it.name %></a>
+                            <% } else { %>
+                              <span><%= it.name %></span>
+                            <% } %>
+                            <% if (it.sku) { %>
+                              <div class="order-item-sku">SKU: <%= it.sku %></div>
+                            <% } %>
+                          </div>
+                        </td>
+
+                        <td><%= it.quantity %></td>
+                        <td><%= it.unit_price_display %></td>
+                        <td><%= it.total_display %></td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+
+                </table>
+              </div>
+            <% } else { %>
+              <div class="empty">
+                <p class="prose">No items found for this order.</p>
+              </div>
+            <% } %>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </body>
+</html>

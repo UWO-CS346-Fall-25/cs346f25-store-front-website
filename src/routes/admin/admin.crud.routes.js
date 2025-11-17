@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
-const { authClient } = require('../models/supabase.js');
-const { uploadProductImages } = require('../middleware/uploads');
-const { uncacheProduct } = require('../models/productDatabase.js');
+const { authClient } = require('../../models/supabase.js');
+const { uploadProductImages } = require('../../middleware/uploads.js');
+const { uncacheProduct } = require('../../models/productDatabase.js');
 
 const csrfProtection = csrf({ cookie: false });
-const { authRequired } = require('../middleware/accountRequired.js');
+const { authRequired } = require('../../middleware/accountRequired.js');
 
 // ====================================================
 // ======================= CREATE =====================

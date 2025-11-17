@@ -119,6 +119,9 @@ button.primary {
   border-radius: .75rem;
   border: 0;
   transition: transform .15s ease, background .2s ease, color .2s ease;
+  /* background: linear-gradient(135deg,
+      var(--tint-1),
+      var(--tint-2)); */
   background: var(--tint-1);
   color: var(--tint-3);
   cursor: pointer;
@@ -129,6 +132,8 @@ button.primary:hover {
   transform: translateY(-1px);
   background: var(--tint-2);
 }
+
+
 
 .button.primary:active,
 button.primary:active {
@@ -204,14 +209,10 @@ button.ghost:hover {
 /* Subtle link styling */
 .link {
   text-decoration: none;
-  color: var(--primary-1);
+  color: var(--tint-1);
   /* tweak to your brand */
   font-weight: 600;
   position: relative;
-}
-
-.link .em {
-  color: var(--tint-1);
 }
 
 .link::after {
@@ -229,11 +230,16 @@ button.ghost:hover {
 
 .link:hover {
   text-decoration: none;
+  color: var(--tint-2)
 }
 
 .link:hover::after {
   transform: scaleX(1);
 }
+
+
+
+
 
 /* Generic form grid */
 .form-row {
