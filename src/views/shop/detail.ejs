@@ -77,13 +77,31 @@
               <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <% } %>
             <input type="hidden" name="product_id" value="<%= product?.id %>">
+
             <label>
               Qty
               <input id="quantity" type="number" name="quantity" min="1" value="1">
             </label>
-            <button id="add-to-cart" class="primary button" type="submit">Add to cart</button>
-            <button id="buy-now" class="ghost button" type="submit">Buy now</button>
+
+            <button
+              id="add-to-cart"
+              class="primary button"
+              type="submit"
+              name="intent"
+              value="cart">
+              Add to cart
+            </button>
+
+            <button
+              id="buy-now"
+              class="ghost button"
+              type="submit"
+              name="intent"
+              value="buy">
+              Buy now
+            </button>
           </form>
+
         </div>
       </div>
 

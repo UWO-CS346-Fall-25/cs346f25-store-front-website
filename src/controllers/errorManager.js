@@ -22,9 +22,10 @@ function throwCritical(object) {
   return object.next(new Error(object.errors[0] || 'Unknown critical error'));
 }
 
-function throwError(object, message) {
+function throwError(object, message, url = null) {
+  console.error(message);
   object.session.flash = { error: message || object.errors[0] || 'Unknown error', errorList: object.errorsMap };
-  return object.res.redirect(object.url || '/');
+  return object.res.redirect(url || object.url || '/');
 }
 
 function addError(object, message, mapKey = null) {
@@ -78,7 +79,7 @@ function generate(req, res, next, { url } = {}) {
   ctx.has = () => hasErrors(ctx);
   ctx.passwordChecker = (options) => passwordChecker(ctx, options);
   ctx.throwCritical = () => throwCritical(ctx);
-  ctx.throwError = (message) => throwError(ctx, message);
+  ctx.throwError = (message, url = null) => throwError(ctx, message, url);
   ctx.verify = (error, key = null) => verify(ctx, error, key);
   ctx.throwSuccess = (message, route = null) => throwSuccess(ctx, message, route);
   ctx.addError = (message, mapKey = null) => addError(ctx, message, mapKey);

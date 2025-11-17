@@ -40,7 +40,8 @@
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
     "node-color-log": "^13.0.3",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "stripe": "^19.3.1"
   },
   "devDependencies": {
     "eslint": "^9.37.0",

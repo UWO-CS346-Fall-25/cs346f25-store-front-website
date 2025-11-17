@@ -1,10 +1,11 @@
 # 🛍️ Storefront Website – To-Do List## Important
 ## General Next Steps
-* [ ] Complete Account pages
+* [x] Complete Account pages
 * [ ] Apply Stripe buying products
 * [ ] Add Account info into admin dashboard
 * [ ] Add Stock properties to products
 * [ ] Cleanup Account pages styling
+    * [ ] Cart / Checkout
 * [ ] View / Modify order fulfilment
 * [ ] CHAT GPT integration into order creations
 
