@@ -95,7 +95,7 @@ router.post('/checkout', async (req, res, next) => {
 // ==================================================================
 bind(router, {
   route: '/checkout/success',
-  view: 'checkout/success',
+  view: 'cart/success',
   middleware: [csrfProtection, require('../../middleware/csrfLocals.js')],
   meta: {
     title: 'Checkout Successful - Thank You!'
