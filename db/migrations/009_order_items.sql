@@ -5,7 +5,7 @@
 create table if not exists public.order_items (
   id                 uuid primary key default gen_random_uuid(),
   order_id           uuid not null references public.orders(id) on delete cascade,
-  product_id         uuid,                      -- optional FK to products(id) if UUID
+  product_id         uuid not null references public.products(id),
   sku                text,
   name               text not null,             -- snapshot name
   quantity           integer not null check (quantity > 0),

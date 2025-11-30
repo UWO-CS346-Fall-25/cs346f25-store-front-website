@@ -20,9 +20,15 @@ router.post('/checkout', async (req, res, next) => {
   try {
     const errors = errorManager(req, res, next, '/cart');
     const ctx = await userDatabase.getUser(req);
-    if (errors.applyContext(ctx)) {
-      return errors.throwError();
+    if (!ctx || !ctx.id) {
+      ctx.user = {
+        email: req.body.email || '',
+        id: undefined,//req.user.id,
+      }
     }
+    // if (errors.applyContext(ctx)) {
+    // return errors.throwError();
+    // }
 
     const cartItems = await getCart(req);
     if (!cartItems.length) {
@@ -69,16 +75,15 @@ router.post('/checkout', async (req, res, next) => {
       mode: 'payment',
       payment_method_types: ['card'],
       line_items,
-      customer_email: ctx.user.email,
       success_url: `${BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${BASE_URL}/cart`,
       metadata: {
         user_id: String(ctx.id),
       },
+      ...(ctx.user?.email ? { customer_email: ctx.user.email } : {}),
     });
 
     // For debugging while you’re testing:
-    console.log('Stripe checkout session created:', session.id, session.url);
 
     // This should send the browser straight to Stripe
     return res.redirect(303, session.url);
@@ -102,7 +107,6 @@ bind(router, {
   },
   getData: async function (req, res, next) {
     const sessionId = req.query.session_id;
-    console.log("Checkout success for session ID:", sessionId);
     if (!sessionId) {
       return {
         session: null,
