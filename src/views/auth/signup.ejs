@@ -10,11 +10,7 @@
         <h1 id="signup-heading">Sign up</h1>
         <p class="lead">Create your account to save your details and view orders.</p>
 
-        <% if (flash && flash.error) { %>
-          <div class="alert alert--error" role="alert">
-            <%= flash.error %>
-          </div>
-        <% } %>
+        <%- include('../partials/flash') %>
 
         <form class="auth-form" action="/auth/signup" method="post">
           <% if (csrfToken) { %>

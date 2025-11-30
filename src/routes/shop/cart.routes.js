@@ -118,12 +118,33 @@ router.post('/cart/update', (req, res, next) => {
     const errors = errorManager(req, res, next, 'back');
     const body = req.body || {};
 
-    // Expect fields like quantities[productId] = qty
-    const quantities = body.quantities || {};
+    const quantities = {};
+
+    // Case 1: extended: true, nested object like { quantities: { "12": "2" } }
+    if (body.quantities && typeof body.quantities === 'object') {
+      Object.assign(quantities, body.quantities);
+    }
+
+    // Case 2: extended: false, flat keys like { "quantities[12]": "2" }
+    for (const [key, value] of Object.entries(body)) {
+      const match = key.match(/^quantities\[(.+)\]$/);
+      if (match) {
+        const productId = match[1];
+        quantities[productId] = value;
+      }
+    }
+
+    if (body.product_id && body.quantity && !Object.keys(quantities).length) {
+      quantities[body.product_id] = body.quantity;
+    }
 
     Object.entries(quantities).forEach(([productId, qtyStr]) => {
       const qty = parseInt(qtyStr, 10);
       if (Number.isNaN(qty)) return;
+
+      // If you want 0 to mean "remove", you can do:
+      // if (qty <= 0) return removeFromCart(req, productId);
+
       updateCartItem(req, productId, qty);
     });
 
@@ -132,6 +153,7 @@ router.post('/cart/update', (req, res, next) => {
     next(err);
   }
 });
+
 
 /* ─────────────────────────────────────────────
  * POST /cart/remove – remove item

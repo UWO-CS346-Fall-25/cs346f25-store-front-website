@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <%- include('../partials/head', {
-    cssFiles: ['shop/product-card.css', 'shop/cart.css'],
-    scripts: []
+    cssFiles: ['shop/product-card.css','shop/cart2.css'],
+    scripts: ['shop/cart.js']
   }) %>
   <body>
     <%- include('../partials/navbar') %>
@@ -14,98 +14,119 @@
             <h1 id="cart-title" class="section__title">Your cart</h1>
           </header>
 
-          <% if (flash && flash.error) { %>
-            <div class="alert alert--error" role="alert">
-              <%= flash.error %>
-            </div>
-          <% } %>
-          <% if (flash && flash.success) { %>
-            <div class="alert alert--success" role="status">
-              <%= flash.success %>
-            </div>
-          <% } %>
+          <%- include('../partials/flash') %>
 
-          <% if (!items || !items.length) { %>
+          <% const hasItems = items && items.length; %>
+
+          <% if (!hasItems) { %>
             <div class="empty">
               <p class="prose">Your cart is empty.</p>
               <a class="button primary" href="/shop">Browse products</a>
             </div>
           <% } else { %>
             <div class="cart-layout">
-              <!-- Items -->
-              <div class="cart-items">
-                <form method="post" action="/cart/update">
-                  <% if (csrfToken) { %>
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                  <% } %>
+              <!-- Left: Items -->
+              <div class="cart-items" aria-label="Cart items">
+                <ul class="cart-items__list">
+                  <% items.forEach(item => { %>
+                    <li class="cart-item">
+                      <!-- Image -->
+                      <div class="cart-item__media">
+                        <% if (item.image) { %>
+                          <a
+                            href="/product/<%= item.slug %>"
+                            class="cart-item-thumb"
+                          >
+                            <img
+                              src="<%= item.image.url %>"
+                              alt="<%= item.image.alt || item.name %>"
+                              loading="lazy"
+                            />
+                          </a>
+                        <% } else { %>
+                          <div class="cart-item__placeholder" aria-hidden="true">
+                            No image
+                          </div>
+                        <% } %>
+                      </div>
 
-                  <div class="table-wrap" role="region" aria-label="Cart items">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th scope="col">Item</th>
-                          <th scope="col">Price</th>
-                          <th scope="col">Qty</th>
-                          <th scope="col">Total</th>
-                          <th scope="col"></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <% items.forEach(item => { %>
-                          <tr>
-                            <td>
-                              <div class="cart-item-main">
-                                <% if (item.image) { %>
-                                  <a href="/product/<%= item.slug %>" class="cart-item-thumb">
-                                    <img
-                                      src="<%= item.image.url %>"
-                                      alt="<%= item.image.alt || item.name %>"
-                                      loading="lazy">
-                                  </a>
-                                <% } %>
-                                <div class="cart-item-text">
-                                  <a href="/product/<%= item.slug %>" class="link">
-                                    <%= item.name %>
-                                  </a>
-                                </div>
-                              </div>
-                            </td>
-                            <td><%= item.priceDisplay %></td>
-                            <td>
-                              <input
-                                type="number"
-                                name="quantities[<%= item.productId %>]"
-                                min="0"
-                                value="<%= item.quantity %>"
-                                class="cart-qty-input">
-                            </td>
-                            <td><%= item.lineTotalDisplay %></td>
-                            <td>
-                              <form method="post" action="/cart/remove" class="inline-form">
-                                <% if (csrfToken) { %>
-                                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                <% } %>
-                                <input type="hidden" name="product_id" value="<%= item.productId %>">
-                                <button type="submit" class="button ghost small remove">Remove</button>
-                              </form>
-                            </td>
-                          </tr>
-                        <% }) %>
-                      </tbody>
+                      <!-- Info + controls -->
+                      <div class="cart-item__info">
+                        <h2 class="cart-item__name">
+                          <a href="/product/<%= item.slug %>" class="link">
+                            <%= item.name %>
+                          </a>
+                        </h2>
 
-                    </table>
-                  </div>
+                        <p class="cart-item__price">
+                          <%= item.priceDisplay %>
+                        </p>
 
-                  <div class="form-row form-actions">
-                    <button class="button ghost" type="submit">
-                      Update cart
-                    </button>
-                    <a class="button link" href="/shop">Continue shopping</a>
-                  </div>
-                </form>
+                        <!-- ONE form per item: handles update + remove -->
+                        <form
+                          method="post"
+                          action="/cart/update"
+                          class="cart-item__controls"
+                        >
+                          <% if (csrfToken) { %>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                          <% } %>
+
+                          <label
+                            class="cart-item__qty-label"
+                            for="qty-<%= item.productId %>"
+                          >
+                            Qty
+                          </label>
+
+                          <select
+                            id="qty-<%= item.productId %>"
+                            name="quantities[<%= item.productId %>]"
+                            class="cart-item__qty-select"
+                            onchange="this.form.submit()"
+                          >
+                            <% for (let q = 1; q <= 10; q++) { %>
+                              <option
+                                value="<%= q %>"
+                                <%= q === item.quantity ? 'selected' : '' %>
+                              >
+                                <%= q %>
+                              </option>
+                            <% } %>
+                          </select>
+
+                          <!-- Remove: overrides action to /cart/remove -->
+                          <button
+                            type="submit"
+                            class="link--icon cart-item__remove"
+                            formaction="/cart/remove"
+                            name="product_id"
+                            value="<%= item.productId %>"
+                            aria-label="Remove <%= item.name %> from cart"
+                          >
+                            <span class="sr-only">Remove</span>
+                            <%- include('../icon', { name: 'trash' }) %>
+                          </button>
+                        </form>
+                      </div>
+
+                      <!-- Line total -->
+                      <div class="cart-item__line-total">
+                        <span class="cart-item__line-label">Total</span>
+                        <span class="cart-item__line-price">
+                          <%= item.lineTotalDisplay %>
+                        </span>
+                      </div>
+                    </li>
+                  <% }); %>
+                </ul>
+
+                <div class="form-row form-actions">
+                  <a class="button link" href="/shop">Continue shopping</a>
+                </div>
               </div>
 
-              <!-- Summary -->
+              <!-- Right: Summary -->
               <aside class="cart-summary" aria-label="Order summary">
                 <div class="card">
                   <div class="card__hd">
@@ -136,6 +157,8 @@
               </aside>
             </div>
           <% } %>
+
+
         </div>
       </section>
     </main>

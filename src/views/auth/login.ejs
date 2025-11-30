@@ -12,12 +12,7 @@
           </h1>
           <p class="lead">Welcome back! Enter your details to continue.</p>
 
-          <!-- Optional flash placeholders -->
-          <% if (flash && flash.error) { %>
-            <div class="alert alert--error" role="alert">
-              <%= flash.error %>
-            </div>
-            <% } %>
+          <%- include('../partials/flash') %>
               <form class="auth-form" action="/auth/login" method="post">
                 <% if (csrfToken) { %>
                   <input type="hidden" name="_csrf" value="<%= csrfToken %>">
