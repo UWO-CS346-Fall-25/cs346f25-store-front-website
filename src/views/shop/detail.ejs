@@ -80,7 +80,11 @@
 
             <label>
               Qty
-              <input id="quantity" type="number" name="quantity" min="1" value="1">
+              <select id="quantity" name="quantity" class="cart-item__qty-select">
+                <% for (let q = 1; q <= 10; q++) { %>
+                  <option value="<%= q %>" <%= q === 1 ? 'selected' : '' %>><%= q %></option>
+                <% } %>
+              </select>
             </label>
 
             <button
