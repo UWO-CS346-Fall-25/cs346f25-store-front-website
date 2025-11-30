@@ -16,6 +16,7 @@
   margin-bottom: 1.5rem;
 }
 
+
 .admin-summary-card {
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
@@ -146,8 +147,37 @@
 /* Actions */
 .admin-actions {
   display: flex;
-  align-items: right;
+  align-items: center;
   margin: auto;
+}
+
+/* center actions (used on archived list) */
+.admin-actions--center {
+  justify-content: center;
+}
+
+/* Subtle unarchive button */
+.btn-unarchive {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  color: var(--primary-alt);
+}
+
+.btn-unarchive:hover,
+.btn-unarchive:focus {
+  background: rgba(15, 23, 42, 0.02);
+}
+
+/* remove the circular hover background from the icon helper for this button */
+.btn-unarchive::before {
+  display: none;
 }
 
 .admin-actions .draft {
@@ -307,6 +337,27 @@
 
 #new-product {
   color: var(--tint-2);
+}
+
+/* Admin panel header (back + new product) */
+.admin-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 640px) {
+  .admin-panel-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-panel-header a {
+    width: 100%;
+    text-align: left;
+  }
 }
 
 /* Optional: slightly monospace feel for long textareas */

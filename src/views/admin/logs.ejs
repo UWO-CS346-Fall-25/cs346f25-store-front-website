@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head', { cssFiles: ['/admin/dashboard.css','/admin/logs.css'], scripts: ['admin/logs.js'] }) %>
+  <body>
+    <%- include('../partials/navbar') %>
+    <header class="admin-header">
+      <h1>Admin Logs</h1>
+      <p class="subtitle">View system logs and diagnostics.</p>
+    </header>
+
+    <div class="logs-panel">
+      <a href="/admin" class="link--button link" id="back-to-dashboard">
+        
+            <%- include('../icon', { name: 'back' }) %> Back to Dashboard
+      </a>
+      <div class="logs-header">
+        <h2 class="logs-title">System Logs</h2>
+        <div class="logs-controls">
+          <input type="search" placeholder="Filter logs..." id="log-filter">
+          <select id="log-level-filter">
+            <option value="">All levels</option>
+            <option value="info">Info</option>
+            <option value="warn">Warn</option>
+            <option value="error">Error</option>
+            <option value="system">System</option>
+          </select>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th class="col-indicator" aria-hidden="true"></th>
+            <th>Time</th>
+            <th>Context</th>
+            <th>Level</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% logs.forEach((log, idx) => { %>
+            <tr class="level-<%= log.level %>" data-log-index="<%= idx %>" tabindex="0" role="button" aria-controls="detail-<%= idx %>" aria-expanded="false">
+              <td class="col-indicator" aria-hidden="true"></td>
+              <td class="col-time"><%= log.timestamp %></td>
+              <td class="col-source"><%= log.context %></td>
+              <td class="col-level level-<%= log.level %>"><span class="badge"><%= log.level.toUpperCase() %></span></td>
+              <td class="col-message">
+                <div class="msg">
+                  <%= log.message %>
+                  <% if (log.meta) { %>
+                    <span class="meta"><%= log.meta %></span>
+                  <% } %>
+                </div>
+                <% if (log.details && log.details.length) { %>
+                  <div class="msg-actions">
+                    <button type="button" class="log-toggle" aria-expanded="false">Show details</button>
+                  </div>
+                <% } %>
+              </td>
+            </tr>
+            <tr id="detail-<%= idx %>" class="detail-row level-<%= log.level %>" aria-hidden="true">
+              <td colspan="6" class="details">
+                <% 
+                  // Normalize details into an array of entries to render.
+                  let details = log.details;
+                  if (typeof details === 'string') {
+                    // Try to JSON.parse if it's a JSON string
+                    try {
+                      details = JSON.parse(details);
+                    } catch (e) {
+                      // Not valid JSON; split on escaped newlines or real newlines
+                      details = details.split(/\\n|\n/).filter(Boolean);
+                    }
+                  }
+                  if (!Array.isArray(details)) {
+                    details = details ? [details] : [];
+                  }
+                %>
+                <% if (details && details.length) { %>
+                  <div class="detail-list">
+                    <% details.forEach(function (d) { %>
+                      <div class="detail-entry">
+                        <% if (typeof d === 'string') { %>
+                          <pre class="detail-pre"><%= d %></pre>
+                        <% } else { %>
+                          <pre class="detail-pre"><%= JSON.stringify(d, null, 2) %></pre>
+                        <% } %>
+                      </div>
+                    <% }); %>
+                  </div>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

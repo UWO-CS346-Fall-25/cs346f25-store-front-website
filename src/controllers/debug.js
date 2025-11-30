@@ -49,17 +49,17 @@ function createLogger(context = 'App') {
       context,
       timestamp: isoTs,
       message: msgText,
-      details,
+      details: [...details],
     };
 
     const ctxLogs = ensureContext(context);
     ctxLogs.push(entry);
-
     // Choose color per log level
     const color =
       level === 'error' ? 'red'
-        : level === 'warn' ? 'yellow'
-          : 'green'; // info/log
+        : level === 'system' ? 'cyan'
+          : level === 'warn' ? 'yellow'
+            : 'green'; // info/log
 
     // Build styled console output with node-color-log:
     // [time][context] normal
@@ -70,7 +70,9 @@ function createLogger(context = 'App') {
     l = l.bold().append(msgText).reset();
 
     if (details.length > 0) {
-      // log supports multiple args (objects, arrays, etc.)
+      for (var i = 0; i < details.length; i++) {
+        details[i] = ' ' + details[i];
+      }
       l.log(...details);
     } else {
       // still flush what we appended
@@ -81,8 +83,10 @@ function createLogger(context = 'App') {
   return {
     // "log" == info level
     log: (message, ...details) => write('info', message, ...details),
+    info: (message, ...details) => write('info', message, ...details),
     warn: (message, ...details) => write('warn', message, ...details),
     error: (message, ...details) => write('error', message, ...details),
+    system: (message, ...details) => write('system', message, ...details),
   };
 }
 

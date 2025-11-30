@@ -1,0 +1,341 @@
+/* Admin logs - polished UI */
+
+:root {
+  --bg: #0f1724;
+  /* unused here but available */
+  --panel-bg: #ffffff;
+  --muted: #6b7280;
+  --border: #e6e9ee;
+  --surface: #f8fafc;
+  --accent: #4f46e5;
+  --success: #1f8a3d;
+
+  --system: #3b82f6;
+  --system-2: #1e40af;
+
+  --warn: #f59e0b;
+  --warn-2: #b45309;
+
+  --danger: #ef4444;
+  --danger-2: #b91c1c;
+
+  --info: #75dc9a;
+  --info-2: #2d8e74;
+
+}
+
+
+
+
+
+/* Container */
+.logs-panel {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(12, 18, 28, 0.06);
+  overflow: hidden;
+}
+
+.logs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.03), transparent);
+}
+
+.logs-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.logs-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.logs-controls input[type="search"],
+.logs-controls select {
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.95rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+thead th {
+  text-align: left;
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 0.75rem 1rem;
+  background: #fbfdff;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-bg);
+}
+
+tbody tr:nth-child(odd) {
+  background: #ffffff;
+}
+
+td {
+  padding: 0.75rem 1rem;
+  vertical-align: top;
+  font-size: 0.95rem;
+  color: #0b1220;
+}
+
+/* Columns sizing */
+.col-time {
+  width: 160px;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.col-level {
+  width: 120px;
+}
+
+.col-source {
+  width: 220px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.col-message {
+  min-width: 320px;
+}
+
+/* Message styling */
+.msg {
+  font-weight: 600;
+  color: #0b1220;
+}
+
+.msg .meta {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+/* Level badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+}
+
+.level-info .badge {
+  background: linear-gradient(90deg, var(--info), var(--info-2));
+}
+
+.level-warn .badge {
+  background: linear-gradient(90deg, var(--warn), var(--warn-2));
+}
+
+.level-error .badge {
+  background: linear-gradient(90deg, var(--danger), var(--danger-2));
+}
+
+.level-system .badge {
+  background: linear-gradient(90deg, var(--system), var(--system-2));
+}
+
+/* If the HTML uses plain text classes (old style), provide colored text fallback */
+.level-info {
+  color: var(--info);
+}
+
+.level-warn {
+  color: var(--warn);
+}
+
+.level-error {
+  color: var(--danger);
+}
+
+.level-system {
+  color: var(--system);
+}
+
+/* Preformatted payloads */
+pre {
+  background: #0f1724;
+  color: #e6eef6;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  overflow: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Details hidden by default to keep rows compact */
+/* detail-row is hidden by default and shows below the main row when open */
+.detail-row {
+  display: none;
+}
+
+.detail-row[aria-hidden="false"],
+.detail-row.show {
+  display: table-row;
+}
+
+/* Within a visible detail-row the pre should be visible */
+.detail-row td.details pre {
+  display: block;
+}
+
+/* Make detail pre blocks lighter and more readable */
+.detail-row td.details .detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-row td.details .detail-entry {
+  margin-bottom: 0.5rem;
+}
+
+.detail-row td.details .detail-pre {
+  background: #f6f8fb;
+  color: #0b1220;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+/* Indicator column (narrow colored bar on left) */
+.col-indicator {
+  width: 12px;
+  min-width: 12px;
+  padding: 0;
+}
+
+.col-indicator::after {
+  content: '';
+  display: block;
+  height: calc(100% - 16px);
+  width: 6px;
+  border-radius: 2px;
+  margin: 8px auto;
+  background: #e2e8f0;
+  /* fallback */
+}
+
+/* Color the indicator based on level (row class) */
+tbody tr.level-info td.col-indicator::after {
+  background: linear-gradient(180deg, var(--info), var(--info-2));
+}
+
+tbody tr.level-warn td.col-indicator::after {
+  background: linear-gradient(180deg, var(--warn), var(--warn-2));
+}
+
+tbody tr.level-error td.col-indicator::after {
+  background: linear-gradient(180deg, var(--danger), var(--danger-2));
+}
+
+tbody tr.level-system td.col-indicator::after {
+  background: linear-gradient(180deg, var(--system), var(--system-2));
+}
+
+/* Compact message row - smaller padding and column spacing */
+.col-message .msg {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* hide the legacy button area; clicking the row toggles details now */
+.msg-actions {
+  display: none;
+}
+
+/* Make main rows appear clickable */
+tbody tr[role="button"] {
+  cursor: pointer;
+}
+
+tbody tr[role="button"]:hover {
+  background: #fbfdff;
+}
+
+tbody tr[role="button"]:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 2px rgba(79, 70, 229, 0.06);
+}
+
+/* small screens: make rows more readable (card-like) */
+@media (max-width: 820px) {
+  thead {
+    display: none;
+  }
+
+  table,
+  tbody,
+  tr,
+  td {
+    display: block;
+    width: 100%;
+  }
+
+  tr {
+    margin-bottom: 0.75rem;
+    border: 0;
+  }
+
+  td {
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(12, 18, 28, 0.03);
+  }
+
+  td+td {
+    margin-top: 6px;
+  }
+
+  .col-label {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 6px;
+    color: var(--muted);
+  }
+}
+
+/* Utility */
+.muted {
+  color: var(--muted);
+}

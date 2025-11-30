@@ -13,7 +13,7 @@
 
         <div class="section__header--product">
           <% if (typeof backUrl === 'string' && backUrl.length) { %>
-            <a class="link" href="<%= backUrl %>">← Back</a>
+            <a class="link" href="<%= backUrl %>"><%- include('../icon', { name: 'back' }) %> Back</a>
           <% } %>
           <h1 id="product-title" class="section__title">
             <%= mainTitle || 'Product' %>

@@ -162,6 +162,17 @@ async function getNewArrivals(count) {
     return res.rows;
   });
 }
+async function getArchived() {
+  const key = `${NAMESPACE}:archivedProducts`;
+  return cache.wrap(key, TTL, async () => {
+    const res = await database.query("SELECT * FROM public.products WHERE status = 'archived' ORDER BY updated_at DESC");
+    return res.rows;
+  });
+}
+async function uncacheArchived() {
+  const key = `${NAMESPACE}:archivedProducts`;
+  cache.clearNS(key);
+}
 async function uncacheProduct(id, slug = null) {
   if (!slug) {
     const res = await database.query('SELECT slug FROM public.products WHERE id = $1', [id]);
@@ -198,6 +209,7 @@ module.exports = {
   getAll,
   getActive,
   getVisible,
+  getArchived,
   getByID,
   getBySlug,
   getFeatured,
@@ -208,5 +220,6 @@ module.exports = {
 
   uncacheProduct,
   uncacheCategory,
+  uncacheArchived,
 
 };

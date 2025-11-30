@@ -12,7 +12,7 @@
         <%- include('navbar-link', { path: '/' , link_title: 'Shop', icon: 'shop', onMobile: true }) %>
 
         <% if (isAdmin) { %>
-          <%- include('navbar-link', { path: '/admin/products' , link_title: 'Admin', icon:'admin', onMobile: true }) %>
+          <%- include('navbar-link', { path: '/admin' , link_title: 'Admin', icon:'admin', onMobile: true }) %>
         <% } else { %>
           <%- include('navbar-link', { path: '/contact' , link_title: 'Contact', icon: 'contact', onMobile: false }) %>
         <% } %>

@@ -18,7 +18,7 @@
               <span class="status status--<%= (order.status || 'unknown').toLowerCase() %>">
                 <%= order.status_display %>
               </span>
-              <a class="link" href="/account/orders">← Back to orders</a>
+              <a class="link" href="/account/orders"><%- include('../icon', { name: 'back' }) %> Back to orders</a>
             </div>
           </header>
 

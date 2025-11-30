@@ -2,29 +2,21 @@
 <html lang="en">
 <%- include('../partials/head', {
   title: 'Admin · Products',
-  cssFiles: ['admin.css'],
+  cssFiles: ['admin/dashboard.css', 'admin.css'],
   scripts: []
 }) %>
 <body>
   <%- include('../partials/navbar') %>
 
   <main id="main-content">
+    
+    <header class="admin-header">
+      <h1>Products Dashboard</h1>
+      <p class="subtitle">Create, update, and retire products shown in your shop.</p>
+    </header>
     <section class="section" aria-labelledby="admin-products-heading">
+      
       <div class="container">
-        <div class="section__header admin-page-header">
-          <div>
-            <h1 id="admin-products-heading" class="section__title">
-              Product admin
-            </h1>
-            <p class="muted">
-              Create, update, and retire products shown in your shop.
-            </p>
-          </div>
-
-          <a href="/admin/products/new" class="link--button link" id="new-product">
-            + New product
-          </a>
-        </div>
 
         <%- include('../partials/flash') %>
 
@@ -45,6 +37,15 @@
 
         <!-- Product list -->
         <section aria-label="Current products" class="admin-panel">
+            <div class="admin-panel-header">
+              <a href="/admin" class="link--button link" id="back-to-dashboard">
+                
+                <%- include('../icon', { name: 'back' }) %> Back to Dashboard
+              </a>
+              <div>
+                <a href="/admin/products/new" class="link--button link" id="new-product">+ New product</a>
+              </div>
+            </div>
           <% if (items.length) { %>
             <div class="admin-table-wrapper">
               <table class="admin-table">

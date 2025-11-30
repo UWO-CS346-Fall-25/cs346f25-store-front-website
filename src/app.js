@@ -88,7 +88,26 @@ app.use(require('./middleware/auth'));
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;
   res.locals.currentUrl = req.originalUrl;
-  res.locals.isPath = (p) => p.endsWith(req.path);
+  // Return true when the current request path equals the given path
+  // or is a sub-path of it. Example: isPath('/admin') => true for
+  // '/admin' and '/admin/products'. Normalizes leading/trailing slashes.
+  res.locals.isPath = (p) => {
+    if (!p || typeof p !== 'string') return false;
+    // Ensure a leading slash so callers can pass 'admin' or '/admin'
+    let normalized = p.startsWith('/') ? p : `/${p}`;
+    // Remove trailing slash except when the path is exactly '/'
+    if (normalized !== '/' && normalized.endsWith('/')) normalized = normalized.slice(0, -1);
+
+    // Compute the full request path including any mount/baseUrl so that
+    // router-mounted roots (e.g. app.use('/admin', adminRouter) where
+    // a route inside the router has path '/') will correctly be matched.
+    const fullReqPath = (req.baseUrl || '') + (req.path || '');
+
+    // Root should only match the root path
+    if (normalized === '/') return fullReqPath === '/';
+
+    return fullReqPath === normalized || fullReqPath.startsWith(normalized + '/');
+  };
   next();
 });
 
@@ -135,8 +154,8 @@ app.use('/', require('./routes/auth/auth.routes')(csrfProtection));
 
 
 
-const ebayRoutes = require("./routes/ebay.routes.js");
-app.use("/ebay", ebayRoutes);
+// const ebayRoutes = require("./routes/ebay.routes.js");
+// app.use("/ebay", ebayRoutes);
 
 
 // Health check and error handling using express-pretty-errors
@@ -147,15 +166,12 @@ app.use(notFound());
 app.use(errorHandler({ showStack: "dev", }));
 
 // Log registered pages to console
-const rows = registry.all().map(p => ({
-  Title: p.meta?.title || '',
-  Route: p.route,
-  View: p.view,
-}));
-console.table(rows);
 
+const log = require("./controllers/debug")("App");
 
+const rows = registry.all().map(p => `${p.meta?.title || ''} -> ${p.route} (${p.view})`);
 
-
+log.log("Registered Pages", `Total: ${rows.length}`);
+log.warn("Pages List", rows);
 
 module.exports = app;

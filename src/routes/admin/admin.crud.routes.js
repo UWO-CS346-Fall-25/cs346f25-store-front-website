@@ -3,7 +3,7 @@ const router = express.Router();
 const csrf = require('csurf');
 const { authClient } = require('../../models/supabase.js');
 const { uploadProductImages } = require('../../middleware/uploads.js');
-const { uncacheProduct } = require('../../models/productDatabase.js');
+const { uncacheProduct, uncacheArchived } = require('../../models/productDatabase.js');
 
 const csrfProtection = csrf({ cookie: false });
 const { authRequired } = require('../../middleware/accountRequired.js');
@@ -321,6 +321,7 @@ router.post('/products/:id/delete', authRequired, csrfProtection, async (req, re
       };
     }
     await uncacheProduct(id);
+    await uncacheArchived();
 
     res.redirect('/admin/products');
   } catch (err) {
@@ -331,6 +332,37 @@ router.post('/products/:id/delete', authRequired, csrfProtection, async (req, re
     }
 
     res.redirect('/admin/products');
+  }
+});
+
+// POST /admin/products/:id/unarchive
+router.post('/products/:id/unarchive', authRequired, csrfProtection, async (req, res) => {
+  const { id } = req.params;
+  const supabase = authClient(req);
+
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .update({ status: 'active', updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+
+    if (req.session) {
+      req.session.flash = {
+        error: (error || !data) ? 'Failed to unarchive product.' : null,
+        success: data ? 'Product restored successfully.' : null,
+      };
+    }
+    await uncacheProduct(id);
+    await uncacheArchived();
+    res.redirect('/admin/products/archived');
+  } catch (err) {
+    console.error('Error unarchiving product:', err);
+    if (req.session) {
+      req.session.flash = { error: 'Failed to unarchive product. Please try again.' };
+    }
+    res.redirect('/admin/products/archived');
   }
 });
 

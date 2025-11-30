@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head', { cssFiles: ['/admin/dashboard.css'], scripts: ['/admin-utilities'] }) %>
+  <body>
+    <%- include('../partials/navbar') %>
+  <header class="admin-header">
+    <h1>Admin Dashboard</h1>
+    <p class="subtitle">Select a utility to manage or inspect system internals.</p>
+  </header>
+
+  <section class="utilities-grid">
+    <% utilities.forEach(util => { %>
+      <a class="utility-card" href="<%= util.path %>" >
+        <div class="utility-icon"><%- include('../icon', { name: util.icon }) %></div>
+        <h2 class="utility-title"><%= util.name %></h2>
+        <p class="utility-description"><%= util.description %></p>
+      </a>
+    <% }) %>
+  </section>
+</body>
+</html>
