@@ -13,6 +13,7 @@
   background: var(--overlay);
   border: 1px solid var(--muted-bg);
   border-radius: 12px;
+  padding: 1.5rem;
 }
 
 .cart-qty-input {
@@ -28,6 +29,7 @@
   align-items: center;
   gap: .5rem;
 }
+
 
 .cart-item-thumb {
   display: block;
@@ -48,4 +50,9 @@
 .cart-item-text {
   display: flex;
   flex-direction: column;
+}
+
+button.ghost.remove {
+  border: none !important;
+  margin: 16px;
 }
