@@ -129,22 +129,22 @@
                         <div class="admin-actions">
                           <!-- View on storefront -->
                           
+                          <% if (product.status == 'active') { %>
                             <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
                               <span class="sr-only">View</span>
-                              <%- include('../svg/view') %>
-                            </a>
-                          <% if (product.status == 'active') { %>
-                            <a class="link link--icon" href="/admin/products/<%= product.id %>/edit">
-                              <span class="sr-only">Edit</span>
-                              <%- include('../svg/edit') %>
+                              <%- include('../icon', { name: 'eye-open' }) %>
                             </a>
                           <% } else { %>
-                            <a class="link link--icon" href="/admin/products/<%= product.id %>/edit">
-                              <span class="sr-only">Draft</span>
-                              <%- include('../svg/draft') %>
+                            <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener" >
+                              <span class="sr-only">View Draft</span>
+                              <%- include('../icon', { name: 'eye-closed-danger' }) %>
                             </a>
                           <% } %>
 
+                          <a class="link link--icon" href="/admin/products/<%= product.id %>/edit">
+                            <span class="sr-only">Edit</span>
+                            <%- include('../icon', { name: 'edit' }) %>
+                          </a>
                           <!-- Delete (POST/DELETE) -->
                           <form
                             method="post"
@@ -156,7 +156,7 @@
                             <% } %>
                             <button type="submit" class="link link--danger admin-delete-link link--icon">
                               <span class="sr-only">Edit</span>
-                              <%- include('../svg/trash') %>
+                              <%- include('../icon', { name: 'trash' }) %>
                             </button>
                           </form>
                         </div>

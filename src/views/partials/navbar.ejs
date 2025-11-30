@@ -1,14 +1,15 @@
+<%- include('./../svg/icon-sprites') %>
+
 <header class="site-header" role="banner">
   <div class="container nav-inner">
     <a href="/" class="brand" aria-label="Home">
-      <!-- Remove width/height attributes; control via CSS so it won't clip -->
       <img src="/images/RavensTreasures_Logo.png" alt="Raven's Treasures logo" decoding="async" loading="eager">
       <span class="brand-title"><%- siteName %></span>
     </a>
 
     <nav id="primary-nav" class="nav" aria-label="Primary">
       <ul class="nav-list" role="list">
-        <%- include('navbar-link', { path: '/' , link_title: 'Shop', icon: 'home', onMobile: true }) %>
+        <%- include('navbar-link', { path: '/' , link_title: 'Shop', icon: 'shop', onMobile: true }) %>
 
         <% if (isAdmin) { %>
           <%- include('navbar-link', { path: '/admin/products' , link_title: 'Admin', icon:'admin', onMobile: true }) %>
@@ -16,8 +17,7 @@
           <%- include('navbar-link', { path: '/contact' , link_title: 'Contact', icon: 'contact', onMobile: false }) %>
         <% } %>
         <% if (cartCount > 0) { %>
-          <%- include('navbar-link', { path: '/cart' , link_title: 'Cart' + (cartCount> 0 ? ' (' +
-            cartCount + ')' : ''), icon:'home', onMobile: true }) %>
+          <%- include('navbar-link', { path: '/cart' , link_title: 'Cart', icon:'cart', onMobile: true, count: cartCount }) %>
         <% } %>
 
         <% if (user !=null) { %>
@@ -26,8 +26,8 @@
           <% } %>
           <%- include('navbar-logout') %>
         <% } else { %>
-          <%- include('navbar-link', { path: '/login' , link_title: 'Login', icon:'sign-in', onMobile: true }) %>
-          <%- include('navbar-link', { path: '/signup' , link_title: 'Sign up', icon:'sign-up', onMobile: false }) %>
+          <%- include('navbar-link', { path: '/login' , link_title: 'Login', icon:'login', onMobile: true }) %>
+          <%- include('navbar-link', { path: '/signup' , link_title: 'Sign up', icon:'sign-up', onMobile: true }) %>
         <% } %>
       </ul>
     </nav>
