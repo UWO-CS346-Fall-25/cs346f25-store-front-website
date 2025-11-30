@@ -17,6 +17,13 @@ const utilities = [
     icon: 'admin-archive',
   },
   {
+    id: 'users',
+    name: 'Users & Profiles',
+    description: 'Manage user accounts and profiles',
+    path: '/admin/users',
+    icon: 'admin-users',
+  },
+  {
     id: 'logs',
     name: 'Log Viewer',
     description: 'View and filter application logs',

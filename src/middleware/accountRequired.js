@@ -29,5 +29,23 @@ function accountRequired(req, res, next) {
 }
 
 
-module.exports = { authRequired, accountRequired };
+function adminRequired(req, res, next) {
+  // Must be logged in
+  if (!req.user) {
+    if (req.session) req.session.returnTo = req.originalUrl;
+    return res.redirect('/login');
+  }
+
+  // auth middleware sets `req.isAdmin` (true/false) — fall back to checking role
+  const isAdmin = (typeof req.isAdmin === 'boolean') ? req.isAdmin : (req.user?.app_metadata?.role === 'admin');
+
+  if (!isAdmin) {
+    if (req.session) req.session.flash = { error: 'Admin access required.' };
+    return res.redirect('/');
+  }
+
+  next();
+}
+
+module.exports = { authRequired, accountRequired, adminRequired };
 

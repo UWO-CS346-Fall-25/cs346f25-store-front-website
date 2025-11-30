@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
-const { authClient } = require('../../models/supabase.js');
+const { authClient, masterClient } = require('../../models/supabase.js');
 const { uploadProductImages } = require('../../middleware/uploads.js');
 const { uncacheProduct, uncacheArchived } = require('../../models/productDatabase.js');
 
 const csrfProtection = csrf({ cookie: false });
-const { authRequired } = require('../../middleware/accountRequired.js');
+const { authRequired, adminRequired } = require('../../middleware/accountRequired.js');
 
 // ====================================================
 // ======================= CREATE =====================
@@ -23,8 +23,9 @@ function dollarsToCents(value) {
 router.post(
   '/products/create',
   authRequired,
-  uploadProductImages,   // 1) parse files and multipart form
-  csrfProtection,        // 2) check CSRF token from parsed body
+  adminRequired,
+  uploadProductImages, // 1) parse files and multipart form
+  csrfProtection, // 2) check CSRF token from parsed body
   async (req, res, next) => {
     const supabase = authClient(req);
 
@@ -40,7 +41,7 @@ router.post(
         seo_title,
         seo_description,
         sku,
-        image_url,       // optional external URL
+        image_url, // optional external URL
       } = req.body;
 
       // basic validation
@@ -52,7 +53,6 @@ router.post(
       const price_cents = dollarsToCents(price);
       const productStatus = status || 'draft';
       const productCurrency = currency || 'USD';
-
 
       // Build row for public.products
       const insertRow = {
@@ -179,8 +179,9 @@ router.post(
 router.post(
   '/products/:id/edit',
   authRequired,
-  uploadProductImages,   // parse multipart + files
-  csrfProtection,        // then check CSRF
+  adminRequired,
+  uploadProductImages, // parse multipart + files
+  csrfProtection, // then check CSRF
   async (req, res, _next) => {
     const supabase = authClient(req);
     const id = req.params.id;
@@ -298,7 +299,7 @@ router.post(
 // ====================================================
 
 
-router.post('/products/:id/delete', authRequired, csrfProtection, async (req, res) => {
+router.post('/products/:id/delete', authRequired, adminRequired, csrfProtection, async (req, res) => {
   const { id } = req.params;
   const supabase = authClient(req);
 
@@ -336,7 +337,7 @@ router.post('/products/:id/delete', authRequired, csrfProtection, async (req, re
 });
 
 // POST /admin/products/:id/unarchive
-router.post('/products/:id/unarchive', authRequired, csrfProtection, async (req, res) => {
+router.post('/products/:id/unarchive', authRequired, adminRequired, csrfProtection, async (req, res) => {
   const { id } = req.params;
   const supabase = authClient(req);
 
@@ -367,5 +368,70 @@ router.post('/products/:id/unarchive', authRequired, csrfProtection, async (req,
 });
 
 
+// ====================================================
+// =================== USER ADMIN =====================
+// ====================================================
+
+// POST /admin/users/:id/set-role  -> body: role=admin|user|banned
+router.post('/users/:id/set-role', authRequired, adminRequired, csrfProtection, async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body || {};
+  const supabase = masterClient();
+
+  const allowed = ['admin', 'user', 'banned'];
+  const desired = String(role || '').toLowerCase();
+  if (!allowed.includes(desired)) {
+    if (req.session) req.session.flash = { error: 'Invalid role.' };
+    return res.redirect('/admin/users');
+  }
+
+  try {
+    const { error } = await supabase.auth.admin.updateUserById(id, {
+      app_metadata: { role: desired },
+    });
+
+    if (req.session) {
+      req.session.flash = { error: error ? 'Failed to update role.' : null, success: error ? null : 'Role updated.' };
+    }
+    return res.redirect('/admin/users');
+  } catch (err) {
+    console.error('Error updating user role:', err);
+    if (req.session) req.session.flash = { error: 'Failed to update role.' };
+    return res.redirect('/admin/users');
+  }
+});
+
+// POST /admin/users/:id/ban -> body: action=ban|unban
+router.post('/users/:id/ban', authRequired, adminRequired, csrfProtection, async (req, res) => {
+  const { id } = req.params;
+  const action = (req.body && req.body.action) ? String(req.body.action).toLowerCase() : '';
+  const supabase = masterClient();
+
+  try {
+    if (action === 'ban') {
+      // set app role to 'banned' and mark user metadata
+      const { error } = await supabase.auth.admin.updateUserById(id, {
+        app_metadata: { role: 'banned' },
+        user_metadata: { banned: true },
+      });
+      if (req.session) req.session.flash = { error: error ? 'Failed to ban user.' : null, success: error ? null : 'User banned.' };
+    } else if (action === 'unban') {
+      // restore to 'user'
+      const { error } = await supabase.auth.admin.updateUserById(id, {
+        app_metadata: { role: 'user' },
+        user_metadata: { banned: false },
+      });
+      if (req.session) req.session.flash = { error: error ? 'Failed to unban user.' : null, success: error ? null : 'User unbanned.' };
+    } else {
+      if (req.session) req.session.flash = { error: 'Invalid action.' };
+    }
+    return res.redirect('/admin/users');
+  } catch (err) {
+    console.error('Error banning/unbanning user:', err);
+    if (req.session) req.session.flash = { error: 'Failed to update user.' };
+    return res.redirect('/admin/users');
+  }
+});
 
 module.exports = router;
+
