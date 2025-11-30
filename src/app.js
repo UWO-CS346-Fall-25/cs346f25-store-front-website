@@ -108,6 +108,10 @@ configure({
 
 const csrfProtection = csrf({ cookie: false });
 
+app.use((req, res, next) => {
+  res.locals.cartCount = require('./models/cart').getCart(req).reduce((sum, item) => sum + item.quantity, 0);
+  next();
+});
 
 app.use('/', require('./routes/root.routes'));
 app.use('/', require('./routes/pages.routes'));

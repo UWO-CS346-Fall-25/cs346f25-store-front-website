@@ -15,8 +15,8 @@
         <% } else { %>
           <%- include('navbar-link', { path: '/contact' , link_title: 'Contact', icon: 'contact', onMobile: false }) %>
         <% } %>
-        <% if (false) { %>
-          <%- include('navbar-link', { path: '/shop/cart' , link_title: 'Cart' + (cartCount> 0 ? ' (' +
+        <% if (cartCount > 0) { %>
+          <%- include('navbar-link', { path: '/cart' , link_title: 'Cart' + (cartCount> 0 ? ' (' +
             cartCount + ')' : ''), icon:'home', onMobile: true }) %>
         <% } %>
 

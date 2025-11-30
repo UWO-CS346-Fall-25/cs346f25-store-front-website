@@ -1,0 +1,24 @@
+:root {
+  --primary-1: #a9a7be;
+  --primary-2: #9b93b7;
+  --primary-3: #857aab;
+
+  --tint-1: #388A67;
+  --tint-2: #21b977;
+  --tint-3: #a5e2c8ff;
+
+  --background: #F0F0F3;
+  --foreground: #000000;
+  --overlay: #ffffff;
+
+  --footer-bg: var(--primary-1);
+  --footer-fg: var(--primary-3);
+  --primary-alt: var(--primary-3);
+  --tint-alt: var(--tint-1);
+  --success-bg: #21b977;
+  --success-fg: #ffffffff;
+
+  --error: #ef4444;
+  --muted-fg: #515152ff;
+  --muted-bg: #ccccd3ff;
+}
