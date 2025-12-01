@@ -4,6 +4,7 @@ const cache = require('../controllers/cache.js');
 const database = require('./db.js');
 const { genericClient } = require('./supabase.js');
 const supabase = genericClient();
+const dbStats = require('../controllers/dbStats.js');
 
 const NAMESPACE = 'productDB';
 const TTL = 60_000; // TODO: adjust cache TTL as needed (should be higher / can clear cache as needed)
@@ -23,6 +24,7 @@ async function bindImages(products) {
     const key = `${NAMESPACE}:product:${p.id}:images`;
     p.images = await cache.wrap(key, TTL, async () => {
       const res = await database.query('SELECT path, external_url, alt FROM public.product_images WHERE product_id = $1 ORDER BY is_primary DESC, id ASC', [p.id]);
+      dbStats.increment();
       for (let r of res.rows) {
         r.url = generateUrl(p.id, r.path, r.external_url);
       }

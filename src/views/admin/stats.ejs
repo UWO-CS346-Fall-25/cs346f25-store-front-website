@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: title || 'Admin · Stats', cssFiles: ['admin/dashboard.css','admin.css'], scripts: ['admin/stats.js'] }) %>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main id="main-content">
+    <header class="admin-header">
+      <h1>Database Call Statistics</h1>
+      <p class="subtitle">Frequency of database calls over time.</p>
+    </header>
+
+    <section class="section" aria-labelledby="admin-stats-heading">
+      <div class="container">
+        <%- include('../partials/flash') %>
+
+        <section class="admin-panel">
+          <a href="/admin" class="link--button link" id="back-to-dashboard">
+            <%- include('../icon', { name: 'back' }) %> Back to Dashboard
+          </a>
+
+          <div style="margin-top:1rem;">
+            <div style="display:flex;gap:1rem;align-items:center;">
+              <div><strong>Total DB calls:</strong> <span id="total-calls">0</span></div>
+              <div>
+                <label for="minutes">Window:</label>
+                <select id="minutes">
+                  <option value="15">15m</option>
+                  <option value="60" selected>60m</option>
+                  <option value="240">4h</option>
+                  <option value="1440">24h</option>
+                </select>
+              </div>
+              <div>
+                <button id="refresh" class="button">Refresh</button>
+                <button id="reset" class="button muted">Reset</button>
+              </div>
+            </div>
+
+            <div style="margin-top:1rem;">
+              <canvas id="dbChart" width="800" height="300" aria-label="DB calls chart"></canvas>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+  <!-- Chart.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+</body>
+</html>

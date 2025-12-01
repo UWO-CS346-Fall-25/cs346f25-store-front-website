@@ -45,6 +45,13 @@ const utilities = [
     icon: 'admin-todo',
   },
   {
+    id: 'database',
+    name: 'Database Manager',
+    description: 'View and manage database connections',
+    path: '/admin/stats',
+    icon: 'admin-database',
+  },
+  {
     id: 'health',
     name: 'Health Status',
     description: 'Basic health checks and diagnostics',

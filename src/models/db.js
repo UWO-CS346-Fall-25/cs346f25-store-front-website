@@ -10,6 +10,7 @@
  */
 
 const { Pool } = require('pg');
+const dbStats = require('../controllers/dbStats');
 
 // Create connection pool
 const pool = new Pool({
@@ -41,6 +42,8 @@ pool.on('error', (err) => {
  * @returns {Promise<object>} Query result
  */
 const query = (text, params) => {
+  // record every call through this helper
+  try { dbStats.increment(1); } catch (e) { /* never crash on stats */ }
   return pool.query(text, params);
 };
 
@@ -48,8 +51,15 @@ const query = (text, params) => {
  * Get a client from the pool for transactions
  * @returns {Promise<object>} Database client
  */
-const getClient = () => {
-  return pool.connect();
+const getClient = async () => {
+  const client = await pool.connect();
+  // Wrap client's query so queries done via transaction clients are counted too
+  const origQuery = client.query.bind(client);
+  client.query = (...args) => {
+    try { dbStats.increment(1); } catch (e) { /* ignore */ }
+    return origQuery(...args);
+  };
+  return client;
 };
 
 module.exports = {
