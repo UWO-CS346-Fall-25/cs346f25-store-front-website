@@ -38,6 +38,13 @@ const utilities = [
     icon: 'admin-log',
   },
   {
+    id: 'todo',
+    name: 'TODO List',
+    description: 'View development TODOs and tasks',
+    path: '/admin/todo',
+    icon: 'admin-todo',
+  },
+  {
     id: 'health',
     name: 'Health Status',
     description: 'Basic health checks and diagnostics',
