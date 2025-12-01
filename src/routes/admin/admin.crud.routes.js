@@ -378,14 +378,37 @@ router.post('/users/:id/set-role', authRequired, adminRequired, csrfProtection, 
   const { role } = req.body || {};
   const supabase = masterClient();
 
-  const allowed = ['admin', 'user', 'banned'];
+  const allowed = ['admin', 'staff', 'user', 'banned'];
   const desired = String(role || '').toLowerCase();
   if (!allowed.includes(desired)) {
     if (req.session) req.session.flash = { error: 'Invalid role.' };
     return res.redirect('/admin/users');
   }
 
+  // Prevent users changing their own role
+  if (req.user && String(req.user.id) === String(id)) {
+    if (req.session) req.session.flash = { error: 'You cannot change your own role.' };
+    return res.redirect('/admin/users');
+  }
+
   try {
+    // Fetch the target user to check their current role
+    let targetUser = null;
+    try {
+      const { data: getData, error: getErr } = await supabase.auth.admin.getUserById(id);
+      if (!getErr && getData) targetUser = getData.user || getData;
+    } catch (e) {
+      // ignore fetch error; we'll defensively block if we can't determine
+    }
+
+    const targetRole = (targetUser && (targetUser?.app_metadata?.role || targetUser?.role)) ? String(targetUser.app_metadata?.role || targetUser.role).toLowerCase() : null;
+
+    // Disallow modifying admins (nobody can modify admin accounts)
+    if (targetRole === 'admin') {
+      if (req.session) req.session.flash = { error: 'Modifying admin accounts is not allowed.' };
+      return res.redirect('/admin/users');
+    }
+
     const { error } = await supabase.auth.admin.updateUserById(id, {
       app_metadata: { role: desired },
     });
@@ -408,6 +431,27 @@ router.post('/users/:id/ban', authRequired, adminRequired, csrfProtection, async
   const supabase = masterClient();
 
   try {
+    // Prevent banning/changing own status
+    if (req.user && String(req.user.id) === String(id)) {
+      if (req.session) req.session.flash = { error: 'You cannot ban or unban yourself.' };
+      return res.redirect('/admin/users');
+    }
+
+    // Fetch target user to check role; if admin, disallow any modifications
+    let targetUser = null;
+    try {
+      const { data: getData, error: getErr } = await supabase.auth.admin.getUserById(id);
+      if (!getErr && getData) targetUser = getData.user || getData;
+    } catch (e) {
+      // ignore
+    }
+
+    const targetRole = (targetUser && (targetUser?.app_metadata?.role || targetUser?.role)) ? String(targetUser.app_metadata?.role || targetUser.role).toLowerCase() : null;
+    if (targetRole === 'admin') {
+      if (req.session) req.session.flash = { error: 'Modifying admin accounts is not allowed.' };
+      return res.redirect('/admin/users');
+    }
+
     if (action === 'ban') {
       // set app role to 'banned' and mark user metadata
       const { error } = await supabase.auth.admin.updateUserById(id, {

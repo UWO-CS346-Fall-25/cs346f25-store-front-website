@@ -57,7 +57,6 @@ bind(router, {
         const users = (data && data.users) || [];
         const total = (data && data.total) || null;
         const totalPages = total ? Math.max(1, Math.ceil(total / perPage)) : page;
-
         return {
           users,
           flash,

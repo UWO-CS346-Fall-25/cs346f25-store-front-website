@@ -431,3 +431,154 @@
   object-fit: cover;
   border-radius: 3px;
 }
+
+/* Danger variant for ghost buttons used in admin tables (e.g., Ban) */
+.button.ghost.danger {
+  color: var(--error);
+  border-color: rgba(220, 38, 38, 0.25);
+}
+
+.button.ghost.danger:hover,
+.button.ghost.danger:focus {
+  color: #7f1d1d;
+  border-color: #7f1d1d;
+}
+
+/* Compact icon buttons used across admin tables */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.icon-btn .icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.icon-btn.primary {
+  background: var(--tint-1);
+  color: var(--tint-3);
+  border-color: transparent;
+}
+
+.icon-btn.ghost {
+  background: transparent;
+  color: var(--tint-1);
+  border-color: rgba(15, 23, 42, 0.06);
+}
+
+.icon-btn.danger {
+  color: var(--error);
+  border-color: rgba(220, 38, 38, 0.12);
+}
+
+.icon-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(15, 23, 42, 0.02);
+}
+
+.icon-btn:focus {
+  outline: 2px solid rgba(155, 135, 245, 0.25);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* ---- admin-simple: compact, clean buttons used in admin UI ---- */
+.admin-simple {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  /* same visual height as other icon buttons */
+  min-width: 36px;
+  /* allows single-icon or small label */
+  padding: 0 10px;
+  /* small horizontal padding for short labels */
+  gap: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  background: transparent;
+  color: var(--tint-1);
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.admin-simple .icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.admin-simple.primary {
+  background: var(--tint-1);
+  color: var(--tint-3);
+  border-color: transparent;
+}
+
+.admin-simple.ghost {
+  background: transparent;
+  color: var(--tint-1);
+  border-color: rgba(15, 23, 42, 0.06);
+}
+
+.admin-simple.danger {
+  color: var(--error);
+  border-color: rgba(220, 38, 38, 0.12);
+}
+
+.admin-simple:hover {
+  transform: translateY(-1px);
+  background: rgba(15, 23, 42, 0.03);
+}
+
+.admin-simple:active {
+  transform: translateY(0);
+}
+
+.admin-simple:focus {
+  outline: 2px solid rgba(155, 135, 245, 0.25);
+  outline-offset: 2px;
+}
+
+/* Highlight the currently logged-in user in the admin users table */
+.current-user-row {
+  background: rgba(222, 255, 230, 0.6);
+  transition: background 120ms ease;
+  border-left: 4px solid rgba(34, 197, 94, 0.22);
+}
+
+.current-user-row td {
+  /* ensure legibility on the highlighted row */
+  color: inherit;
+}
+
+@media (prefers-color-scheme: dark) {
+  .current-user-row {
+    background: rgba(34, 197, 94, 0.08);
+    border-left-color: rgba(34, 197, 94, 0.35);
+  }
+}

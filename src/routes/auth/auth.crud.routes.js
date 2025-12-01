@@ -94,6 +94,7 @@ module.exports = function (csrfProtection) {
       options: {
         data: {
           display_name: name,
+          role: 'user',
         },
       },
     });

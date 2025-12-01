@@ -5,27 +5,25 @@
   <%- include('../partials/navbar') %>
 
   <main id="main-content">
+    <header class="admin-header">
+      <h1>Users Dashboard</h1>
+      <p class="subtitle">List of registered users and basic profile metadata.</p>
+    </header>
     <section class="section" aria-labelledby="admin-users-heading">
       <div class="container">
-        <div class="section__header admin-page-header">
-          <div>
-            <h1 id="admin-users-heading" class="section__title">Users & Profiles</h1>
-            <p class="muted">List of registered users and basic profile metadata.</p>
-          </div>
-          <div>
-            <a href="/admin" class="link"><%- include('../icon', { name: 'back'}) %> Back to Dashboard</a>
-          </div>
-        </div>
 
         <%- include('../partials/flash') %>
 
         <section class="admin-panel">
           <% const rows = users || []; const page = (paging && paging.page) || 1; const perPage = (paging && paging.perPage) || 10; const totalPages = (paging && paging.totalPages) || 1; const qVal = (typeof q !== 'undefined' && q) ? q : (typeof query !== 'undefined' && query.q ? query.q : ''); %>
 
+          <a href="/admin" class="link--button link" id="back-to-dashboard">
+            <%- include('../icon', { name: 'back' }) %> Back to Dashboard
+          </a>
           <form method="get" action="" style="margin-bottom:0.75rem;display:flex;gap:0.5rem;align-items:center;">
             <input type="text" name="q" value="<%= qVal %>" placeholder="Search users by email, name, or metadata" style="flex:1;padding:0.4rem;border:1px solid #ddd;border-radius:4px;" />
             <input type="hidden" name="perPage" value="<%= perPage %>" />
-            <button class="btn" type="submit">Search</button>
+            <button class="button primary small" type="submit">Search</button>
             <% if (qVal) { %>
               <a class="link" href="?perPage=<%= perPage %>">Clear</a>
             <% } %>
@@ -40,7 +38,6 @@
                     <th></th>
                     <th>Email</th>
                     <th>Name</th>
-                    <th>Role</th>
                     <th>Created</th>
                     <th>Last sign in</th>
                     <th>Actions</th>
@@ -53,6 +50,7 @@
                       const r = String(role).toLowerCase();
                       switch (r) {
                         case 'admin':
+                          return 'level-warn';
                         case 'staff':
                         case 'manager':
                           return 'level-system';
@@ -80,42 +78,58 @@
                       const normRole = rawRole ? String(rawRole).toLowerCase() : 'user';
                       const roleDisplay = normRole ? (normRole.charAt(0).toUpperCase() + normRole.slice(1)) : '—';
                     %>
-                    <tr>
+                    <tr class="<%= String(user && user.id) === String(u.id) ? 'current-user-row' : '' %>">
                       <td class="col-role"><div class="<%= roleClassFor(normRole) %>"><span class="badge"><%= roleDisplay %></span></div></td>
                       <td><%= u.email %></td>
-                      <td><%= u.display_name || '—' %></td>
-                      <td><%= roleDisplay %></td>
+                      <td><%= u.user_metadata.display_name || '—' %></td>
                       <td class="muted"><%= u.created_at ? new Date(u.created_at).toLocaleString() : '—' %></td>
                       <td class="muted"><%= u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString() : '—' %></td>
                       <td>
-                        <!-- Set role form -->
-                        <% if (normRole !== 'admin') { %>
-                          <form method="post" action="/admin/users/<%= u.id %>/set-role" style="display:inline;margin-right:6px;">
-                            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                            <input type="hidden" name="role" value="admin" />
-                            <button class="btn" type="submit">Make Admin</button>
-                          </form>
+                        <% const canModify = !(user && String(user.id) === String(u.id)) && normRole !== 'admin'; %>
+                        <% if (!canModify) { %>
+                          <span class="muted">Protected</span>
                         <% } else { %>
-                          <form method="post" action="/admin/users/<%= u.id %>/set-role" style="display:inline;margin-right:6px;">
-                            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                            <input type="hidden" name="role" value="user" />
-                            <button class="btn" type="submit">Revoke Admin</button>
-                          </form>
-                        <% } %>
+                          <!-- Set role form (promote to staff instead of admin) -->
+                          <% if (normRole !== 'staff') { %>
+                            <form method="post" action="/admin/users/<%= u.id %>/set-role" style="display:inline;margin-right:6px;">
+                              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                              <input type="hidden" name="role" value="staff" />
+                              <button class="admin-simple" type="submit" title="Make Staff">
+                                <%- include('../icon', { name: 'admin-promote' }) %>
+                                Make Staff
+                              </button>
+                            </form>
+                          <% } else { %>
+                            <form method="post" action="/admin/users/<%= u.id %>/set-role" style="display:inline;margin-right:6px;">
+                              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                              <input type="hidden" name="role" value="user" />
+                              <button class="admin-simple" type="submit" title="Revoke Staff">
+                                <%- include('../icon', { name: 'admin-demote' }) %>
+                                Revoke Staff
+                              </button>
+                            </form>
+                          <% } %>
 
-                        <!-- Ban/unban form -->
-                        <% if (normRole !== 'banned') { %>
-                          <form method="post" action="/admin/users/<%= u.id %>/ban" style="display:inline;">
-                            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                            <input type="hidden" name="action" value="ban" />
-                            <button class="btn" type="submit">Ban</button>
-                          </form>
-                        <% } else { %>
-                          <form method="post" action="/admin/users/<%= u.id %>/ban" style="display:inline;">
-                            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                            <input type="hidden" name="action" value="unban" />
-                            <button class="btn" type="submit">Unban</button>
-                          </form>
+                          <!-- Ban/unban form -->
+                          <% if (normRole !== 'banned') { %>
+                            <form method="post" action="/admin/users/<%= u.id %>/ban" style="display:inline;">
+                              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                              <input type="hidden" name="action" value="ban" />
+                              <button class="admin-simple" type="submit" title="Ban">
+                                <%- include('../icon', { name: 'admin-ban' }) %>
+                                Ban
+                              </button>
+                            </form>
+                          <% } else { %>
+                            <form method="post" action="/admin/users/<%= u.id %>/ban" style="display:inline;">
+                              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                              <input type="hidden" name="action" value="unban" />
+                              <button class="admin-simple" type="submit" title="Unban">
+                                <%- include('../icon', { name: 'admin-unban' }) %>
+                                Unban
+                              </button>
+                            </form>
+                          <% } %>
                         <% } %>
                       </td>
                     </tr>

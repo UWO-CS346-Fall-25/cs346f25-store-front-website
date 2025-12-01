@@ -37,8 +37,8 @@ function adminRequired(req, res, next) {
   }
 
   // auth middleware sets `req.isAdmin` (true/false) — fall back to checking role
-  const isAdmin = (typeof req.isAdmin === 'boolean') ? req.isAdmin : (req.user?.app_metadata?.role === 'admin');
-
+  // Treat 'staff' as an elevated role equivalent to admin for back-office access
+  const isAdmin = (['admin', 'staff'].includes(String(req.user?.app_metadata?.role || '').toLowerCase()));
   if (!isAdmin) {
     if (req.session) req.session.flash = { error: 'Admin access required.' };
     return res.redirect('/');
