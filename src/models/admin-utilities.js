@@ -10,6 +10,13 @@ const utilities = [
     icon: 'admin-products',
   },
   {
+    id: 'orders',
+    name: 'Orders Manager',
+    description: 'Manage customer orders',
+    path: '/admin/orders',
+    icon: 'admin-orders',
+  },
+  {
     id: 'archived-products',
     name: 'Archived Products',
     description: 'View and restore archived products',

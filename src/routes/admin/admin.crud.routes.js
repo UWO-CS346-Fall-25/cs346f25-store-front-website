@@ -477,5 +477,40 @@ router.post('/users/:id/ban', authRequired, adminRequired, csrfProtection, async
   }
 });
 
+// POST /admin/orders/:id/status -> body: status=<new_status>
+router.post('/orders/:id/status', authRequired, adminRequired, csrfProtection, async (req, res) => {
+  const { id } = req.params;
+  const status = (req.body && req.body.status) ? String(req.body.status).trim() : '';
+  const supabase = masterClient();
+
+  const allowed = ['processing', 'packed', 'awaiting_shipment', 'shipped', 'in_transit', 'delivered', 'canceled', 'cancelled', 'refunded', 'on_hold'];
+  const desired = String(status || '').toLowerCase();
+  if (!allowed.includes(desired)) {
+    if (req.session) req.session.flash = { error: 'Invalid order status.' };
+    return res.redirect('/admin/orders');
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .update({ status: desired, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+
+    if (req.session) {
+      req.session.flash = {
+        error: (error || !data) ? 'Failed to update order status.' : null,
+        success: (data && !error) ? 'Order status updated.' : null,
+      };
+    }
+    return res.redirect('/admin/orders');
+  } catch (err) {
+    console.error('Error updating order status:', err);
+    if (req.session) req.session.flash = { error: 'Failed to update order status.' };
+    return res.redirect('/admin/orders');
+  }
+});
+
 module.exports = router;
 
