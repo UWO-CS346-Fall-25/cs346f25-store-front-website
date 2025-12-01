@@ -1,140 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('../partials/head', { title: 'Admin · Order', cssFiles: ['admin/dashboard.css', 'admin.css'], scripts: [] }) %>
-<body>
-  <%- include('../partials/navbar') %>
+  <%- include('../partials/head', { cssFiles: ['account.css', 'admin/dashboard.css'], scripts: [] }) %>
+  <body>
+    <%- include('../partials/navbar') %>
 
-  <main id="main-content">
-    <header class="admin-header">
-      <h1>Order #<%= order.number %></h1>
-      <p class="subtitle">Admin view for order <%= order.number %></p>
-    </header>
-
-    <section class="section">
-      <div class="container">
-        <a href="/admin/orders" class="link--button link"><%- include('../icon', { name: 'back' }) %> Back to Orders</a>
-        <%- include('../partials/flash') %>
-
-        <div class="admin-panel" style="margin-top:1rem;">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+    <main id="main-content">
+      <section class="section" aria-labelledby="order-title">
+        <div class="container account">
+          <header class="section__header">
             <div>
-              <h2>Order #<%= order.number %></h2>
-              <div class="muted">Placed: <%= order.placed_at_display %></div>
-              <% if (order.user_email) { %>
-                <div class="muted">Customer: <a class="link" href="/admin/users?q=<%= encodeURIComponent(order.user_email) %>"><%= order.user_email %></a></div>
-              <% } %>
+              <h1 id="order-title">Order #<%= order.number %></h1>
+              <p class="order-subtitle">
+                Placed on <%= order.placed_at_display %>
+              </p>
             </div>
-            <div style="text-align:right;">
-              <form method="post" action="/admin/orders/<%= order.id %>/status">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                <label for="status-select">Status</label>
-                <select id="status-select" name="status">
-                  <option value="processing" <%= order.status==='processing' ? 'selected' : '' %>>Processing</option>
-                  <option value="packed" <%= order.status==='packed' ? 'selected' : '' %>>Packed</option>
-                  <option value="awaiting_shipment" <%= order.status==='awaiting_shipment' ? 'selected' : '' %>>Awaiting shipment</option>
-                  <option value="shipped" <%= order.status==='shipped' ? 'selected' : '' %>>Shipped</option>
-                  <option value="in_transit" <%= order.status==='in_transit' ? 'selected' : '' %>>In transit</option>
-                  <option value="delivered" <%= order.status==='delivered' ? 'selected' : '' %>>Delivered</option>
-                  <option value="canceled" <%= (order.status==='canceled' || order.status==='cancelled') ? 'selected' : '' %>>Canceled</option>
-                  <option value="refunded" <%= order.status==='refunded' ? 'selected' : '' %>>Refunded</option>
-                  <option value="on_hold" <%= order.status==='on_hold' ? 'selected' : '' %>>On hold</option>
-                </select>
-                <div style="margin-top:0.5rem;">
-                  <button class="button primary" type="submit">Update status</button>
+            <div class="order-header-actions">
+              <span class="status status--<%= (order.status || 'unknown').toLowerCase() %>">
+                <%= order.status_display %>
+              </span>
+              <a class="link" href="/account/orders"><%- include('../icon', { name: 'back' }) %> Back to orders</a>
+            </div>
+          </header>
+
+          <div class="admin-panel" style="margin-top:1rem;">
+            <div style="display:flex;gap:1rem;align-items:stretch;flex-wrap:wrap;">
+              <!-- Left card: Status + modify -->
+              <div class="card" style="flex:1 1 320px;min-width:260px;">
+                <div class="card__hd"><h3 class="card__title">Status</h3></div>
+                <div class="card__body">
+                  <p>Current: <strong class="status status--<%= (order.status || 'unknown').toLowerCase() %>"><%= order.status_display %></strong></p>
+                  <form method="post" action="/admin/orders/<%= order.id %>/status" style="margin-top:0.75rem;">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <label for="admin-status-select" class="sr-only">Change status</label>
+                    <select id="admin-status-select" name="status" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(15,23,42,0.06)">
+                      <option value="processing" <%= order.status==='processing' ? 'selected' : '' %>>Processing</option>
+                      <option value="packed" <%= order.status==='packed' ? 'selected' : '' %>>Packed</option>
+                      <option value="awaiting_shipment" <%= order.status==='awaiting_shipment' ? 'selected' : '' %>>Awaiting shipment</option>
+                      <option value="shipped" <%= order.status==='shipped' ? 'selected' : '' %>>Shipped</option>
+                      <option value="in_transit" <%= order.status==='in_transit' ? 'selected' : '' %>>In transit</option>
+                      <option value="delivered" <%= order.status==='delivered' ? 'selected' : '' %>>Delivered</option>
+                      <option value="canceled" <%= (order.status==='canceled' || order.status==='cancelled') ? 'selected' : '' %>>Canceled</option>
+                      <option value="refunded" <%= order.status==='refunded' ? 'selected' : '' %>>Refunded</option>
+                      <option value="on_hold" <%= order.status==='on_hold' ? 'selected' : '' %>>On hold</option>
+                    </select>
+                    <div style="margin-top:0.6rem;text-align:right;"><button class="button primary" type="submit">Update</button></div>
+                  </form>
                 </div>
-              </form>
-            </div>
-          </div>
+              </div>
 
-          <div style="display:flex;gap:1.5rem;margin-top:1rem;flex-wrap:wrap;">
-            <div style="flex:1 1 60%;min-width:320px;">
-              <section>
-                <h3>Addresses</h3>
-                <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-                  <div class="card" style="flex:1;">
-                    <div class="card__hd"><h4 class="card__title">Shipping address</h4></div>
-                    <div class="card__body">
-                      <% if (order.shipping_address) { const a = order.shipping_address; %>
-                        <p><%= a.full_name %></p>
-                        <% if (a.label) { %><p class="badge"><%= a.label %></p><% } %>
-                        <p><%= a.line1 %></p>
-                        <% if (a.line2) { %><p><%= a.line2 %></p><% } %>
-                        <p><%= a.city %>, <%= a.region || '' %> <%= a.postal_code %></p>
-                        <p><%= a.country_code %></p>
-                        <% if (a.phone) { %><p>Phone: <%= a.phone %></p><% } %>
-                      <% } else { %>
-                        <p class="muted">No shipping address on file.</p>
-                      <% } %>
-                    </div>
-                  </div>
-
-                  <div class="card" style="flex:1;">
-                    <div class="card__hd"><h4 class="card__title">Billing address</h4></div>
-                    <div class="card__body">
-                      <% if (order.billing_address) { const b = order.billing_address; %>
-                        <p><%= b.full_name %></p>
-                        <% if (b.label) { %><p class="badge"><%= b.label %></p><% } %>
-                        <p><%= b.line1 %></p>
-                        <% if (b.line2) { %><p><%= b.line2 %></p><% } %>
-                        <p><%= b.city %>, <%= b.region || '' %> <%= b.postal_code %></p>
-                        <p><%= b.country_code %></p>
-                        <% if (b.phone) { %><p>Phone: <%= b.phone %></p><% } %>
-                      <% } else { %>
-                        <p class="muted">No billing address on file.</p>
-                      <% } %>
-                    </div>
-                  </div>
+              <!-- Middle card: Shipping address -->
+              <div class="card" style="flex:1 1 360px;min-width:260px;">
+                <div class="card__hd"><h3 class="card__title">Shipping address</h3></div>
+                <div class="card__body">
+                  <% if (order.shipping_address) { const a = order.shipping_address; %>
+                    <p><strong><%= a.full_name %></strong></p>
+                    <% if (a.label) { %><p class="badge"><%= a.label %></p><% } %>
+                    <p><%= a.line1 %></p>
+                    <% if (a.line2) { %><p><%= a.line2 %></p><% } %>
+                    <p><%= a.city %>, <%= a.region || '' %> <%= a.postal_code %></p>
+                    <p><%= a.country_code %></p>
+                    <% if (a.phone) { %><p>Phone: <%= a.phone %></p><% } %>
+                  <% } else { %>
+                    <p class="muted">No shipping address on file.</p>
+                  <% } %>
                 </div>
-              </section>
+              </div>
 
-              <section style="margin-top:1rem;">
-                <h3>Items</h3>
-                <% if (order.items && order.items.length) { %>
-                  <div class="table-wrap">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th>Item</th>
-                          <th>Quantity</th>
-                          <th>Unit price</th>
-                          <th>Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <% order.items.forEach(it => { %>
-                          <tr>
-                            <td class="order-item-main">
-                              <% if (it.product && it.product.image) { %>
-                                <a class="order-item-thumb" href="<%= it.product.url || '#' %>">
-                                  <img src="<%= it.product.image.url %>" alt="<%= it.product.image.alt || it.name %>" loading="lazy">
-                                </a>
-                              <% } %>
-                              <div class="order-item-main__text">
-                                <% if (it.product && it.product.url) { %>
-                                  <a href="<%= it.product.url %>" class="link"><%= it.name %></a>
-                                <% } else { %>
-                                  <span><%= it.name %></span>
-                                <% } %>
-                                <% if (it.sku) { %><div class="order-item-sku">SKU: <%= it.sku %></div><% } %>
-                              </div>
-                            </td>
-                            <td><%= it.quantity %></td>
-                            <td><%= it.unit_price_display %></td>
-                            <td><%= it.total_display %></td>
-                          </tr>
-                        <% }) %>
-                      </tbody>
-                    </table>
-                  </div>
-                <% } else { %>
-                  <p class="muted">No items found for this order.</p>
-                <% } %>
-              </section>
-            </div>
-
-            <aside style="flex:1 1 300px;min-width:220px;">
-              <div class="card order-summary-card">
-                <div class="card__hd"><h4 class="card__title">Order summary</h4></div>
+              <!-- Right card: Order summary -->
+              <div class="card order-summary-card" style="flex:0 1 280px;min-width:220px;">
+                <div class="card__hd"><h3 class="card__title">Order summary</h3></div>
                 <div class="card__body">
                   <dl class="summary-list">
                     <div class="summary-row"><dt>Subtotal</dt><dd><%= order.subtotal_display %></dd></div>
@@ -143,17 +77,74 @@
                     <div class="summary-row summary-row--total"><dt>Total</dt><dd><strong><%= order.total_display %></strong></dd></div>
                   </dl>
                 </div>
-                <div class="card__ft">
-                  <a class="button ghost" href="/admin/orders">Back to orders</a>
-                </div>
+                <div class="card__ft"><a class="button ghost" href="/shop">Reorder items</a></div>
               </div>
-            </aside>
+            </div>
           </div>
-        </div>
-      </div>
-    </section>
-  </main>
 
-  <%- include('../partials/footer') %>
-</body>
+          <!-- Items table -->
+          <section class="order-items" aria-labelledby="items-h">
+            <div class="section__header">
+              <h2 id="items-h">Items in this order</h2>
+            </div>
+
+            <% if (order.items && order.items.length) { %>
+              <div class="table-wrap" role="region" aria-label="Order items">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Item</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Price</th>
+                      <th scope="col">Total</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <% order.items.forEach(it => { %>
+                      <tr>
+                        <td class="order-item-main">
+                          <% if (it.product && it.product.image) { %>
+                            <a class="order-item-thumb" href="<%= it.product.url || '#' %>">
+                              <img
+                                src="<%= it.product.image.url %>"
+                                alt="<%= it.product.image.alt || it.name %>"
+                                loading="lazy"
+                              >
+                            </a>
+                          <% } %>
+
+                          <div class="order-item-main__text">
+                            <% if (it.product && it.product.url) { %>
+                              <a href="<%= it.product.url %>" class="link"><%= it.name %></a>
+                            <% } else { %>
+                              <span><%= it.name %></span>
+                            <% } %>
+                            <% if (it.sku) { %>
+                              <div class="order-item-sku">SKU: <%= it.sku %></div>
+                            <% } %>
+                          </div>
+                        </td>
+
+                        <td><%= it.quantity %></td>
+                        <td><%= it.unit_price_display %></td>
+                        <td><%= it.total_display %></td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+
+                </table>
+              </div>
+            <% } else { %>
+              <div class="empty">
+                <p class="prose">No items found for this order.</p>
+              </div>
+            <% } %>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+  </body>
 </html>

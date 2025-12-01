@@ -12,6 +12,10 @@ section {
   color: var(--tint-1);
 }
 
+.card {
+  background-color: var(--overlay);
+}
+
 /* Header */
 .admin-header {
   text-align: center;

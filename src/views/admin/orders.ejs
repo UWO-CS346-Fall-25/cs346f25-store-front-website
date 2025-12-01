@@ -82,7 +82,7 @@
                 <tbody>
                   <% rows.forEach(function (o) { %>
                     <tr>
-                      <td><a href="/admin/order/<%= o.id %>"><%= o.number %></a></td>
+                      <td><a class="link" href="/admin/order/<%= o.id %>"><%= o.number %></a></td>
                       <td>
                         <a class="link" href="/admin/users?q=<%= encodeURIComponent(o.email || o.user_id) %>">
                           <%= o.email ? o.email : (o.user_id || '—') %>
