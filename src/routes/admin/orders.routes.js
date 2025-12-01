@@ -43,56 +43,22 @@ bind(router, {
         console.error('Error fetching admin orders:', error);
         return { orders: [], flash: { error: 'Failed to load orders.' } };
       }
-
-      // Efficiently resolve user emails for the orders using cache + batch lookup
-      // 1) collect unique user ids
-      const userIds = [...new Set((rows || []).map(r => r.user_id).filter(Boolean))];
-      const userMap = {};
-
-      if (userIds.length) {
-        const missing = [];
-
-        // Try cache first
-        for (const id of userIds) {
-          const cached = cache.get(`user:email:${id}`);
-          if (cached !== null && typeof cached !== 'undefined') {
-            // cached may be null if previously missing
-            userMap[id] = cached ? { id, email: cached } : null;
-          } else {
-            missing.push(id);
-          }
-        }
-
-        // Batch fetch missing ids from auth.users
-        if (missing.length) {
+      const TTL = 60_000; // 1 minute cache for user emails
+      await Promise.all(rows.map(async (c) => {
+        c.email = await cache.wrap("user:email:" + c.user_id, TTL, async () => {
           try {
-            const { data: users, error: usersErr } = await supabase
-              .from('auth.users')
-              .select('id, email')
-              .in('id', missing);
-
-            if (!usersErr && Array.isArray(users)) {
-              for (const u of users) {
-                userMap[u.id] = { id: u.id, email: u.email };
-                // cache email for 30 minutes
-                try { cache.set(`user:email:${u.id}`, u.email, 1000 * 60 * 30); } catch (e) { /* ignore cache errors */ }
-              }
+            const { data: listData, error: userErr } = await supabase.auth.admin.getUserById(c.user_id);
+            if (userErr) {
+              console.error('Error fetching user for order listing:', userErr);
+              return null;
             }
-
-            // For any missing ids not returned, store null in cache to avoid repeat lookups
-            const foundIds = new Set((users || []).map(u => u.id));
-            for (const id of missing) {
-              if (!foundIds.has(id)) {
-                userMap[id] = null;
-                try { cache.set(`user:email:${id}`, null, 1000 * 60 * 30); } catch (e) { }
-              }
-            }
+            return listData.user ? listData.user.email : null;
           } catch (e) {
-            console.error('Error batch fetching users for orders list:', e);
-            // fallback: leave userMap entries undefined so we don't crash
+            console.error('Error fetching user email for order listing:', e);
           }
-        }
-      }
+        });
+      }));
+
 
       const fmtCurrency = (cents, currency = 'USD') =>
         new Intl.NumberFormat('en-US', { style: 'currency', currency }).format((cents || 0) / 100);
@@ -101,7 +67,6 @@ bind(router, {
         ...r,
         placed_at_display: r.placed_at ? new Date(r.placed_at).toLocaleString() : '',
         total_display: fmtCurrency(r.total_cents, r.currency || 'USD'),
-        user_email: (r.user_id && userMap[r.user_id] && userMap[r.user_id].email) || null,
       }));
 
       const total = count || 0;
@@ -148,10 +113,25 @@ bind(router, {
         return { error: 'Failed to load order' };
       }
 
+      const TTL = 60_000; // 1 minute cache for user emails
+
+
       if (!row) {
         res.status(404);
         return { notFound: true, error: 'Order not found' };
       }
+      row.email = await cache.wrap("user:email:" + row.user_id, TTL, async () => {
+        try {
+          const { data: listData, error: userErr } = await supabase.auth.admin.getUserById(row.user_id);
+          if (userErr) {
+            console.error('Error fetching user for order listing:', userErr);
+            return null;
+          }
+          return listData.user ? listData.user.email : null;
+        } catch (e) {
+          console.error('Error fetching user email for order listing:', e);
+        }
+      });
 
       // Format dates and currency
       const placed_at_display = row.placed_at
@@ -189,49 +169,16 @@ bind(router, {
         };
       });
 
-      // Resolve user email via cache first
-      let user_email = null;
-      try {
-        const cached = cache.get(`user:email:${row.user_id}`);
-        if (cached !== null && typeof cached !== 'undefined') {
-          user_email = cached;
-        } else if (row.user_id) {
-          const { data: uRow, error: userErr } = await supabase.from('auth.users').select('id,email').eq('id', row.user_id).maybeSingle();
-          if (!userErr && uRow) {
-            user_email = uRow.email;
-            cache.set(`user:email:${row.user_id}`, user_email, 1000 * 60 * 30);
-          } else {
-            cache.set(`user:email:${row.user_id}`, null, 1000 * 60 * 30);
-          }
-        }
-      } catch (e) {
-        console.error('Error resolving user email for admin order detail:', e);
-      }
 
       const order = {
-        id: row.id,
-        number: row.number,
-        status: row.status,
-        status_display: row.status, // could map nicer labels if desired
-        placed_at: row.placed_at,
-        placed_at_display,
-        subtotal_cents: row.subtotal_cents,
-        shipping_cents: row.shipping_cents,
-        tax_cents: row.tax_cents,
-        total_cents: row.total_cents,
+        ...row,
         currency,
         subtotal_display: fmtCurrency(row.subtotal_cents),
         shipping_display: fmtCurrency(row.shipping_cents),
         tax_display: fmtCurrency(row.tax_cents),
         total_display: fmtCurrency(row.total_cents),
-        carrier: row.carrier,
-        tracking_code: row.tracking_code,
-        shipping_eta: row.shipping_eta,
         shipping_eta_display,
-        shipping_address: row.shipping_address || null,
-        billing_address: row.billing_address || null,
         items,
-        user_email,
       };
 
       return { flash, order };

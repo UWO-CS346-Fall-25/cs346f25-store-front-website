@@ -504,7 +504,7 @@ router.post('/orders/:id/status', authRequired, adminRequired, csrfProtection, a
         success: (data && !error) ? 'Order status updated.' : null,
       };
     }
-    return res.redirect('/admin/orders');
+    return res.redirect('/admin/order/' + id);
   } catch (err) {
     console.error('Error updating order status:', err);
     if (req.session) req.session.flash = { error: 'Failed to update order status.' };

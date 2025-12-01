@@ -28,7 +28,44 @@
               <div class="card" style="flex:1 1 320px;min-width:260px;">
                 <div class="card__hd"><h3 class="card__title">Status</h3></div>
                 <div class="card__body">
-                  <p>Current: <strong class="status status--<%= (order.status || 'unknown').toLowerCase() %>"><%= order.status_display %></strong></p>
+                  <% const s = (order.status || '').toLowerCase(); %>
+                  <% const stepPlaced = !(['refunded', 'canceled', 'on_hold'].includes(s)); %>
+                  <% const stepShipped = ['shipped','in_transit','delivered'].includes(s); %>
+                  <% const stepDelivered = ['delivered'].includes(s); %>
+
+                  <ol class="timeline" style="margin:0 0 0.75rem;">
+                    <li class="timeline__item  <%= stepPlaced ? (stepShipped ? 'timeline__item--done' : 'timeline__item--current') : '' %>">
+                      <div class="timeline__title">Order placed</div>
+                      <div class="timeline__meta"><%= order.placed_at_display %></div>
+                    </li>
+
+                    <li class="timeline__item <%= stepShipped ? (stepDelivered ? 'timeline__item--done' : 'timeline__item--current') : '' %>">
+                      <div class="timeline__title">Shipped</div>
+                      <div class="timeline__meta">
+                        <% if (order.carrier && order.tracking_code) { %>
+                          <span><%= order.carrier %> · <%= order.tracking_code %></span>
+                        <% } else { %>
+                          <span><%= stepShipped ? 'Package has left our facility.' : 'Preparing your shipment.' %></span>
+                        <% } %>
+                      </div>
+                    </li>
+
+                    <li class="timeline__item <%= stepDelivered ? 'timeline__item--done' : '' %>">
+                      <div class="timeline__title">Delivered</div>
+                      <div class="timeline__meta">
+                        <% if (order.shipping_eta_display) { %>
+                          Estimated by <%= order.shipping_eta_display %>
+                        <% } else { %>
+                          Delivery date not available yet.
+                        <% } %>
+                      </div>
+                    </li>
+                  </ol>
+
+                  <% if (order.carrier && order.tracking_code) { %>
+                    <p class="timeline-track">Track your package with <strong><%= order.carrier %></strong> using code <code><%= order.tracking_code %></code>.</p>
+                  <% } %>
+
                   <form method="post" action="/admin/orders/<%= order.id %>/status" style="margin-top:0.75rem;">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <label for="admin-status-select" class="sr-only">Change status</label>
@@ -43,7 +80,13 @@
                       <option value="refunded" <%= order.status==='refunded' ? 'selected' : '' %>>Refunded</option>
                       <option value="on_hold" <%= order.status==='on_hold' ? 'selected' : '' %>>On hold</option>
                     </select>
-                    <div style="margin-top:0.6rem;text-align:right;"><button class="button primary" type="submit">Update</button></div>
+                      <div style="display:flex;gap:0.5rem;align-items:center;">
+                        <button type="submit" class="button primary button--compact" title="Update status" aria-label="Update status" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.45rem 0.65rem;border-radius:6px;">
+                          <%# Use a simple inline check SVG to avoid depending on icon partial names %>
+                          <%- include('../icon', { name: 'admin-accept' }) %>
+                          <span style="font-size:0.95rem;line-height:1">Update</span>
+                        </button>
+                      </div>
                   </form>
                 </div>
               </div>
@@ -53,13 +96,30 @@
                 <div class="card__hd"><h3 class="card__title">Shipping address</h3></div>
                 <div class="card__body">
                   <% if (order.shipping_address) { const a = order.shipping_address; %>
-                    <p><strong><%= a.full_name %></strong></p>
-                    <% if (a.label) { %><p class="badge"><%= a.label %></p><% } %>
-                    <p><%= a.line1 %></p>
-                    <% if (a.line2) { %><p><%= a.line2 %></p><% } %>
-                    <p><%= a.city %>, <%= a.region || '' %> <%= a.postal_code %></p>
-                    <p><%= a.country_code %></p>
-                    <% if (a.phone) { %><p>Phone: <%= a.phone %></p><% } %>
+                    <div style="display:flex;flex-direction:column;gap:0.25rem;">
+                      <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                        <strong><%= a.full_name %></strong>
+                        <% if (a.label) { %><span class="badge"><%= a.label %></span><% } %>
+                      </div>
+
+                      <% if (order.email) { %>
+                        <div class="muted" style="font-size:0.95rem;"><a href="mailto:<%= order.email %>" class="link"><%= order.email %></a></div>
+                      <% } %>
+
+                      <div style="margin-top:0.25rem;">
+                        <div><%= a.line1 %></div>
+                        <% if (a.line2) { %><div><%= a.line2 %></div><% } %>
+                        <div><%= a.city %>, <%= a.region || '' %> <%= a.postal_code %></div>
+                        <div><%= a.country_code %></div>
+                        <% if (a.phone) { %><div>Phone: <a href="tel:<%= a.phone %>" class="link"><%= a.phone %></a></div><% } %>
+                      </div>
+                    </div>
+                  <% } else if (order.email) { %>
+                    <div style="display:flex;flex-direction:column;gap:0.25rem;">
+                      <strong>Customer</strong>
+                      <div class="muted"><a href="mailto:<%= order.email %>" class="link"><%= order.email %></a></div>
+                      <p class="muted">No shipping address on file.</p>
+                    </div>
                   <% } else { %>
                     <p class="muted">No shipping address on file.</p>
                   <% } %>
