@@ -171,7 +171,7 @@ const log = require("./controllers/debug")("App");
 
 const rows = registry.all().map(p => `${p.meta?.title || ''} -> ${p.route} (${p.view})`);
 
-log.log("Registered Pages", `Total: ${rows.length}`);
-log.warn("Pages List", rows);
+log.system("Registered Pages", `Total: ${rows.length}`);
+log.system("Pages List", rows);
 
 module.exports = app;
