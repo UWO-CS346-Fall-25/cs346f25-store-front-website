@@ -49,9 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   resetBtn && resetBtn.addEventListener('click', async () => {
     if (!confirm('Reset collected DB stats?')) return;
-    const meta = document.querySelector('meta[name="csrf-token"]');
-    const token = meta ? meta.getAttribute('content') : '';
-    await fetch('/admin/stats/reset', { method: 'POST', credentials: 'same-origin', headers: { 'x-csrf-token': token } });
+    await fetch('/admin/stats/reset', { method: 'POST', credentials: 'same-origin', headers: { 'x-csrf-token': window._csrfToken || '' } });
     load(minutesEl.value);
   });
 

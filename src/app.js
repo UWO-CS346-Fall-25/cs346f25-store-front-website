@@ -27,7 +27,8 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'"],
+        // Allow Chart.js from jsdelivr CDN in addition to self
+        scriptSrc: ["'self'", 'https://cdn.jsdelivr.net'],
         imgSrc: ["'self'", 'data:', 'https:'],
         formAction: ["'self'", "https://checkout.stripe.com"],
         baseUri: ["'self'"],

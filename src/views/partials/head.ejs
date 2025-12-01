@@ -4,6 +4,9 @@
   <title>
     <%= title %>
   </title>
+  <% if (typeof csrfToken !== 'undefined' && csrfToken) { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
   <link rel="stylesheet" href="/css/root.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/footer.css">
