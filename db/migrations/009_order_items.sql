@@ -49,8 +49,8 @@ drop policy if exists "Admins manage all order_items" on public.order_items;
 create policy "Admins manage all order_items"
 on public.order_items for all
 to authenticated
-using (coalesce((auth.jwt() ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() ->> 'role') in ('admin','staff'), false))
+with check (coalesce((auth.jwt() ->> 'role') in ('admin','staff'), false));
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Keep orders.subtotal_cents and total_cents in sync with order_items

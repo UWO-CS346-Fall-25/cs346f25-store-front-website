@@ -85,8 +85,8 @@ using (status = 'active');
 create policy "Admins can write products"
 on public.products for all
 to authenticated
-using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') in ('admin','staff'), false))
+with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') in ('admin','staff'), false));
 
 
 

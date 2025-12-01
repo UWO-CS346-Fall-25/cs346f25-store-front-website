@@ -57,5 +57,5 @@ drop policy if exists "Admins manage all addresses" on public.addresses;
 create policy "Admins manage all addresses"
 on public.addresses for all
 to authenticated
-using (coalesce((auth.jwt() ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() ->> 'role') in ('admin','staff'), false))
+with check (coalesce((auth.jwt() ->> 'role') in ('admin','staff'), false));

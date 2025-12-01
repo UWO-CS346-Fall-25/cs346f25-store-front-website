@@ -81,11 +81,11 @@ using (
 create policy "Admins manage categories"
 on public.categories for all
 to authenticated
-using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') in ('admin','staff'), false))
+with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') in ('admin','staff'), false));
 
 create policy "Admins manage product_categories"
 on public.product_categories for all
 to authenticated
-using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') in ('admin','staff'), false))
+with check (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') in ('admin','staff'), false));
