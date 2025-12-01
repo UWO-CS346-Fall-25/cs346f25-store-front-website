@@ -198,3 +198,80 @@ form[action^="/admin/orders/"] .button.button--compact:hover {
     justify-content: center;
   }
 }
+
+/* Additional mobile / responsive tweaks for order-details */
+@media (max-width: 900px) {
+
+  /* Stack the three top cards vertically for small/medium screens */
+  .admin-panel>div {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .card.order-summary-card {
+    order: 3;
+    /* put totals last on narrow screens */
+  }
+
+  .card {
+    padding: 0.85rem;
+  }
+
+  /* Make timeline vertical for narrow screens */
+  .timeline {
+    flex-direction: column;
+  }
+
+  .timeline__item {
+    width: 100%;
+  }
+
+  .timeline__title {
+    font-size: 0.95rem;
+  }
+
+  .timeline__meta {
+    font-size: 0.9rem;
+  }
+
+  /* Increase touch targets for select/button */
+  form[action^="/admin/orders/"] select#admin-status-select,
+  form[action^="/admin/orders/"] .button.button--compact {
+    height: 42px;
+  }
+}
+
+@media (max-width: 520px) {
+
+  /* Make the timeline items have comfortable spacing on phones */
+  .timeline__item {
+    padding: 0.7rem;
+    border-radius: 10px;
+  }
+
+  /* Stack order items card layout for narrow screens */
+  .order-item-main {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .order-item-thumb img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  /* Make table horizontally scrollable and comfortable on small screens */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Condense summary rows text slightly */
+  .summary-list .summary-row dt,
+  .summary-list .summary-row dd {
+    font-size: 0.95rem;
+  }
+}

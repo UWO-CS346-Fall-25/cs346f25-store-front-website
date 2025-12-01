@@ -65,7 +65,7 @@ bind(router, {
 
       const orders = (rows || []).map((r) => ({
         ...r,
-        placed_at_display: r.placed_at ? new Date(r.placed_at).toLocaleString() : '',
+        placed_at_display: r.placed_at ? new Date(r.placed_at).toLocaleDateString() : '',
         total_display: fmtCurrency(r.total_cents, r.currency || 'USD'),
       }));
 
@@ -179,6 +179,7 @@ bind(router, {
         total_display: fmtCurrency(row.total_cents),
         shipping_eta_display,
         items,
+        placed_at_display,
       };
 
       return { flash, order };

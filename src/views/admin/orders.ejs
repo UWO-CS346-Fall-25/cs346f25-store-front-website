@@ -32,8 +32,6 @@
                 shipped: 'Shipped',
                 in_transit: 'In transit',
                 delivered: 'Delivered',
-                canceled: 'Canceled',
-                cancelled: 'Canceled',
                 refunded: 'Refunded',
                 on_hold: 'On hold',
               };
@@ -55,7 +53,6 @@
               <option value="shipped" <%= statusFilter==='shipped' ? 'selected' : '' %>>Shipped</option>
               <option value="in_transit" <%= statusFilter==='in_transit' ? 'selected' : '' %>>In transit</option>
               <option value="delivered" <%= statusFilter==='delivered' ? 'selected' : '' %>>Delivered</option>
-              <option value="canceled" <%= statusFilter==='canceled' ? 'selected' : '' %>>Canceled</option>
               <option value="refunded" <%= statusFilter==='refunded' ? 'selected' : '' %>>Refunded</option>
             </select>
             <input type="hidden" name="pageSize" value="<%= pageSize %>" />

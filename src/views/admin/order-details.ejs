@@ -5,24 +5,17 @@
     <%- include('../partials/navbar') %>
 
     <main id="main-content">
+    <header class="admin-header">
+      <h1 id="order-title">Order #<%= order.number %></h1>
+      <p class="subtitle">Placed on <%= order.placed_at_display %></p>
+    </header>
       <section class="section" aria-labelledby="order-title">
         <div class="container account">
-          <header class="section__header">
-            <div>
-              <h1 id="order-title">Order #<%= order.number %></h1>
-              <p class="order-subtitle">
-                Placed on <%= order.placed_at_display %>
-              </p>
-            </div>
-            <div class="order-header-actions">
-              <span class="status status--<%= (order.status || 'unknown').toLowerCase() %>">
-                <%= order.status_display %>
-              </span>
-              <a class="link" href="/account/orders"><%- include('../icon', { name: 'back' }) %> Back to orders</a>
-            </div>
-          </header>
 
           <div class="admin-panel" style="margin-top:1rem;">
+            <a href="/admin/orders" class="link--button link" id="back-to-dashboard">
+              <%- include('../icon', { name: 'back' }) %> Back to Orders
+            </a>
             <div style="display:flex;gap:1rem;align-items:stretch;flex-wrap:wrap;">
               <!-- Left card: Status + modify -->
               <div class="card" style="flex:1 1 320px;min-width:260px;">
@@ -76,7 +69,6 @@
                       <option value="shipped" <%= order.status==='shipped' ? 'selected' : '' %>>Shipped</option>
                       <option value="in_transit" <%= order.status==='in_transit' ? 'selected' : '' %>>In transit</option>
                       <option value="delivered" <%= order.status==='delivered' ? 'selected' : '' %>>Delivered</option>
-                      <option value="canceled" <%= (order.status==='canceled' || order.status==='cancelled') ? 'selected' : '' %>>Canceled</option>
                       <option value="refunded" <%= order.status==='refunded' ? 'selected' : '' %>>Refunded</option>
                       <option value="on_hold" <%= order.status==='on_hold' ? 'selected' : '' %>>On hold</option>
                     </select>
@@ -137,7 +129,6 @@
                     <div class="summary-row summary-row--total"><dt>Total</dt><dd><strong><%= order.total_display %></strong></dd></div>
                   </dl>
                 </div>
-                <div class="card__ft"><a class="button ghost" href="/shop">Reorder items</a></div>
               </div>
             </div>
           </div>
