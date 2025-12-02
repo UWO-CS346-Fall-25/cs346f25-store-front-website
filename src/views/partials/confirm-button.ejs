@@ -8,9 +8,12 @@
   // confirmText / cancelText: button labels
   const uid = typeof id !== 'undefined' ? id : 'confirm-' + Math.random().toString(36).slice(2,9);
 %>
-<button type="button" class="<%= btnClasses %>" data-confirm-id="<%= uid %>" aria-haspopup="dialog" aria-label="<%= label %>">
+<button type="button" class="<%= btnClasses %> confirm-button-trigger" data-confirm-id="<%= uid %>" aria-haspopup="dialog" aria-label="<%= label %>">
   <span class="sr-only"><%= label %></span>
   <%- include('../icon', { name: iconName }) %>
+  <% if (typeof btnText !== 'undefined' && btnText) { %>
+    <span class="confirm-button__label"><%= btnText %></span>
+  <% } %>
 </button>
 
 <div class="confirm-modal-overlay" id="<%= uid %>" aria-hidden="true" role="dialog" aria-modal="true">

@@ -777,3 +777,18 @@
 .confirm-modal-actions .admin-simple:hover {
   transform: translateY(-1px);
 }
+
+/* Visible label for confirm-button when used with text */
+.confirm-button__label {
+  margin-left: 0.45rem;
+  font-size: 0.95rem;
+  line-height: 1;
+  display: inline-block;
+}
+
+/* Ensure icon + label align inside trigger buttons */
+.confirm-button-trigger {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+}

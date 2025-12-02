@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <%- include('../partials/head', { cssFiles: ['account.css', 'admin/dashboard.css'], scripts: [] }) %>
+  <%- include('../partials/head', { cssFiles: ['account.css', 'admin/dashboard.css', 'admin.css'], scripts: [] }) %>
   <body>
     <%- include('../partials/navbar') %>
 
@@ -73,11 +73,16 @@
                       <option value="on_hold" <%= order.status==='on_hold' ? 'selected' : '' %>>On hold</option>
                     </select>
                       <div style="display:flex;gap:0.5rem;align-items:center;">
-                        <button type="submit" class="button primary button--compact" title="Update status" aria-label="Update status" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.45rem 0.65rem;border-radius:6px;">
-                          <%# Use a simple inline check SVG to avoid depending on icon partial names %>
-                          <%- include('../icon', { name: 'admin-accept' }) %>
-                          <span style="font-size:0.95rem;line-height:1">Update</span>
-                        </button>
+                        <%- include('../partials/confirm-button', {
+                          btnClasses: 'button primary button--compact',
+                          iconName: 'admin-accept',
+                          btnText: 'Update',
+                          label: 'Update status',
+                          modalTitle: 'Update order status',
+                          modalBody: 'Change the order status? This will update the order timeline and notify the customer depending on your settings.',
+                          confirmText: 'Update',
+                          cancelText: 'Cancel'
+                        }) %>
                       </div>
                   </form>
                 </div>
