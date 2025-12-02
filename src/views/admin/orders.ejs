@@ -22,6 +22,7 @@
             const totalPages = (filters && filters.totalPages) || 1; 
             const qVal = (filters && filters.q) || ''; 
             const statusFilter = (filters && filters.status) || '';
+            const orderFilter = (filters && filters.order) || 'asc';
 
             const statusLabel = (s) => {
               if (!s) return '—';
@@ -47,6 +48,7 @@
             <input type="text" name="q" value="<%= qVal %>" placeholder="Search order number" style="flex:1;padding:0.4rem;border:1px solid #ddd;border-radius:4px;" />
             <select name="status" style="padding:0.4rem;border:1px solid #ddd;border-radius:4px;">
               <option value="">All statuses</option>
+              <option value="pending" <%= statusFilter==='pending' ? 'selected' : '' %>>Pending</option>
               <option value="processing" <%= statusFilter==='processing' ? 'selected' : '' %>>Processing</option>
               <option value="packed" <%= statusFilter==='packed' ? 'selected' : '' %>>Packed</option>
               <option value="awaiting_shipment" <%= statusFilter==='awaiting_shipment' ? 'selected' : '' %>>Awaiting shipment</option>
@@ -54,6 +56,10 @@
               <option value="in_transit" <%= statusFilter==='in_transit' ? 'selected' : '' %>>In transit</option>
               <option value="delivered" <%= statusFilter==='delivered' ? 'selected' : '' %>>Delivered</option>
               <option value="refunded" <%= statusFilter==='refunded' ? 'selected' : '' %>>Refunded</option>
+            </select>
+            <select name="order" style="padding:0.4rem;border:1px solid #ddd;border-radius:4px;">
+              <option value="asc" <%= orderFilter==='asc' ? 'selected' : '' %>>Ascending</option>
+              <option value="desc" <%= orderFilter==='desc' ? 'selected' : '' %>>Descending</option>
             </select>
             <input type="hidden" name="pageSize" value="<%= pageSize %>" />
             <button class="button primary small" type="submit">Filter</button>
@@ -104,6 +110,7 @@
                      const parts = ['page=' + p];
                      if (qVal) parts.push('q=' + encodeURIComponent(qVal));
                      if (statusFilter) parts.push('status=' + encodeURIComponent(statusFilter));
+                     if (orderFilter) parts.push('order=' + encodeURIComponent(orderFilter));
                      if (pageSize) parts.push('pageSize=' + pageSize);
                      return parts.join('&');
                    };

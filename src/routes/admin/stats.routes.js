@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../../controllers/adminStatsController');
 const dbStats = require('../../controllers/dbStats');
 
 const csrf = require('csurf');

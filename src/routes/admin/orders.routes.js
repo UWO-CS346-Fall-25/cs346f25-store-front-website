@@ -21,18 +21,29 @@ bind(router, {
 
     const page = Math.max(1, Number(req.query.page) || 1);
     const pageSize = Number(req.query.pageSize) || 20;
-    const status = (req.query.status || '').trim();
+    // Determine status filter: if the `status` query param is absent, default to the "pending" group.
+    // If the param is present but an empty string (user selected "All statuses"), treat as no filter.
+    const status = (req.query.status === undefined) ? 'pending' : String(req.query.status || '').trim();
     const q = (req.query.q || '').trim();
+    // Ordering: allow 'asc' or 'desc'; default to 'asc' so earliest placed orders appear first.
+    const orderParam = (req.query.order === undefined) ? 'asc' : String(req.query.order || '').trim().toLowerCase();
+    const order = orderParam === 'desc' ? 'desc' : 'asc';
 
     try {
       let query = supabase
         .from('orders_view')
         .select('id, number, user_id, status, placed_at, total_cents, currency', { count: 'exact' });
 
-      if (status) query = query.eq('status', status);
+      // Support a "pending" virtual filter that includes several statuses
+      if (status === 'pending') {
+        query = query.in('status', ['processing', 'packed', 'awaiting_shipment']);
+      } else if (status) {
+        query = query.eq('status', status);
+      }
       if (q) query = query.ilike('number', `%${q}%`);
 
-      query = query.order('placed_at', { ascending: false });
+      // Order by placed_at: ascending when 'asc', descending when 'desc'
+      query = query.order('placed_at', { ascending: order === 'asc' });
 
       const from = (page - 1) * pageSize;
       const to = from + pageSize - 1;
@@ -74,7 +85,7 @@ bind(router, {
 
       return {
         orders,
-        filters: { page, pageSize, total, totalPages, status, q },
+        filters: { page, pageSize, total, totalPages, status, q, order },
         flash,
       };
     } catch (err) {

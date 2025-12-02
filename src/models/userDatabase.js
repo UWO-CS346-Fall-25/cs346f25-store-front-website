@@ -63,6 +63,7 @@ async function getUser(req) {
 
 
 
+const dbStats = require('../controllers/dbStats.js');
 async function bindAddresses(user) {
   if (user.error) return user;
 
@@ -76,7 +77,7 @@ async function bindAddresses(user) {
       .order('is_default_billing', { ascending: false })
       .order('updated_at', { ascending: false })
       .limit(5);
-
+    dbStats.increment();
     if (addrErr) {
       console.error('Error fetching addresses:', addrErr);
       return { ...user, error: 'Failed to fetch addresses', errorDetail: addrErr };
@@ -98,7 +99,7 @@ async function bindAddressesList(user) {
     .order('is_default_shipping', { ascending: false })
     .order('is_default_billing', { ascending: false })
     .order('updated_at', { ascending: false });
-
+  dbStats.increment();
   if (error) {
     console.error('Error fetching addresses:', error);
     return { ...user, error: 'Failed to fetch addresses', errorDetail: error };
@@ -117,7 +118,7 @@ async function bindOrders(user, { page = 1, status = '', q = '' }) {
       .from('orders_view')
       .select('id, number, status, placed_at, total_cents, currency, carrier, tracking_code, shipping_eta', { count: 'exact' })
       .eq('user_id', user.id);
-
+    dbStats.increment();
     if (status) query = query.eq('status', status);
     if (q) query = query.ilike('number', `%${q}%`);
 
@@ -144,6 +145,7 @@ async function bindOrders(user, { page = 1, status = '', q = '' }) {
     await Promise.all(statusesToCount.map(async (s) => {
       let qc = user.supabase.from('orders_view').select('id', { count: 'exact', head: true })
         .eq('user_id', user.id);
+      dbStats.increment();
       if (s) qc = qc.eq('status', s);
       if (q) qc = qc.ilike('number', `%${q}%`);
       const { count: c } = await qc;
@@ -170,7 +172,7 @@ async function bindOrderSummary(user) {
       .eq('user_id', user.id)
       .order('placed_at', { ascending: false })
       .limit(5);
-
+    dbStats.increment();
     if (ordersErr) {
       console.error('Error fetching recent orders:', ordersErr);
       return { ...user, error: 'Failed to fetch recent orders', errorDetail: ordersErr };
@@ -226,7 +228,7 @@ async function bindOrderDetail(user, orderId) {
       .eq('user_id', userId)
       .eq('id', orderId)
       .maybeSingle();   // returns null if not found
-
+    dbStats.increment();
     if (error) {
       console.error('Error fetching order detail:', error);
       return { ...user, error: 'Failed to fetch order', errorDetail: error };

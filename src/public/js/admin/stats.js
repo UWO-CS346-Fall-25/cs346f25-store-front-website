@@ -33,7 +33,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const res = await fetch('/admin/stats/data?minutes=' + encodeURIComponent(minutes));
     const json = await res.json();
     const series = json.series || [];
-    const labels = series.map(s => new Date(s.ts).toLocaleString());
+    const minutesWindow = Number(minutes) || 60;
+    const labels = series.map(s => {
+      const d = new Date(s.ts);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    });
     const data = series.map(s => s.count);
     const totalEl = document.getElementById('total-calls');
     if (totalEl) totalEl.textContent = json.total || 0;
