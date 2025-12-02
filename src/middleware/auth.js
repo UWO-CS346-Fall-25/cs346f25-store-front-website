@@ -13,6 +13,7 @@ async function authMiddleware(req, res, next) {
   }
 
   const { data, error } = await supabase.auth.getUser(token);
+  require('../controllers/dbStats.js').increment();
 
   if (error || !data?.user) {
     // invalid/expired token

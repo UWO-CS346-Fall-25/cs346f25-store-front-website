@@ -9,6 +9,7 @@ const csrfProtection = csrf({ cookie: false });
 const userDatabase = require('../../models/userDatabase.js');
 const csrfLocals = require('../../middleware/csrfLocals.js');
 const errorManager = require('../../controllers/errorManager.js');
+const dbStats = require('../../controllers/dbStats.js');
 
 
 bind(router, {
@@ -76,6 +77,7 @@ router.post('/profile', authRequired, async (req, res, next) => {
         newsletter_opt_in: profile.newsletter,
       },
     });
+    dbStats.increment();
 
     if (errors.verify(updateErr, 'profileUpdate')) return errors.throwError();
 

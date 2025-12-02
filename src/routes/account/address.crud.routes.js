@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const userDatabase = require('../../models/userDatabase.js');
 const errorManager = require('../../controllers/errorManager.js');
+const dbStats = require('../../controllers/dbStats.js');
 
 // =================================================
 // ============== Create address ===================
@@ -49,6 +50,7 @@ router.post('/addresses/new', async (req, res, next) => {
       .insert(payload)
       .select('*')
       .single();
+    dbStats.increment();
 
     if (errors.verify(error)) return errors.throwError();
 
@@ -61,6 +63,7 @@ router.post('/addresses/new', async (req, res, next) => {
         .update({ is_default_shipping: false })
         .eq('user_id', userId)
         .neq('id', id);
+      dbStats.increment();
     }
 
     if (payload.is_default_billing) {
@@ -69,6 +72,7 @@ router.post('/addresses/new', async (req, res, next) => {
         .update({ is_default_billing: false })
         .eq('user_id', userId)
         .neq('id', id);
+      dbStats.increment();
     }
 
     return errors.throwSuccess('Address added.', '/account/addresses');
@@ -120,6 +124,7 @@ router.post('/addresses/:id/edit', async (req, res, next) => {
       .update(payload)
       .eq('id', addressId)
       .eq('user_id', userId);
+    dbStats.increment();
 
     if (errors.verify(error)) return errors.throwError();
 
@@ -130,6 +135,7 @@ router.post('/addresses/:id/edit', async (req, res, next) => {
         .update({ is_default_shipping: false })
         .eq('user_id', userId)
         .neq('id', addressId);
+      dbStats.increment();
     }
 
     if (payload.is_default_billing) {
@@ -138,6 +144,7 @@ router.post('/addresses/:id/edit', async (req, res, next) => {
         .update({ is_default_billing: false })
         .eq('user_id', userId)
         .neq('id', addressId);
+      dbStats.increment();
     }
 
     return errors.throwSuccess('Address updated.', '/account/addresses');
@@ -167,6 +174,7 @@ router.post('/addresses/:id/delete', async (req, res, next) => {
       .delete()
       .eq('id', addressId)
       .eq('user_id', userId);
+    dbStats.increment();
 
     if (errors.verify(error)) return errors.throwError('This address cannot be deleted because it is attached to an order.');
 
@@ -197,12 +205,14 @@ router.post('/addresses/:id/default-shipping', async (req, res, next) => {
       .update({ is_default_shipping: true })
       .eq('id', addressId)
       .eq('user_id', userId);
+    dbStats.increment();
 
     await supabase
       .from('addresses')
       .update({ is_default_shipping: false })
       .eq('user_id', userId)
       .neq('id', addressId);
+    dbStats.increment();
 
     return errors.throwSuccess('Default shipping address updated.');
   } catch (err) {
@@ -230,12 +240,14 @@ router.post('/addresses/:id/default-billing', async (req, res, next) => {
       .update({ is_default_billing: true })
       .eq('id', addressId)
       .eq('user_id', userId);
+    dbStats.increment();
 
     await supabase
       .from('addresses')
       .update({ is_default_billing: false })
       .eq('user_id', userId)
       .neq('id', addressId);
+    dbStats.increment();
 
     return errors.throwSuccess('Default billing address updated.');
   } catch (err) {

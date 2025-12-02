@@ -7,6 +7,7 @@ const { uncacheProduct, uncacheArchived } = require('../../models/productDatabas
 
 const csrfProtection = csrf({ cookie: false });
 const { authRequired, adminRequired } = require('../../middleware/accountRequired.js');
+const dbStats = require('../../controllers/dbStats.js');
 
 // ====================================================
 // ======================= CREATE =====================
@@ -75,6 +76,7 @@ router.post(
         .insert(insertRow)
         .select('*')
         .single();
+      dbStats.increment();
 
       if (productError) {
         console.error('Error inserting product:', productError);
@@ -149,6 +151,7 @@ router.post(
         const { error: imgError } = await supabase
           .from('product_images')
           .insert(imageRows);
+        dbStats.increment();
 
         if (imgError) {
           console.error('Error inserting product_images:', imgError);
@@ -229,6 +232,7 @@ router.post(
         .eq('id', id)
         .select('*')
         .maybeSingle();
+      dbStats.increment();
 
       if (updateError) {
         console.error('Error updating product:', updateError);
@@ -277,6 +281,7 @@ router.post(
         const { error: imgError } = await supabase
           .from('product_images')
           .insert(imageRows);
+        dbStats.increment();
 
         if (imgError) {
           console.error('Error inserting product_images on edit:', imgError);

@@ -6,6 +6,7 @@ const { masterClient } = require('../../models/supabase.js');
 const { authRequired, adminRequired } = require('../../middleware/accountRequired.js');
 const cache = require('../../controllers/cache.js');
 const productDB = require('../../models/productDatabase.js');
+const dbStats = require('../../controllers/dbStats.js');
 
 const csrfProtection = csrf({ cookie: false });
 
@@ -33,6 +34,7 @@ bind(router, {
       let query = supabase
         .from('orders_view')
         .select('id, number, user_id, status, placed_at, total_cents, currency', { count: 'exact' });
+      dbStats.increment();
 
       // Support a "pending" virtual filter that includes several statuses
       if (status === 'pending') {
@@ -59,6 +61,7 @@ bind(router, {
         c.email = await cache.wrap("user:email:" + c.user_id, TTL, async () => {
           try {
             const { data: listData, error: userErr } = await supabase.auth.admin.getUserById(c.user_id);
+            dbStats.increment();
             if (userErr) {
               console.error('Error fetching user for order listing:', userErr);
               return null;
@@ -117,6 +120,7 @@ bind(router, {
         .select('*')
         .eq('id', id)
         .maybeSingle();
+      dbStats.increment();
 
       if (error) {
         console.error('Error loading order detail (admin):', error);
@@ -134,6 +138,7 @@ bind(router, {
       row.email = await cache.wrap("user:email:" + row.user_id, TTL, async () => {
         try {
           const { data: listData, error: userErr } = await supabase.auth.admin.getUserById(row.user_id);
+          dbStats.increment();
           if (userErr) {
             console.error('Error fetching user for order listing:', userErr);
             return null;

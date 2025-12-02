@@ -5,6 +5,7 @@ const { bind } = require('express-page-registry');
 const db = require('../../models/productDatabase.js');
 const { masterClient } = require('../../models/supabase.js');
 const { authRequired, adminRequired } = require('../../middleware/accountRequired.js');
+const dbStats = require('../../controllers/dbStats.js');
 
 const csrfProtection = csrf({ cookie: false });
 
@@ -74,6 +75,7 @@ bind(router, {
 
       while (shouldContinue) {
         const { data, error } = await supabase.auth.admin.listUsers({ page: fetchPage, perPage: fetchPerPage });
+        dbStats.increment();
         if (error) {
           console.error('Error listing users while searching:', error);
           break;

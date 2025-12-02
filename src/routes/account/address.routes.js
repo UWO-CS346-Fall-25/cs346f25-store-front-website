@@ -8,6 +8,7 @@ const csrfProtection = csrf({ cookie: false });
 const userDatabase = require('../../models/userDatabase.js');
 const csrfLocals = require('../../middleware/csrfLocals.js');
 const errorManager = require('../../controllers/errorManager.js');
+const dbStats = require('../../controllers/dbStats.js');
 
 
 // =================================================
@@ -35,6 +36,7 @@ bind(router, {
       .eq('id', addressId)
       .eq('user_id', userId)
       .maybeSingle();
+    dbStats.increment();
 
     if (errors.verify(error)) return errors.throwError();
     if (!address) return errors.throwError('Address not found.');
