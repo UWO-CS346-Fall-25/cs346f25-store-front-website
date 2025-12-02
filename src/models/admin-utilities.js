@@ -52,6 +52,13 @@ const utilities = [
     icon: 'admin-database',
   },
   {
+    id: 'cache',
+    name: 'Cache Manager',
+    description: 'View and manage in-memory cache',
+    path: '/admin/cache',
+    icon: 'admin-cache',
+  },
+  {
     id: 'health',
     name: 'Health Status',
     description: 'Basic health checks and diagnostics',

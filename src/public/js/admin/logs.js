@@ -43,8 +43,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const tr = el.closest('tr');
     if (!tr || tr.classList.contains('detail-row')) return;
 
-    // If click originated from an interactive control, don't toggle
-    if (el.closest('a, button, input, select, textarea')) return;
+    // If click originated from a dedicated toggle button, handle it explicitly
+    const toggleBtn = el.closest('.log-toggle');
+    if (toggleBtn) {
+      const btnRow = toggleBtn.closest('tr');
+      if (btnRow && !btnRow.classList.contains('detail-row')) {
+        toggleDetailForRow(btnRow);
+        return;
+      }
+    }
+
+    // If click originated from an interactive control (other than the toggle button), don't toggle
+    if (el.closest('a, input, select, textarea')) return;
+
+    // Buttons (other than .log-toggle) should not toggle here
+    if (el.tagName && el.tagName.toLowerCase() === 'button') return;
 
     toggleDetailForRow(tr);
   });

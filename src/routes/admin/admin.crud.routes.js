@@ -527,3 +527,53 @@ router.post('/orders/:id/status', authRequired, adminRequired, csrfProtection, a
 
 module.exports = router;
 
+// Cache management POST endpoints
+// Note: placed after module export to keep similar pattern. If project lints against this, move earlier.
+const cacheController = require('../../controllers/cache.js');
+
+router.post('/cache/delete', authRequired, adminRequired, csrfProtection, async (req, res) => {
+  const key = req.body && req.body.key ? String(req.body.key) : '';
+  if (!key) {
+    if (req.session) req.session.flash = { error: 'Key required.' };
+    return res.redirect('/admin/cache');
+  }
+  try {
+    cacheController.del(key);
+    if (req.session) req.session.flash = { success: 'Key deleted.' };
+    return res.redirect('/admin/cache');
+  } catch (err) {
+    console.error('Error deleting cache key:', err);
+    if (req.session) req.session.flash = { error: 'Failed to delete key.' };
+    return res.redirect('/admin/cache');
+  }
+});
+
+router.post('/cache/clear-namespace', authRequired, adminRequired, csrfProtection, async (req, res) => {
+  const ns = req.body && req.body.ns ? String(req.body.ns) : '';
+  if (!ns) {
+    if (req.session) req.session.flash = { error: 'Namespace required.' };
+    return res.redirect('/admin/cache');
+  }
+  try {
+    cacheController.clearNS(ns);
+    if (req.session) req.session.flash = { success: 'Namespace cleared.' };
+    return res.redirect('/admin/cache');
+  } catch (err) {
+    console.error('Error clearing namespace:', err);
+    if (req.session) req.session.flash = { error: 'Failed to clear namespace.' };
+    return res.redirect('/admin/cache');
+  }
+});
+
+router.post('/cache/clear-all', authRequired, adminRequired, csrfProtection, async (req, res) => {
+  try {
+    cacheController.clearAll();
+    if (req.session) req.session.flash = { success: 'Cache cleared.' };
+    return res.redirect('/admin/cache');
+  } catch (err) {
+    console.error('Error clearing cache:', err);
+    if (req.session) req.session.flash = { error: 'Failed to clear cache.' };
+    return res.redirect('/admin/cache');
+  }
+});
+

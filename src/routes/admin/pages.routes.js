@@ -297,6 +297,58 @@ bind(router, {
   }
 });
 
+// Admin: Cache viewer
+bind(router, {
+  route: '/cache',
+  view: 'admin/cache',
+  meta: { title: 'Cache' },
+  middleware: [authRequired, adminRequired, csrfProtection, require('../../middleware/csrfLocals.js')],
+  getData: async function (req) {
+    const flash = req.session?.flash;
+    if (req.session) delete req.session.flash;
+    try {
+      const cache = require('../../controllers/cache.js');
+      const raw = cache.listKeys(); // [{key, exp}]
+      const items = raw.map(entry => {
+        const key = entry.key;
+        const exp = entry.exp || 0;
+        const now = Date.now();
+        const ttlRemaining = exp === 0 ? null : Math.max(0, exp - now);
+        let preview = null;
+        try {
+          const val = cache.get(key);
+          if (val == null) preview = null;
+          else if (typeof val === 'string') {
+            // If it's a JSON string, pretty-print it
+            try {
+              const parsed = JSON.parse(val);
+              preview = JSON.stringify(parsed, null, 2);
+            } catch (e) {
+              preview = val;
+            }
+          } else {
+            try {
+              preview = JSON.stringify(val, null, 2);
+            } catch (e) {
+              preview = String(val);
+            }
+          }
+        } catch (e) {
+          preview = '<unserializable>';
+        }
+        // Truncate very large previews to avoid rendering huge blocks in the admin UI
+        if (typeof preview === 'string' && preview.length > 2000) preview = preview.substring(0, 2000) + '\n…(truncated)';
+        return { key, exp, ttlRemaining, preview };
+      });
+
+      return { flash, items };
+    } catch (err) {
+      console.error('Error preparing cache admin page:', err);
+      return { flash, items: [] };
+    }
+  }
+});
+
 
 bind(router, {
   route: '/products',
