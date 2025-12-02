@@ -69,7 +69,7 @@ function createLogger(context = 'App') {
     l = l.append(prefix + ' ');
     l = l.bold().append(msgText).reset();
 
-    if (details.length > 0) {
+    if (details.length > 0 && level !== 'error') {
       for (var i = 0; i < details.length; i++) {
         details[i] = ' ' + details[i];
       }
