@@ -567,7 +567,7 @@
   font-weight: 600;
   font-size: 0.9rem;
   line-height: 1;
-  border: 1px solid rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--tint-2);
   background: transparent;
   color: var(--tint-1);
   cursor: pointer;
@@ -604,11 +604,6 @@
 
 .admin-simple:active {
   transform: translateY(0);
-}
-
-.admin-simple:focus {
-  outline: 2px solid rgba(155, 135, 245, 0.25);
-  outline-offset: 2px;
 }
 
 /* Highlight the currently logged-in user in the admin users table */
@@ -770,4 +765,15 @@
   display: inline-flex;
   align-items: center;
   padding: 0 10px;
+}
+
+.confirm-modal-actions:focus,
+.confirm-modal-actions:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+.confirm-modal-actions .admin-simple:hover {
+  transform: translateY(-1px);
 }

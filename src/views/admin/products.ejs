@@ -120,7 +120,7 @@
                           <!-- View on storefront -->
                           
                           <% if (product.status == 'active') { %>
-                            <span class="helper-popup" tabindex="0" aria-haspopup="true">
+                            <span class="helper-popup hide-on-mobile" tabindex="0" aria-haspopup="true">
                               <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
                                 <span class="sr-only">View</span>
                                 <%- include('../icon', { name: 'eye-open' }) %>
@@ -128,7 +128,7 @@
                               <span class="helper-popup__text" role="tooltip">View</span>
                             </span>
                           <% } else { %>
-                            <span class="helper-popup" tabindex="0" aria-haspopup="true">
+                            <span class="helper-popup hide-on-mobile" tabindex="0" aria-haspopup="true">
                               <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
                                 <span class="sr-only">View Draft</span>
                                 <%- include('../icon', { name: 'eye-closed-danger' }) %>

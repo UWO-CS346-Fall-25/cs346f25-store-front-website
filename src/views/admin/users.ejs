@@ -94,19 +94,29 @@
                             <form method="post" action="/admin/users/<%= u.id %>/set-role" style="display:inline;margin-right:6px;">
                               <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                               <input type="hidden" name="role" value="staff" />
-                              <button class="admin-simple" type="submit" title="Make Staff">
-                                <%- include('../icon', { name: 'admin-promote' }) %>
-                                Make Staff
-                              </button>
+                              <%- include('../partials/confirm-button', {
+                                btnClasses: 'admin-simple',
+                                iconName: 'admin-promote',
+                                label: 'Make Staff',
+                                modalTitle: 'Make staff',
+                                modalBody: 'Promote this user to staff? This will grant additional privileges.',
+                                confirmText: 'Make Staff',
+                                cancelText: 'Cancel'
+                              }) %>
                             </form>
                           <% } else { %>
                             <form method="post" action="/admin/users/<%= u.id %>/set-role" style="display:inline;margin-right:6px;">
                               <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                               <input type="hidden" name="role" value="user" />
-                              <button class="admin-simple" type="submit" title="Revoke Staff">
-                                <%- include('../icon', { name: 'admin-demote' }) %>
-                                Revoke Staff
-                              </button>
+                              <%- include('../partials/confirm-button', {
+                                btnClasses: 'admin-simple',
+                                iconName: 'admin-demote',
+                                label: 'Revoke Staff',
+                                modalTitle: 'Revoke staff',
+                                modalBody: 'Revoke staff privileges for this user?',
+                                confirmText: 'Revoke',
+                                cancelText: 'Cancel'
+                              }) %>
                             </form>
                           <% } %>
 
@@ -115,19 +125,29 @@
                             <form method="post" action="/admin/users/<%= u.id %>/ban" style="display:inline;">
                               <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                               <input type="hidden" name="action" value="ban" />
-                              <button class="admin-simple" type="submit" title="Ban">
-                                <%- include('../icon', { name: 'admin-ban' }) %>
-                                Ban
-                              </button>
+                              <%- include('../partials/confirm-button', {
+                                btnClasses: 'admin-simple',
+                                iconName: 'admin-ban',
+                                label: 'Ban',
+                                modalTitle: 'Ban user',
+                                modalBody: 'Ban this user? They will not be able to sign in.',
+                                confirmText: 'Ban',
+                                cancelText: 'Cancel'
+                              }) %>
                             </form>
                           <% } else { %>
                             <form method="post" action="/admin/users/<%= u.id %>/ban" style="display:inline;">
                               <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                               <input type="hidden" name="action" value="unban" />
-                              <button class="admin-simple" type="submit" title="Unban">
-                                <%- include('../icon', { name: 'admin-unban' }) %>
-                                Unban
-                              </button>
+                              <%- include('../partials/confirm-button', {
+                                btnClasses: 'admin-simple',
+                                iconName: 'admin-unban',
+                                label: 'Unban',
+                                modalTitle: 'Unban user',
+                                modalBody: 'Unban this user?',
+                                confirmText: 'Unban',
+                                cancelText: 'Cancel'
+                              }) %>
                             </form>
                           <% } %>
                         <% } %>
