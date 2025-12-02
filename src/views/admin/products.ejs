@@ -12,7 +12,9 @@
     
     <header class="admin-header">
       <h1>Products Dashboard</h1>
-      <p class="subtitle">Create, update, and retire products shown in your shop.</p>
+      <p class="subtitle">Create, update, and retire products shown in your shop.
+        <%- include('../partials/helper-popup', { text: 'Draft products are only visible to admins. Use the eye icon to preview drafts.' }) %>
+      </p>
     </header>
     <section class="section" aria-labelledby="admin-products-heading">
       
