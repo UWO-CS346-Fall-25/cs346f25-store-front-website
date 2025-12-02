@@ -21,7 +21,7 @@
           } else if (util.count && util.count > 0) {
             if (util.id === 'orders') badgeLabel = String(util.count) + ' pending orders';
             else if (util.id === 'todo') badgeLabel = String(util.count) + ' open TODOs';
-            else badgeLabel = String(util.count) + ' items';
+            else badgeLabel = String(util.count) + ' draft items';
           }
         %>
         <% if (util.id === 'logs') { %>

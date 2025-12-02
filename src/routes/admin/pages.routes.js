@@ -34,6 +34,7 @@ bind(router, {
           .from('orders_view')
           .select('id', { count: 'exact', head: true })
           .in('status', ['processing', 'packed', 'awaiting_shipment']);
+        dbStats.increment();
         if (!error && typeof count === 'number') pendingOrdersCount = count;
       } catch (e) {
         console.error('Error counting pending orders for dashboard:', e);
@@ -69,9 +70,26 @@ bind(router, {
         // ignore if file not present
       }
 
+      // Count draft products for Products Manager badge
+      let draftProductsCount = 0;
+      try {
+        const database = require('../../models/db.js');
+        const r = await database.query("SELECT COUNT(*) AS cnt FROM public.products WHERE status = 'draft'");
+        dbStats.increment();
+        if (r && r.rows && r.rows[0]) {
+          draftProductsCount = Number(r.rows[0].cnt) || 0;
+        }
+      } catch (e) {
+        console.error('Error counting draft products for dashboard:', e);
+      }
+
       const utilities = utilList.map(u => {
         const copy = Object.assign({}, u);
         if (copy.id === 'orders') copy.count = pendingOrdersCount || 0;
+        else if (copy.id === 'products') {
+          // show number of drafts on Products Manager
+          copy.count = draftProductsCount || 0;
+        }
         else if (copy.id === 'logs') {
           // For logs we provide both overall count and errorCount; show error badge for errors
           copy.count = logsCount || 0;
@@ -110,6 +128,7 @@ bind(router, {
       // If no search query, use the simple paged admin API
       if (!q) {
         const { data, error } = await supabase.auth.admin.listUsers({ page, perPage });
+        dbStats.increment();
 
         if (error) {
           console.error('Error listing users:', error);

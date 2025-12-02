@@ -318,6 +318,7 @@ router.post('/products/:id/delete', authRequired, adminRequired, csrfProtection,
       .eq('id', id)
       .select()
       .maybeSingle();
+    dbStats.increment();
 
     console.log(error, data);
     if (req.session) {
@@ -353,6 +354,7 @@ router.post('/products/:id/unarchive', authRequired, adminRequired, csrfProtecti
       .eq('id', id)
       .select()
       .maybeSingle();
+    dbStats.increment();
 
     if (req.session) {
       req.session.flash = {
@@ -401,6 +403,7 @@ router.post('/users/:id/set-role', authRequired, adminRequired, csrfProtection, 
     let targetUser = null;
     try {
       const { data: getData, error: getErr } = await supabase.auth.admin.getUserById(id);
+      dbStats.increment();
       if (!getErr && getData) targetUser = getData.user || getData;
     } catch (e) {
       // ignore fetch error; we'll defensively block if we can't determine
@@ -417,6 +420,7 @@ router.post('/users/:id/set-role', authRequired, adminRequired, csrfProtection, 
     const { error } = await supabase.auth.admin.updateUserById(id, {
       app_metadata: { role: desired },
     });
+    dbStats.increment();
 
     if (req.session) {
       req.session.flash = { error: error ? 'Failed to update role.' : null, success: error ? null : 'Role updated.' };
@@ -446,6 +450,7 @@ router.post('/users/:id/ban', authRequired, adminRequired, csrfProtection, async
     let targetUser = null;
     try {
       const { data: getData, error: getErr } = await supabase.auth.admin.getUserById(id);
+      dbStats.increment();
       if (!getErr && getData) targetUser = getData.user || getData;
     } catch (e) {
       // ignore
@@ -463,6 +468,7 @@ router.post('/users/:id/ban', authRequired, adminRequired, csrfProtection, async
         app_metadata: { role: 'banned' },
         user_metadata: { banned: true },
       });
+      dbStats.increment();
       if (req.session) req.session.flash = { error: error ? 'Failed to ban user.' : null, success: error ? null : 'User banned.' };
     } else if (action === 'unban') {
       // restore to 'user'
@@ -470,6 +476,7 @@ router.post('/users/:id/ban', authRequired, adminRequired, csrfProtection, async
         app_metadata: { role: 'user' },
         user_metadata: { banned: false },
       });
+      dbStats.increment();
       if (req.session) req.session.flash = { error: error ? 'Failed to unban user.' : null, success: error ? null : 'User unbanned.' };
     } else {
       if (req.session) req.session.flash = { error: 'Invalid action.' };
@@ -502,6 +509,7 @@ router.post('/orders/:id/status', authRequired, adminRequired, csrfProtection, a
       .eq('id', id)
       .select()
       .maybeSingle();
+    dbStats.increment();
 
     if (req.session) {
       req.session.flash = {

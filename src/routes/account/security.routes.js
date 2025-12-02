@@ -5,6 +5,7 @@ const { genericClient, masterClient } = require('../../models/supabase');
 const { bind } = require('express-page-registry');
 const { authRequired } = require('../../middleware/accountRequired.js');
 const errorManager = require('../../controllers/errorManager.js');
+const dbStats = require('../../controllers/dbStats.js');
 
 
 // =================================================
@@ -57,12 +58,14 @@ router.post('/security/password', authRequired, async (req, res, next) => {
       email,
       password: currentPassword,
     });
+    dbStats.increment();
     if (errors.verify(signInError, 'currentPassword')) return errors.throwError();
 
     // 2) Update password via admin client
     const { error: updateErr } = await masterClient.auth.admin.updateUserById(userId, {
       password: newPassword,
     });
+    dbStats.increment();
     if (errors.verify(updateErr)) return errors.throwError();
 
     return errors.throwSuccess('Password updated successfully.');
