@@ -120,21 +120,30 @@
                           <!-- View on storefront -->
                           
                           <% if (product.status == 'active') { %>
-                            <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
-                              <span class="sr-only">View</span>
-                              <%- include('../icon', { name: 'eye-open' }) %>
-                            </a>
+                            <span class="helper-popup" tabindex="0" aria-haspopup="true">
+                              <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
+                                <span class="sr-only">View</span>
+                                <%- include('../icon', { name: 'eye-open' }) %>
+                              </a>
+                              <span class="helper-popup__text" role="tooltip">View</span>
+                            </span>
                           <% } else { %>
-                            <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener" >
-                              <span class="sr-only">View Draft</span>
-                              <%- include('../icon', { name: 'eye-closed-danger' }) %>
-                            </a>
+                            <span class="helper-popup" tabindex="0" aria-haspopup="true">
+                              <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
+                                <span class="sr-only">View Draft</span>
+                                <%- include('../icon', { name: 'eye-closed-danger' }) %>
+                              </a>
+                              <span class="helper-popup__text" role="tooltip">View Draft</span>
+                            </span>
                           <% } %>
 
-                          <a class="link link--icon" href="/admin/products/<%= product.id %>/edit">
-                            <span class="sr-only">Edit</span>
-                            <%- include('../icon', { name: 'edit' }) %>
-                          </a>
+                          <span class="helper-popup" tabindex="0" aria-haspopup="true">
+                            <a class="link link--icon" href="/admin/products/<%= product.id %>/edit">
+                              <span class="sr-only">Edit</span>
+                              <%- include('../icon', { name: 'edit' }) %>
+                            </a>
+                            <span class="helper-popup__text" role="tooltip">Edit</span>
+                          </span>
                           <!-- Delete (POST/DELETE) -->
                           <form
                             method="post"
@@ -144,10 +153,18 @@
                             <% if (csrfToken) { %>
                               <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                             <% } %>
-                            <button type="submit" class="link link--danger admin-delete-link link--icon">
-                              <span class="sr-only">Edit</span>
-                              <%- include('../icon', { name: 'trash' }) %>
-                            </button>
+                            <span class="helper-popup" tabindex="0" aria-haspopup="true">
+                              <%- include('../partials/confirm-button', {
+                                btnClasses: 'link link--danger admin-delete-link link--icon',
+                                iconName: 'trash',
+                                label: 'Delete',
+                                modalTitle: 'Delete product',
+                                modalBody: 'Delete this product? This cannot be undone.',
+                                confirmText: 'Delete',
+                                cancelText: 'Cancel'
+                              }) %>
+                              <span class="helper-popup__text" role="tooltip">Delete</span>
+                            </span>
                           </form>
                         </div>
                       </td>

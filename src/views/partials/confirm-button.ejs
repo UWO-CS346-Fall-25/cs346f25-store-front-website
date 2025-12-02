@@ -1,0 +1,29 @@
+<%
+  // Params:
+  // btnClasses: CSS classes for the trigger button
+  // iconName: name of icon to include
+  // label: sr-only label for accessibility
+  // modalTitle: title text shown in modal
+  // modalBody: body text shown in modal
+  // confirmText / cancelText: button labels
+  const uid = typeof id !== 'undefined' ? id : 'confirm-' + Math.random().toString(36).slice(2,9);
+%>
+<button type="button" class="<%= btnClasses %>" data-confirm-id="<%= uid %>" aria-haspopup="dialog" aria-label="<%= label %>">
+  <span class="sr-only"><%= label %></span>
+  <%- include('../icon', { name: iconName }) %>
+</button>
+
+<div class="confirm-modal-overlay" id="<%= uid %>" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="confirm-modal-dialog" role="document">
+    <% if (modalTitle) { %>
+      <p class="confirm-modal-title"><%= modalTitle %></p>
+    <% } %>
+    <p class="confirm-modal-body"><%= modalBody || '' %></p>
+    <div class="confirm-modal-actions">
+      <button type="button" class="admin-simple" data-confirm-cancel><%= cancelText || 'Cancel' %></button>
+      <button type="button" class="admin-simple primary" data-confirm-ok><%= confirmText || 'Confirm' %></button>
+    </div>
+  </div>
+</div>
+
+<!-- confirm-button behavior is initialized by /js/confirm-button.js -->
