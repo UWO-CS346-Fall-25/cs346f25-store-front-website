@@ -22,10 +22,71 @@ bind(router, {
     if (req.session) {
       delete req.session.flash;
     }
-    return {
-      flash,
-      utilities: require('../../models/admin-utilities.js'),
-    };
+    try {
+      const utilList = require('../../models/admin-utilities.js');
+      const supabase = require('../../models/supabase.js').masterClient();
+      const fs = require('fs').promises;
+
+      // Compute a few useful counts for dashboard badges
+      let pendingOrdersCount = 0;
+      try {
+        const { error, count } = await supabase
+          .from('orders_view')
+          .select('id', { count: 'exact', head: true })
+          .in('status', ['processing', 'packed', 'awaiting_shipment']);
+        if (!error && typeof count === 'number') pendingOrdersCount = count;
+      } catch (e) {
+        console.error('Error counting pending orders for dashboard:', e);
+      }
+
+      // Logs count (use debug controller).
+      // Count only errors that have NOT been marked as viewed in the current session.
+      let logsCount = 0;
+      let logsErrorCount = 0;
+      try {
+        const logs = require('../../controllers/debug.js');
+        const all = logs.getAllLogs();
+        logsCount = Array.isArray(all) ? all.length : 0;
+        // get set of already-viewed log ids from session (persist per admin session)
+        const viewedSet = new Set((req.session && Array.isArray(req.session.viewedLogs)) ? req.session.viewedLogs : []);
+        if (Array.isArray(all)) {
+          logsErrorCount = all.filter(e => String(e.level || '').toLowerCase() === 'error' && !viewedSet.has(e.id)).length;
+        }
+      } catch (e) {
+        console.error('Error computing logs count for dashboard:', e);
+      }
+
+      // TODO count: count unchecked list items in docs/TODO.md
+      let todoOpenCount = 0;
+      try {
+        const todoPath = require('path').join(__dirname, '..', '..', 'docs', 'TODO.md');
+        const md = await fs.readFile(todoPath, { encoding: 'utf8' });
+        if (md) {
+          const matches = md.match(/- \[ \]/g);
+          todoOpenCount = matches ? matches.length : 0;
+        }
+      } catch (e) {
+        // ignore if file not present
+      }
+
+      const utilities = utilList.map(u => {
+        const copy = Object.assign({}, u);
+        if (copy.id === 'orders') copy.count = pendingOrdersCount || 0;
+        else if (copy.id === 'logs') {
+          // For logs we provide both overall count and errorCount; show error badge for errors
+          copy.count = logsCount || 0;
+          copy.errorCount = logsErrorCount || 0;
+        }
+        else if (copy.id === 'todo') copy.count = todoOpenCount || 0;
+        else copy.count = 0;
+        return copy;
+      });
+
+      return { flash, utilities };
+    } catch (err) {
+      console.error('Error preparing admin dashboard data:', err);
+      return { flash, utilities: require('../../models/admin-utilities.js') };
+    }
   }
 });
 
@@ -173,6 +234,20 @@ bind(router, {
       e.details = d;
       return e;
     });
+
+    // Mark any error-level logs present on this page as viewed for this session
+    try {
+      if (req.session) {
+        const viewed = new Set(req.session.viewedLogs || []);
+        for (const e of normalized) {
+          if (String(e.level || '').toLowerCase() === 'error') viewed.add(e.id);
+        }
+        req.session.viewedLogs = Array.from(viewed);
+      }
+    } catch (e) {
+      // don't block on session errors
+      console.error('Error marking logs as viewed in session:', e);
+    }
 
     return {
       flash,

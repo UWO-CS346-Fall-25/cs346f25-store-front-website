@@ -11,6 +11,33 @@
   <section class="utilities-grid">
     <% utilities.forEach(util => { %>
       <a class="utility-card" href="<%= util.path %>" >
+        <% 
+          // compute a human-friendly label for tooltip/aria
+          let badgeLabel = null;
+          if (util.id === 'logs') {
+            if (util.errorCount && util.errorCount > 0) {
+              badgeLabel = (util.errorCount === 1) ? '1 error' : (String(util.errorCount) + ' errors');
+            }
+          } else if (util.count && util.count > 0) {
+            if (util.id === 'orders') badgeLabel = String(util.count) + ' pending orders';
+            else if (util.id === 'todo') badgeLabel = String(util.count) + ' open TODOs';
+            else badgeLabel = String(util.count) + ' items';
+          }
+        %>
+        <% if (util.id === 'logs') { %>
+          <% if (util.errorCount && util.errorCount > 0) { %>
+              <span class="utility-badge utility-badge--error" data-tooltip="<%= badgeLabel %>" aria-label="<%= badgeLabel %>" aria-hidden="false">
+                <% /* Visible content: '!' when single error, otherwise number. */ %>
+                <span class="utility-badge__value" aria-hidden="true"><%= util.errorCount === 1 ? '!' : util.errorCount %></span>
+              </span>
+          <% } %>
+        <% } else { %>
+          <% if (util.count && util.count > 0) { %>
+            <span class="utility-badge" data-tooltip="<%= badgeLabel %>" aria-label="<%= badgeLabel %>" aria-hidden="false">
+              <span class="utility-badge__value" aria-hidden="true"><%= util.count %></span>
+            </span>
+          <% } %>
+        <% } %>
         <div class="utility-icon"><%- include('../icon', { name: util.icon }) %></div>
         <h2 class="utility-title"><%= util.name %></h2>
         <p class="utility-description"><%= util.description %></p>

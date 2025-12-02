@@ -59,6 +59,11 @@ section {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+/* make room for an optional badge */
+.utility-card {
+  position: relative;
+}
+
 .utility-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
@@ -101,6 +106,119 @@ section {
 
 .utility-btn:hover {
   background: #1f2937;
+}
+
+/* Numeric badge shown in the top-right corner when a utility has notifications */
+.utility-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--tint-3);
+  background: var(--tint-2);
+  border-radius: 999px;
+  /* subtle shadow for depth */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  /* colored glow using site tint variable */
+  filter: drop-shadow(0 1px 5px var(--tint-2));
+  line-height: 1;
+  z-index: 3;
+}
+
+/* small wrapper/value inside badge to allow custom tooltip element positioning */
+.utility-badge__value {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  font-weight: 700;
+  color: inherit;
+}
+
+/* Custom tooltip using data-tooltip attribute on the badge container.
+   Tooltip appears on hover or when the card receives focus (keyboard accessible via focus-within). */
+.utility-card:hover .utility-badge::after,
+.utility-card:focus-within .utility-badge::after {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.utility-badge::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  transform-origin: right bottom;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(6px) scale(0.98);
+  transition: opacity 150ms ease, transform 150ms ease;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.utility-badge::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 4px);
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.85);
+  transform: rotate(45deg);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 150ms ease, transform 150ms ease;
+  z-index: 4;
+}
+
+.utility-card:hover .utility-badge::before,
+.utility-card:focus-within .utility-badge::before {
+  opacity: 1;
+}
+
+/* Make sure tooltip text wraps on very small screens */
+@media (max-width: 420px) {
+  .utility-badge::after {
+    white-space: normal;
+    max-width: 160px;
+    right: -6px;
+  }
+}
+
+/* Error variant for logs: red badge using site --error variable */
+.utility-badge--error {
+  background: var(--error);
+  /* keep readable depth */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  /* filter: drop-shadow(0 6px 18px rgba(239, 68, 68, 0.18)); */
+  filter: drop-shadow(0 1px 5px var(--error));
+}
+
+/* hide badge when zero via not rendering in template; keep small screens comfortable */
+@media (max-width: 480px) {
+  .utility-badge {
+    top: 8px;
+    right: 10px;
+    min-width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+  }
 }
 
 /* Order-details: inline status controls and timeline styles */

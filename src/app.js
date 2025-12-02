@@ -174,5 +174,6 @@ const rows = registry.all().map(p => `${p.meta?.title || ''} -> ${p.route} (${p.
 
 log.system("Registered Pages", `Total: ${rows.length}`);
 log.system("Pages List", rows);
+log.error("Test Error");
 
 module.exports = app;
