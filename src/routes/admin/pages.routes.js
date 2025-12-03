@@ -11,6 +11,7 @@ const csrfProtection = csrf({ cookie: false });
 
 const logs = require('../../controllers/debug.js');
 const utilities = require('../../models/admin-utilities.js');
+const supabase = require('../../models/supabase.js');
 
 bind(router, {
   route: '/',
@@ -366,6 +367,40 @@ bind(router, {
       products,
       flash,
     };
+  }
+});
+
+
+bind(router, {
+  route: '/message-senders',
+  view: 'admin/message-senders',
+  meta: { title: 'Message Senders' },
+  middleware: [authRequired, adminRequired, csrfProtection, require('../../middleware/csrfLocals.js')],
+  getData: async function (req) {
+    const flash = req.session?.flash;
+    if (req.session) delete req.session.flash;
+    try {
+      // Select users who have sent messages (is_from_user = true) and the last message for each
+
+      // const r = await database.query(sql, []);
+      const { data, error } = await supabase.masterClient()
+        .rpc('get_message_threads');
+      dbStats.increment();
+
+      console.log('Message senders data:', data);
+
+      if (error) {
+        console.error(error);
+      }
+      // data is an array of:
+      // { user_id: string, display_name: string, last_body: string, last_at: string }
+
+      const rows = (data && data.length) ? data : [];
+      return { flash, senders: rows };
+    } catch (err) {
+      console.error('Error preparing message-senders admin page:', err);
+      return { flash, senders: [] };
+    }
   }
 });
 bind(router, {

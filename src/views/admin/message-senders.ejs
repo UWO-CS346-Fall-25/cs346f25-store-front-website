@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Admin · Message Senders', cssFiles: ['admin/dashboard.css', 'admin.css', 'admin/logs.css'], scripts: [] }) %>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main id="main-content">
+    <header class="admin-header">
+      <h1>Message Senders</h1>
+      <p class="subtitle">Users who have sent messages and their latest message.</p>
+    </header>
+    <section class="section" aria-labelledby="admin-message-senders-heading">
+      <div class="container">
+
+        <%- include('../partials/flash') %>
+
+        <section class="admin-panel">
+          <% const rows = senders || []; %>
+
+          <a href="/admin" class="link--button link" id="back-to-dashboard">
+            <%- include('../icon', { name: 'back' }) %> Back to Dashboard
+          </a>
+
+          <% if (!rows.length) { %>
+            <p class="muted">No message senders found.</p>
+          <% } else { %>
+            <div class="admin-table-wrapper">
+              <table class="admin-table admin-table--simple">
+                <thead>
+                  <tr>
+                    <th>Sender</th>
+                    <th style="width:140px;text-align:right">Last message at</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% rows.forEach(function(r) { %>
+                    <tr>
+                      <td>
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                          <div style="font-weight:600;"><%= r.display_name || r.user_id %></div>
+                          <div class="muted" style="white-space:pre-wrap;"> <%= r.last_body ? r.last_body : '—' %></div>
+                        </div>
+                      </td>
+                      <td class="muted" style="text-align:right;vertical-align:middle;"><%= r.last_at ? new Date(r.last_at).toLocaleString() : '—' %></td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } %>
+
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

@@ -1,5 +1,3 @@
--- 010_seed_messages.sql
-
 -- Seed a couple of example messages between the system/admin and demo user.
 -- Uses fixed UUIDs from auth seed so this is deterministic:
 -- Admin user id: 11111111-1111-1111-1111-111111111111
@@ -16,8 +14,8 @@ values
     'Hello! Welcome to the demo store. If you have any questions, reply to this message and our team will get back to you.',
     null,
     false,
-    now(),
-    now()
+    TIMESTAMPTZ '2024-01-01 09:00:00+00',
+    TIMESTAMPTZ '2024-01-01 09:00:00+00'
   ),
   (
     101,
@@ -26,10 +24,9 @@ values
     'Thanks! I have a question about shipping times. How long does delivery usually take?',
     100,
     false,
-    now(),
-    now()
-  )
-  ,
+    TIMESTAMPTZ '2024-01-01 09:05:00+00',
+    TIMESTAMPTZ '2024-01-01 09:05:00+00'
+  ),
   (
     102,
     '22222222-2222-2222-2222-222222222222'::uuid,
@@ -37,8 +34,8 @@ values
     'Most orders ship within 1-2 business days. International orders may take longer depending on customs.',
     101,
     false,
-    now(),
-    now()
+    TIMESTAMPTZ '2024-01-01 09:10:00+00',
+    TIMESTAMPTZ '2024-01-01 09:10:00+00'
   ),
   (
     103,
@@ -47,8 +44,8 @@ values
     'Great — thanks for the quick reply! Also, can I change my shipping address after placing an order?',
     null,
     false,
-    now(),
-    now()
+    TIMESTAMPTZ '2024-01-01 10:00:00+00',
+    TIMESTAMPTZ '2024-01-01 10:00:00+00'
   ),
   (
     104,
@@ -57,8 +54,8 @@ values
     'We can update the shipping address within 2 hours of order placement. If it has already shipped we cannot change it.',
     103,
     false,
-    now(),
-    now()
+    TIMESTAMPTZ '2024-01-01 10:05:00+00',
+    TIMESTAMPTZ '2024-01-01 10:05:00+00'
   ),
   (
     105,
@@ -67,7 +64,7 @@ values
     'Understood — thank you! One last question: do you offer expedited shipping?',
     null,
     false,
-    now(),
-    now()
+    TIMESTAMPTZ '2024-01-01 10:15:00+00',
+    TIMESTAMPTZ '2024-01-01 10:15:00+00'
   )
 on conflict (id) do nothing;

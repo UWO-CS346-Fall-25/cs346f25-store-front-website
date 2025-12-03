@@ -74,4 +74,42 @@ USING (
   OR public.is_admin()
 );
 
+
+
+-- Get latest message per user (where user has sent at least one message),
+-- along with their display name and timestamp of last message.
+create or replace function public.get_message_threads()
+returns table (
+  user_id uuid,
+  display_name text,
+  last_body text,
+  last_at timestamptz
+)
+language sql
+security definer
+set search_path = public, auth
+as $$
+  select
+    s.user_id,
+    coalesce(u.raw_user_meta_data->>'display_name', u.email) as display_name,
+    lm.body as last_body,
+    lm.created_at as last_at
+  from (
+    select distinct user_id
+    from public.messages
+    where is_from_user = true
+  ) s
+  join lateral (
+    select body, created_at
+    from public.messages m2
+    where m2.user_id = s.user_id
+    order by created_at desc
+    limit 1
+  ) lm on true
+  left join auth.users u on u.id = s.user_id
+  order by lm.created_at desc;
+$$;
+
+
+
 COMMIT;

@@ -59,6 +59,13 @@ const utilities = [
     icon: 'admin-cache',
   },
   {
+    id: 'messages',
+    name: 'Messages',
+    description: 'View and manage user messages',
+    path: '/admin/message-senders',
+    icon: 'admin-messages',
+  },
+  {
     id: 'health',
     name: 'Health Status',
     description: 'Basic health checks and diagnostics',
