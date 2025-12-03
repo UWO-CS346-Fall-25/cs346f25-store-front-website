@@ -382,19 +382,18 @@ bind(router, {
     try {
       // Select users who have sent messages (is_from_user = true) and the last message for each
 
-      // const r = await database.query(sql, []);
+      // Gets last messages
+      // data is an array of:
+      // { user_id: string, display_name: string, last_body: string, last_at: string }
       const { data, error } = await supabase.masterClient()
         .rpc('get_message_threads');
       dbStats.increment();
 
-      console.log('Message senders data:', data);
+      console.log(data);
 
       if (error) {
         console.error(error);
       }
-      // data is an array of:
-      // { user_id: string, display_name: string, last_body: string, last_at: string }
-
       const rows = (data && data.length) ? data : [];
       return { flash, senders: rows };
     } catch (err) {

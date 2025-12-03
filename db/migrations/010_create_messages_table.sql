@@ -78,11 +78,13 @@ USING (
 
 -- Get latest message per user (where user has sent at least one message),
 -- along with their display name and timestamp of last message.
+DROP FUNCTION IF EXISTS public.get_message_threads();
 create or replace function public.get_message_threads()
 returns table (
   user_id uuid,
   display_name text,
   last_body text,
+  last_is_read boolean,
   last_at timestamptz
 )
 language sql
@@ -93,6 +95,7 @@ as $$
     s.user_id,
     coalesce(u.raw_user_meta_data->>'display_name', u.email) as display_name,
     lm.body as last_body,
+    lm.is_read as last_is_read,
     lm.created_at as last_at
   from (
     select distinct user_id
@@ -100,7 +103,7 @@ as $$
     where is_from_user = true
   ) s
   join lateral (
-    select body, created_at
+    select body, created_at, is_read
     from public.messages m2
     where m2.user_id = s.user_id
     order by created_at desc
