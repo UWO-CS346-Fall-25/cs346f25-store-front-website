@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { cssFiles: ['messages.css'], scripts: ['messages-page.js']}) %>
+
+  <body>
+    <%- include('../partials/navbar') %>
+
+      <main class="section" aria-labelledby="send-heading">
+        <div class="container container--narrow">
+          <h1 id="send-heading">Send Message</h1>
+
+          <section class="stack">
+            <form id="admin-send-form" class="messages-form" action="#" method="post" onsubmit="return false;">
+              <label for="recipient" class="muted">Recipient (email or user id)</label>
+              <input id="recipient" name="recipient" type="text" placeholder="user@example.com" value="<%= typeof recipient !== 'undefined' ? recipient : '' %>" />
+
+              <label for="body" class="muted">Message</label>
+              <textarea id="body" name="body" rows="6" placeholder="Write your message..."></textarea>
+
+              <div class="messages-form-actions">
+                <button class="primary" type="submit">Send Message</button>
+              </div>
+            </form>
+          </section>
+
+        </div>
+      </main>
+
+
+      <%- include('../partials/footer') %>
+  </body>
+
+</html>

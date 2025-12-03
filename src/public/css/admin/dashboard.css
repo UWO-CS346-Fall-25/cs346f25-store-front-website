@@ -393,3 +393,14 @@ form[action^="/admin/orders/"] .button.button--compact:hover {
     font-size: 0.95rem;
   }
 }
+
+
+
+.admin-panel {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--overlay);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(12, 18, 28, 0.06);
+  overflow: hidden;
+}

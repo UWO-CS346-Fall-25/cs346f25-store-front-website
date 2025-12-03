@@ -402,6 +402,69 @@ bind(router, {
     }
   }
 });
+// Admin: view a message thread for a specific user
+bind(router, {
+  route: '/messages/thread',
+  view: 'messages/admin',
+  meta: { title: 'Message Thread' },
+  middleware: [authRequired, adminRequired, csrfProtection, require('../../middleware/csrfLocals.js')],
+  getData: async function (req) {
+    const flash = req.session?.flash;
+    if (req.session) delete req.session.flash;
+    const userId = (req.query && (req.query.user || req.query.recipient)) ? String(req.query.user || req.query.recipient) : null;
+    if (!userId) return { flash, messages: [], recipient: '' };
+
+    try {
+      const sup = supabase.masterClient();
+      // Fetch messages for the selected user (admin view)
+      const { data, error } = await sup
+        .from('messages')
+        .select('id, user_id, is_from_user, body, parent_id, is_read, created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: true });
+      dbStats.increment();
+
+      if (error) console.error('Error fetching thread messages for admin:', error);
+
+      let recipient_display = "Anonymous";
+      console.log(data);
+      try {
+        console.log("GETTING DATA");
+        const { data: listData, error: userErr } = await sup.auth.admin.getUserById(userId);
+        console.log(listData);
+        dbStats.increment();
+        if (userErr) {
+          console.error('Error fetching user for order listing:', userErr);
+          return null;
+        }
+        recipient_display = listData.user ? listData.user.user_metadata.display_name : "Anonymous";
+      } catch (e) {
+        console.error('Error fetching user display name for admin message thread:', e);
+      }
+
+
+
+      return { flash, messages: (data && data.length) ? data : [], recipient: userId, recipient_display };
+    } catch (err) {
+      console.error('Error preparing admin message thread page:', err);
+      return { flash, messages: [], recipient: userId || '' };
+    }
+  }
+});
+// Admin: Send message page (renders the send form for admins)
+bind(router, {
+  route: '/messages/send',
+  view: 'messages/send',
+  meta: { title: 'Send Message' },
+  middleware: [authRequired, adminRequired, csrfProtection, require('../../middleware/csrfLocals.js')],
+  getData: async function (req) {
+    const flash = req.session?.flash;
+    if (req.session) delete req.session.flash;
+    // Prefill recipient from query string (recipient can be user id or email)
+    const recipient = req.query && req.query.recipient ? String(req.query.recipient) : '';
+    return { flash, recipient };
+  }
+});
 bind(router, {
   route: '/products/archived',
   view: 'admin/products-archived',
