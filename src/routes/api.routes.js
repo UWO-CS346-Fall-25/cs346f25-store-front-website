@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 const database = require('../models/productDatabase.js');
-const { authClient } = require('../models/supabase');
+const { authClient, masterClient } = require('../models/supabase');
+const { adminRequired } = require('../middleware/accountRequired');
 
 // Messages API
 // GET /api/messages -> returns messages for current user (RLS will enforce visibility)
@@ -39,11 +40,34 @@ router.post('/api/messages', async (req, res) => {
     };
 
     const { data, error } = await supabase.from('messages').insert(row).select().maybeSingle();
-    require('../controllers/dbStats.js').increment();
     if (error) return res.status(500).json({ error: error.message || String(error) });
     return res.json({ ok: true, message: data });
   } catch (err) {
     console.error('Error creating message:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Admin: create a message as the server/admin for a given user
+router.post('/api/admin/messages', adminRequired, async (req, res) => {
+  try {
+    const { recipient, body, parent_id } = req.body || {};
+    if (!recipient || typeof recipient !== 'string' || !recipient.trim()) return res.status(400).json({ error: 'Recipient required' });
+    if (!body || typeof body !== 'string' || !body.trim()) return res.status(400).json({ error: 'Message body required' });
+
+    const supabase = masterClient();
+    const row = {
+      user_id: recipient,
+      is_from_user: false,
+      body: body.trim(),
+      parent_id: parent_id || null,
+    };
+
+    const { data, error } = await supabase.from('messages').insert(row).select().maybeSingle();
+    if (error) return res.status(500).json({ error: error.message || String(error) });
+    return res.json({ ok: true, message: data });
+  } catch (err) {
+    console.error('Error creating admin message:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 });

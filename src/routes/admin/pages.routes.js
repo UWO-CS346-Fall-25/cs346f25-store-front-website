@@ -35,6 +35,7 @@ bind(router, {
           .from('orders_view')
           .select('id', { count: 'exact', head: true })
           .in('status', ['processing', 'packed', 'awaiting_shipment']);
+
         dbStats.increment();
         if (!error && typeof count === 'number') pendingOrdersCount = count;
       } catch (e) {
@@ -389,8 +390,6 @@ bind(router, {
         .rpc('get_message_threads');
       dbStats.increment();
 
-      console.log(data);
-
       if (error) {
         console.error(error);
       }
@@ -427,11 +426,8 @@ bind(router, {
       if (error) console.error('Error fetching thread messages for admin:', error);
 
       let recipient_display = "Anonymous";
-      console.log(data);
       try {
-        console.log("GETTING DATA");
         const { data: listData, error: userErr } = await sup.auth.admin.getUserById(userId);
-        console.log(listData);
         dbStats.increment();
         if (userErr) {
           console.error('Error fetching user for order listing:', userErr);
@@ -442,6 +438,16 @@ bind(router, {
         console.error('Error fetching user display name for admin message thread:', e);
       }
 
+      // Mark server/admin-originated messages as read for this user when they open their inbox
+      try {
+        await sup
+          .from('messages')
+          .update({ is_read: true })
+          .eq('user_id', userId)
+          .eq('is_read', false);
+      } catch (e) {
+        console.error('Error marking user messages as read:', e);
+      }
 
 
       return { flash, messages: (data && data.length) ? data : [], recipient: userId, recipient_display };

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('../partials/head', { cssFiles: ['messages.css', 'admin/dashboard.css'], scripts: [] }) %>
+<%- include('../partials/head', { cssFiles: ['messages.css', 'admin/dashboard.css'], scripts: ['admin-thread.js'] }) %>
 
   <body>
     <%- include('../partials/navbar') %>
@@ -20,7 +20,7 @@
                 <div class="messages-empty muted">No messages yet.</div>
               <% } else { %>
                 <% messages.forEach(function(m) { %>
-                  <div class="message <%= m.is_from_user ? 'from-user' : 'from-server' %>">
+                  <div class="message <%= m.is_from_user ? 'from-server' : 'from-user' %>">
                     <div class="message-header">
                       <time datetime="<%= m.created_at %>"><%= new Date(m.created_at).toLocaleString() %></time>
                       <% if (m.user_email) { %>
@@ -33,7 +33,7 @@
               <% } %>
             </div>
 
-            <form id="messages-form" class="messages-form" action="#" onsubmit="return false;">
+            <form id="messages-form" class="messages-form" action="#">
               <input type="hidden" id="recipient" name="recipient" value="<%= typeof recipient !== 'undefined' ? recipient : '' %>" />
               <textarea id="messages-body" name="body" rows="3" placeholder="Write a message reply..."></textarea>
               <div class="messages-form-actions">
