@@ -2,6 +2,51 @@ const express = require('express');
 const router = express.Router();
 
 const database = require('../models/productDatabase.js');
+const { authClient } = require('../models/supabase');
+
+// Messages API
+// GET /api/messages -> returns messages for current user (RLS will enforce visibility)
+router.get('/api/messages', async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+    const supabase = authClient(req);
+    const { data, error } = await supabase
+      .from('messages')
+      .select('id, user_id, is_from_user, body, parent_id, is_read, created_at')
+      .order('created_at', { ascending: true });
+    require('../controllers/dbStats.js').increment();
+    if (error) return res.status(500).json({ error: error.message || String(error) });
+    return res.json({ ok: true, messages: data });
+  } catch (err) {
+    console.error('Error fetching messages:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// POST /api/messages -> create a new message from current user
+router.post('/api/messages', async (req, res) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+    const supabase = authClient(req);
+    const { body, parent_id } = req.body || {};
+    if (!body || typeof body !== 'string' || !body.trim()) return res.status(400).json({ error: 'Message body required' });
+
+    const row = {
+      user_id: req.user.id,
+      is_from_user: true,
+      body: body.trim(),
+      parent_id: parent_id || null,
+    };
+
+    const { data, error } = await supabase.from('messages').insert(row).select().maybeSingle();
+    require('../controllers/dbStats.js').increment();
+    if (error) return res.status(500).json({ error: error.message || String(error) });
+    return res.json({ ok: true, message: data });
+  } catch (err) {
+    console.error('Error creating message:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+});
 
 router.get('/api/featured', async (req, res) => {
   const featuredProducts = await database.getFeatured();

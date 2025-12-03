@@ -1,0 +1,126 @@
+/* messages popup */
+#messages-popup {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1200;
+  font-family: inherit;
+}
+
+.messages-toggle {
+  background: var(--primary-1);
+  color: var(--overlay);
+  border: none;
+  padding: 10px 14px;
+  border-radius: 24px;
+  cursor: pointer;
+}
+
+.messages-panel {
+  width: 320px;
+  max-height: 440px;
+  background: var(--overlay);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+}
+
+.messages-panel.open {
+  display: flex;
+}
+
+.messages-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.messages-header h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.messages-close {
+  background: var(--overlay);
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer
+}
+
+.messages-list {
+  padding: 12px;
+  overflow: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.message {
+  max-width: 85%;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.message.from-user {
+  align-self: flex-end;
+  background: linear-gradient(180deg, var(--tint-1), color-mix(in srgb, var(--tint-1) 70%, black 2%));
+  color: var(--overlay);
+}
+
+.message.from-server {
+  align-self: flex-start;
+  background: var(--overlay);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.message-header {
+  font-size: 11px;
+  color: var(--overlay);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.message.from-server .message-header {
+  color: var(--foreground);
+}
+
+/* subject removed for plain messages */
+
+.message-body {
+  margin-top: 6px;
+  white-space: pre-wrap;
+}
+
+.messages-empty {
+  padding: 12px;
+}
+
+.messages-form {
+  padding: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.messages-form input,
+.messages-form textarea {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 13px;
+}
+
+.messages-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
