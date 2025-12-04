@@ -57,8 +57,8 @@ bind(router, {
 });
 bind(router, {
   route: '/products/new',
-  view: 'admin/products-new',
-  meta: { title: 'Add Product' },
+  view: 'admin/admin_panel',
+  meta: pageData.product_new,
   middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
   getData: async function (req) {
     // const products = await db.bindCategories(await db.bindPrimaryImage(await db.getAll()));
@@ -76,8 +76,8 @@ bind(router, {
 
 bind(router, {
   route: '/products/:id/edit',
-  view: 'admin/products-new',
-  meta: { title: 'Edit Product' },
+  view: 'admin/admin_panel',
+  meta: pageData.product_new,
   middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
   getData: async function (req, res) {
 

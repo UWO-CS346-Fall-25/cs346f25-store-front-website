@@ -102,6 +102,17 @@ const page_data = {
     body: './cache',
     cssFiles: ['admin/dashboard.css', 'admin.css', 'admin/logs.css'],
     scripts: ['admin/logs.js']
+  },
+  product_new: {
+    title: 'Product Details',
+    subtitle: 'Setup a new product for your store.',
+    backLink: { name: 'Back to Products', href: '/admin/products', icon: 'back' },
+    postLink: null,
+    resetLink: null,
+    preBody: null,
+    body: './products-new',
+    cssFiles: ['admin/dashboard.css', 'admin.css'],
+    scripts: ['photo-view.js']
   }
 }
 
