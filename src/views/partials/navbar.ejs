@@ -21,9 +21,7 @@
         <% } %>
 
         <% if (user !=null) { %>
-          <% if(!isAdmin) { %>
-            <%- include('navbar-link', { path: '/account' , link_title: 'Account', icon:'account', onMobile: true }) %>
-          <% } %>
+          <%- include('navbar-link', { path: '/account' , link_title: user.user_metadata.display_name, icon:'account', onMobile: true }) %>
           <%- include('navbar-logout') %>
         <% } else { %>
           <%- include('navbar-link', { path: '/login' , link_title: 'Login', icon:'login', onMobile: true }) %>

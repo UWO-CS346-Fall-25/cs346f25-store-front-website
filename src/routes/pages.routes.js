@@ -14,7 +14,7 @@ bind(router, {
   view: 'home',
   meta: { title: 'Home' },
   middleware: [csrfProtection, require('../middleware/csrfLocals')],
-  getData: async (_) => ({
+  getData: async () => ({
     featuredProducts: await db.bindPrimaryImage(await db.getFeatured()),
     categories: await db.categoryBindProductAndPrimaryImage(await db.getCategories()),
     newArrivals: await db.bindPrimaryImage(await db.getNewArrivals(8)),

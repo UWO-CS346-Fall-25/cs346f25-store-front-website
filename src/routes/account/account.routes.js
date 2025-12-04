@@ -20,7 +20,7 @@ bind(router, {
     user = await userDatabase.bindAddresses(user);
     user = await userDatabase.bindOrderSummary(user);
 
-    return user;
+    return { ...user, user: req.user };
   }
 });
 
@@ -39,7 +39,7 @@ bind(router, {
 
     user = await userDatabase.bindOrders(user, { page, status, q });
 
-    return user;
+    return { ...user, user: req.user };
 
   }
 
@@ -65,7 +65,7 @@ bind(router, {
     if (user.error) {
       return next(user.errorDetail || new Error(user.error));
     }
-    return user;
+    return { ...user, user: req.user };
   }
 });
 

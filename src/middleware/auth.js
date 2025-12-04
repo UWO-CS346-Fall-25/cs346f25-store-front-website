@@ -5,7 +5,6 @@ async function authMiddleware(req, res, next) {
   const token = req.cookies['sb-access-token'];
   res.locals.user = null;
   res.locals.isAdmin = false;
-
   if (!token) {
     req.user = null;
     req.isAdmin = false;
