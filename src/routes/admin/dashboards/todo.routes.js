@@ -28,7 +28,7 @@ bind(router, {
       delete req.session.flash;
     }
     try {
-      const todoController = require('../../controllers/todoController.js');
+      const todoController = require('../../../controllers/todoController.js');
       const todoHtml = await todoController.getTodoHtml();
       return { flash, todoHtml };
     } catch (err) {

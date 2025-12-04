@@ -26,7 +26,7 @@ async function authMiddleware(req, res, next) {
   const role = user.app_metadata?.role;
 
   req.user = user;
-  req.isAdmin = role === 'admin';
+  req.isAdmin = role === 'admin' || role === 'staff';
 
   res.locals.user = user;
   res.locals.isAdmin = req.isAdmin;

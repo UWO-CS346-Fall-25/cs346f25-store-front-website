@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS public.unread_messages (
   user_id UUID NOT NULL PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   name TEXT NOT NULL DEFAULT 'Unknown User',
   body TEXT NOT NULL DEFAULT '...',
+  unread boolean NOT NULL DEFAULT TRUE,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 

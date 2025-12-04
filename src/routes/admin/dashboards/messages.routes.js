@@ -31,7 +31,9 @@ bind(router, {
       // data is an array of:
       // { user_id: string, display_name: string, last_body: string, last_at: string }
       const { data, error } = await supabase.masterClient()
-        .rpc('get_message_threads');
+        .from('unread_messages')
+        .select('user_id, name, body, unread, created_at')
+        .order('created_at', { ascending: false });
       dbStats.increment();
 
       if (error) {
@@ -62,7 +64,7 @@ bind(router, {
       // Fetch messages for the selected user (admin view)
       const { data, error } = await sup
         .from('messages')
-        .select('id, user_id, is_from_user, body, parent_id, is_read, created_at')
+        .select('id, user_id, is_from_user, body, created_at')
         .eq('user_id', userId)
         .order('created_at', { ascending: true });
       dbStats.increment();
@@ -85,10 +87,9 @@ bind(router, {
       // Mark server/admin-originated messages as read for this user when they open their inbox
       try {
         await sup
-          .from('messages')
-          .update({ is_read: true })
-          .eq('user_id', userId)
-          .eq('is_read', false);
+          .from('unread_messages')
+          .update({ unread: false })
+          .eq('user_id', userId);
       } catch (e) {
         console.error('Error marking user messages as read:', e);
       }

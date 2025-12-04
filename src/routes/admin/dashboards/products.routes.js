@@ -4,7 +4,7 @@ const router = express.Router();
 const csrf = require('csurf');
 const { bind } = require('express-page-registry');
 const db = require('../../../models/productDatabase.js');
-const { masterClient } = require('../../../models/supabase.js');
+const { masterClient, authClient } = require('../../../models/supabase.js');
 const { authRequired, adminRequired } = require('../../../middleware/accountRequired.js');
 const dbStats = require('../../../controllers/dbStats.js');
 
@@ -14,6 +14,7 @@ const logs = require('../../../controllers/debug.js');
 const utilities = require('../../../models/admin-utilities.js');
 const supabase = require('../../../models/supabase.js');
 const { uploadProductImages } = require('../../../middleware/uploads.js');
+const { uncacheProduct, uncacheArchived } = require('../../../models/productDatabase.js');
 
 
 

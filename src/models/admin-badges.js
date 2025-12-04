@@ -60,7 +60,8 @@ async function messages() {
     const db = supabase.masterClient();
     const { count, error } = await db
       .from('unread_messages')
-      .select('*', { count: 'exact', head: true });
+      .select('*', { count: 'exact', head: true })
+      .eq('unread', true);
     dbStats.increment();
     if (error) {
       console.error('Error counting unread messages for badges:', error);

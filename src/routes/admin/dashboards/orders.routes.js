@@ -13,6 +13,7 @@ const csrfProtection = csrf({ cookie: false });
 const logs = require('../../../controllers/debug.js');
 const utilities = require('../../../models/admin-utilities.js');
 const supabase = require('../../../models/supabase.js');
+const cache = require('../../../controllers/cache.js');
 
 bind(router, {
   route: '/orders',

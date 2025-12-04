@@ -13,7 +13,7 @@ router.get('/api/messages', async (req, res) => {
     const supabase = authClient(req);
     const { data, error } = await supabase
       .from('messages')
-      .select('id, user_id, is_from_user, body, parent_id, is_read, created_at')
+      .select('id, user_id, is_from_user, body, created_at')
       .order('created_at', { ascending: true });
     require('../controllers/dbStats.js').increment();
     if (error) return res.status(500).json({ error: error.message || String(error) });
@@ -36,11 +36,19 @@ router.post('/api/messages', async (req, res) => {
       user_id: req.user.id,
       is_from_user: true,
       body: body.trim(),
-      parent_id: parent_id || null,
     };
 
     const { data, error } = await supabase.from('messages').insert(row).select().maybeSingle();
     if (error) return res.status(500).json({ error: error.message || String(error) });
+
+    await supabase.from('unread_messages').upsert({
+      user_id: req.user.id,
+      name: req.user.user_metadata.display_name || 'User',
+      unread: true,
+      body: body.trim().substring(0, 100)
+    });
+    require('../controllers/dbStats.js').increment();
+
     return res.json({ ok: true, message: data });
   } catch (err) {
     console.error('Error creating message:', err);
@@ -60,11 +68,19 @@ router.post('/api/admin/messages', adminRequired, async (req, res) => {
       user_id: recipient,
       is_from_user: false,
       body: body.trim(),
-      parent_id: parent_id || null,
     };
 
     const { data, error } = await supabase.from('messages').insert(row).select().maybeSingle();
     if (error) return res.status(500).json({ error: error.message || String(error) });
+
+    await supabase.from('unread_messages').update({
+      user_id: recipient,
+      body: body.trim().substring(0, 100),
+      unread: false
+    });
+
+    require('../controllers/dbStats.js').increment();
+
     return res.json({ ok: true, message: data });
   } catch (err) {
     console.error('Error creating admin message:', err);

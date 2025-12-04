@@ -37,19 +37,19 @@
                         <td>
                           <a class="link" href="/admin/messages/thread?user=<%= encodeURIComponent(r.user_id || '') %>" style="display:block;color:inherit;text-decoration:none;">
                             <div style="display:flex;gap:8px;align-items:flex-start;">
-                              <% if (!r.last_is_read) { %>
-                                <span title="Unread" aria-hidden="true" style="width:12px;height:12px;border-radius:999px;background:#28a745;display:inline-block;margin-top:6px;margin-right:6px;"></span>
+                              <% if (r.unread) { %>
+                                <span title="Unread" aria-hidden="true" style="width:12px;height:12px;border-radius:999px;background:var(--tint-2);display:inline-block;margin-top:6px;margin-right:6px;"></span>
                               <% } else { %>
                                 <span style="width:12px;height:12px;display:inline-block;margin-right:6px;margin-top:6px;"></span>
                               <% } %>
                               <div style="display:flex;flex-direction:column;gap:6px;">
-                                <div style="font-weight:600;"><%= r.display_name || r.user_id %></div>
-                                <div class="muted" style="white-space:pre-wrap;"> <%= r.last_body ? r.last_body : '—' %></div>
+                                <div style="font-weight:600;"><%= r.name || r.user_id %></div>
+                                <div class="muted" style="white-space:pre-wrap;"> <%= r.body ? r.body : '—' %></div>
                               </div>
                             </div>
                           </a>
                         </td>
-                        <td class="muted" style="text-align:right;vertical-align:middle;"><%= r.last_at ? new Date(r.last_at).toLocaleString() : '—' %></td>
+                        <td class="muted" style="text-align:right;vertical-align:middle;"><%= r.created_at ? new Date(r.created_at).toLocaleString() : '—' %></td>
                       </tr>
                   <% }); %>
                 </tbody>
