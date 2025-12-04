@@ -148,8 +148,7 @@ app.use('/account', require('./routes/account/address.crud.routes.js'));
 app.use('/account', require('./routes/account/profile.routes.js'));
 app.use('/account', require('./routes/account/security.routes.js'));
 
-app.use('/admin', require('./routes/admin/admin.routes'));
-app.use('/admin', require('./routes/admin/admin.crud.routes'));
+app.use('/admin', require('./routes/admin/dashboard.routes'));
 app.use('/auth', require('./routes/auth/auth.crud.routes')(csrfProtection));
 app.use('/', require('./routes/auth/auth.routes')(csrfProtection));
 

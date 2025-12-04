@@ -1,13 +1,119 @@
+
 const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
-const { authClient, masterClient } = require('../../models/supabase.js');
-const { uploadProductImages } = require('../../middleware/uploads.js');
-const { uncacheProduct, uncacheArchived } = require('../../models/productDatabase.js');
+const { bind } = require('express-page-registry');
+const db = require('../../../models/productDatabase.js');
+const { masterClient } = require('../../../models/supabase.js');
+const { authRequired, adminRequired } = require('../../../middleware/accountRequired.js');
+const dbStats = require('../../../controllers/dbStats.js');
 
 const csrfProtection = csrf({ cookie: false });
-const { authRequired, adminRequired } = require('../../middleware/accountRequired.js');
-const dbStats = require('../../controllers/dbStats.js');
+
+const logs = require('../../../controllers/debug.js');
+const utilities = require('../../../models/admin-utilities.js');
+const supabase = require('../../../models/supabase.js');
+const { uploadProductImages } = require('../../../middleware/uploads.js');
+
+
+
+bind(router, {
+  route: '/products',
+  view: 'admin/products',
+  meta: { title: 'Products' },
+  middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
+  getData: async function (req) {
+    const products = await db.bindCategories(await db.bindPrimaryImage(await db.getAll()));
+
+    const flash = req.session?.flash;
+    if (req.session) {
+      delete req.session.flash;
+    }
+    return {
+      products,
+      flash,
+    };
+  }
+});
+
+bind(router, {
+  route: '/products/archived',
+  view: 'admin/products-archived',
+  meta: { title: 'Archived Products' },
+  middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
+  getData: async function (req) {
+    const products = await db.bindCategories(await db.bindPrimaryImage(await db.getArchived()));
+
+    const flash = req.session?.flash;
+    if (req.session) {
+      delete req.session.flash;
+    }
+    return {
+      products,
+      flash,
+    };
+  }
+});
+bind(router, {
+  route: '/products/new',
+  view: 'admin/products-new',
+  meta: { title: 'Add Product' },
+  middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
+  getData: async function (req) {
+    // const products = await db.bindCategories(await db.bindPrimaryImage(await db.getAll()));
+
+    const error = req.flash ? req.flash('error')[0] : null;
+    const success = req.flash ? req.flash('success')[0] : null;
+
+    return {
+      product: null,
+      mode: 'create',
+      flash: { error, success },
+    };
+  }
+});
+
+bind(router, {
+  route: '/products/:id/edit',
+  view: 'admin/products-new',
+  meta: { title: 'Edit Product' },
+  middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
+  getData: async function (req, res) {
+
+    const error = req.flash ? req.flash('error')[0] : null;
+    const success = req.flash ? req.flash('success')[0] : null;
+    const id = req.params.id;
+
+    try {
+      const product_list = [await db.getByID(id)];
+
+      if (!product_list[0]) {
+        console.error('Error loading product for edit:', error || 'Not found');
+        req.flash?.('error', 'Product not found.');
+        return {};
+      }
+      const product = (await db.bindImages(product_list))[0];
+
+      return {
+        product,
+        mode: 'edit',
+        flash: { error, success },
+      };
+    } catch {
+      res.redirect('/admin/products');
+      return {};
+    }
+
+
+  }
+});
+
+
+
+
+
+
+
 
 // ====================================================
 // ======================= CREATE =====================
@@ -375,205 +481,8 @@ router.post('/products/:id/unarchive', authRequired, adminRequired, csrfProtecti
 });
 
 
-// ====================================================
-// =================== USER ADMIN =====================
-// ====================================================
 
-// POST /admin/users/:id/set-role  -> body: role=admin|user|banned
-router.post('/users/:id/set-role', authRequired, adminRequired, csrfProtection, async (req, res) => {
-  const { id } = req.params;
-  const { role } = req.body || {};
-  const supabase = masterClient();
 
-  const allowed = ['admin', 'staff', 'user', 'banned'];
-  const desired = String(role || '').toLowerCase();
-  if (!allowed.includes(desired)) {
-    if (req.session) req.session.flash = { error: 'Invalid role.' };
-    return res.redirect('/admin/users');
-  }
 
-  // Prevent users changing their own role
-  if (req.user && String(req.user.id) === String(id)) {
-    if (req.session) req.session.flash = { error: 'You cannot change your own role.' };
-    return res.redirect('/admin/users');
-  }
-
-  try {
-    // Fetch the target user to check their current role
-    let targetUser = null;
-    try {
-      const { data: getData, error: getErr } = await supabase.auth.admin.getUserById(id);
-      dbStats.increment();
-      if (!getErr && getData) targetUser = getData.user || getData;
-    } catch (e) {
-      // ignore fetch error; we'll defensively block if we can't determine
-    }
-
-    const targetRole = (targetUser && (targetUser?.app_metadata?.role || targetUser?.role)) ? String(targetUser.app_metadata?.role || targetUser.role).toLowerCase() : null;
-
-    // Disallow modifying admins (nobody can modify admin accounts)
-    if (targetRole === 'admin') {
-      if (req.session) req.session.flash = { error: 'Modifying admin accounts is not allowed.' };
-      return res.redirect('/admin/users');
-    }
-
-    const { error } = await supabase.auth.admin.updateUserById(id, {
-      app_metadata: { role: desired },
-    });
-    dbStats.increment();
-
-    if (req.session) {
-      req.session.flash = { error: error ? 'Failed to update role.' : null, success: error ? null : 'Role updated.' };
-    }
-    return res.redirect('/admin/users');
-  } catch (err) {
-    console.error('Error updating user role:', err);
-    if (req.session) req.session.flash = { error: 'Failed to update role.' };
-    return res.redirect('/admin/users');
-  }
-});
-
-// POST /admin/users/:id/ban -> body: action=ban|unban
-router.post('/users/:id/ban', authRequired, adminRequired, csrfProtection, async (req, res) => {
-  const { id } = req.params;
-  const action = (req.body && req.body.action) ? String(req.body.action).toLowerCase() : '';
-  const supabase = masterClient();
-
-  try {
-    // Prevent banning/changing own status
-    if (req.user && String(req.user.id) === String(id)) {
-      if (req.session) req.session.flash = { error: 'You cannot ban or unban yourself.' };
-      return res.redirect('/admin/users');
-    }
-
-    // Fetch target user to check role; if admin, disallow any modifications
-    let targetUser = null;
-    try {
-      const { data: getData, error: getErr } = await supabase.auth.admin.getUserById(id);
-      dbStats.increment();
-      if (!getErr && getData) targetUser = getData.user || getData;
-    } catch (e) {
-      // ignore
-    }
-
-    const targetRole = (targetUser && (targetUser?.app_metadata?.role || targetUser?.role)) ? String(targetUser.app_metadata?.role || targetUser.role).toLowerCase() : null;
-    if (targetRole === 'admin') {
-      if (req.session) req.session.flash = { error: 'Modifying admin accounts is not allowed.' };
-      return res.redirect('/admin/users');
-    }
-
-    if (action === 'ban') {
-      // set app role to 'banned' and mark user metadata
-      const { error } = await supabase.auth.admin.updateUserById(id, {
-        app_metadata: { role: 'banned' },
-        user_metadata: { banned: true },
-      });
-      dbStats.increment();
-      if (req.session) req.session.flash = { error: error ? 'Failed to ban user.' : null, success: error ? null : 'User banned.' };
-    } else if (action === 'unban') {
-      // restore to 'user'
-      const { error } = await supabase.auth.admin.updateUserById(id, {
-        app_metadata: { role: 'user' },
-        user_metadata: { banned: false },
-      });
-      dbStats.increment();
-      if (req.session) req.session.flash = { error: error ? 'Failed to unban user.' : null, success: error ? null : 'User unbanned.' };
-    } else {
-      if (req.session) req.session.flash = { error: 'Invalid action.' };
-    }
-    return res.redirect('/admin/users');
-  } catch (err) {
-    console.error('Error banning/unbanning user:', err);
-    if (req.session) req.session.flash = { error: 'Failed to update user.' };
-    return res.redirect('/admin/users');
-  }
-});
-
-// POST /admin/orders/:id/status -> body: status=<new_status>
-router.post('/orders/:id/status', authRequired, adminRequired, csrfProtection, async (req, res) => {
-  const { id } = req.params;
-  const status = (req.body && req.body.status) ? String(req.body.status).trim() : '';
-  const supabase = masterClient();
-
-  const allowed = ['processing', 'packed', 'awaiting_shipment', 'shipped', 'in_transit', 'delivered', 'canceled', 'cancelled', 'refunded', 'on_hold'];
-  const desired = String(status || '').toLowerCase();
-  if (!allowed.includes(desired)) {
-    if (req.session) req.session.flash = { error: 'Invalid order status.' };
-    return res.redirect('/admin/orders');
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from('orders')
-      .update({ status: desired, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .maybeSingle();
-    dbStats.increment();
-
-    if (req.session) {
-      req.session.flash = {
-        error: (error || !data) ? 'Failed to update order status.' : null,
-        success: (data && !error) ? 'Order status updated.' : null,
-      };
-    }
-    return res.redirect('/admin/order/' + id);
-  } catch (err) {
-    console.error('Error updating order status:', err);
-    if (req.session) req.session.flash = { error: 'Failed to update order status.' };
-    return res.redirect('/admin/orders');
-  }
-});
 
 module.exports = router;
-
-// Cache management POST endpoints
-// Note: placed after module export to keep similar pattern. If project lints against this, move earlier.
-const cacheController = require('../../controllers/cache.js');
-
-router.post('/cache/delete', authRequired, adminRequired, csrfProtection, async (req, res) => {
-  const key = req.body && req.body.key ? String(req.body.key) : '';
-  if (!key) {
-    if (req.session) req.session.flash = { error: 'Key required.' };
-    return res.redirect('/admin/cache');
-  }
-  try {
-    cacheController.del(key);
-    if (req.session) req.session.flash = { success: 'Key deleted.' };
-    return res.redirect('/admin/cache');
-  } catch (err) {
-    console.error('Error deleting cache key:', err);
-    if (req.session) req.session.flash = { error: 'Failed to delete key.' };
-    return res.redirect('/admin/cache');
-  }
-});
-
-router.post('/cache/clear-namespace', authRequired, adminRequired, csrfProtection, async (req, res) => {
-  const ns = req.body && req.body.ns ? String(req.body.ns) : '';
-  if (!ns) {
-    if (req.session) req.session.flash = { error: 'Namespace required.' };
-    return res.redirect('/admin/cache');
-  }
-  try {
-    cacheController.clearNS(ns);
-    if (req.session) req.session.flash = { success: 'Namespace cleared.' };
-    return res.redirect('/admin/cache');
-  } catch (err) {
-    console.error('Error clearing namespace:', err);
-    if (req.session) req.session.flash = { error: 'Failed to clear namespace.' };
-    return res.redirect('/admin/cache');
-  }
-});
-
-router.post('/cache/clear-all', authRequired, adminRequired, csrfProtection, async (req, res) => {
-  try {
-    cacheController.clearAll();
-    if (req.session) req.session.flash = { success: 'Cache cleared.' };
-    return res.redirect('/admin/cache');
-  } catch (err) {
-    console.error('Error clearing cache:', err);
-    if (req.session) req.session.flash = { error: 'Failed to clear cache.' };
-    return res.redirect('/admin/cache');
-  }
-});
-

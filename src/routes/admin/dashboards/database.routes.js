@@ -1,18 +1,24 @@
+
 const express = require('express');
 const router = express.Router();
-const dbStats = require('../../controllers/dbStats');
-
 const csrf = require('csurf');
 const { bind } = require('express-page-registry');
-const { authRequired, adminRequired } = require('../../middleware/accountRequired.js');
+const db = require('../../../models/productDatabase.js');
+const { masterClient } = require('../../../models/supabase.js');
+const { authRequired, adminRequired } = require('../../../middleware/accountRequired.js');
+const dbStats = require('../../../controllers/dbStats.js');
 
 const csrfProtection = csrf({ cookie: false });
+
+const logs = require('../../../controllers/debug.js');
+const utilities = require('../../../models/admin-utilities.js');
+const supabase = require('../../../models/supabase.js');
 
 bind(router, {
   route: '/stats',
   view: 'admin/stats',
   meta: { title: 'Database', flash: {} },
-  middleware: [authRequired, adminRequired, csrfProtection, require('../../middleware/csrfLocals.js')],
+  middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
 });
 
 // Data endpoint (GET) — protected for admins
@@ -23,7 +29,7 @@ router.get('/stats/data', authRequired, adminRequired, (req, res) => {
 });
 
 // Reset endpoint (POST) — protected and CSRF-protected
-router.post('/stats/reset', authRequired, adminRequired, csrfProtection, require('../../middleware/csrfLocals.js'), (req, res) => {
+router.post('/stats/reset', authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js'), (req, res) => {
   dbStats.reset();
   res.json({ ok: true });
 });

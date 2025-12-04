@@ -1,20 +1,24 @@
+
 const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
 const { bind } = require('express-page-registry');
-const { masterClient } = require('../../models/supabase.js');
-const { authRequired, adminRequired } = require('../../middleware/accountRequired.js');
-const cache = require('../../controllers/cache.js');
-const productDB = require('../../models/productDatabase.js');
-const dbStats = require('../../controllers/dbStats.js');
+const db = require('../../../models/productDatabase.js');
+const { masterClient } = require('../../../models/supabase.js');
+const { authRequired, adminRequired } = require('../../../middleware/accountRequired.js');
+const dbStats = require('../../../controllers/dbStats.js');
 
 const csrfProtection = csrf({ cookie: false });
+
+const logs = require('../../../controllers/debug.js');
+const utilities = require('../../../models/admin-utilities.js');
+const supabase = require('../../../models/supabase.js');
 
 bind(router, {
   route: '/orders',
   view: 'admin/orders',
   meta: { title: 'Orders' },
-  middleware: [authRequired, adminRequired, csrfProtection, require('../../middleware/csrfLocals.js')],
+  middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
   getData: async function (req) {
     const supabase = masterClient();
     const flash = req.session?.flash;
@@ -102,7 +106,7 @@ bind(router, {
   route: '/order/:id',
   view: 'admin/order-details',
   meta: { title: 'Order Details' },
-  middleware: [authRequired, adminRequired, csrfProtection, require('../../middleware/csrfLocals.js')],
+  middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
   getData: async function (req, res) {
     const supabase = masterClient();
     const flash = req.session?.flash;
@@ -204,6 +208,49 @@ bind(router, {
       res.status(500);
       return { error: 'Failed to load order' };
     }
+  }
+});
+
+
+
+
+
+
+
+
+// POST /admin/orders/:id/status -> body: status=<new_status>
+router.post('/orders/:id/status', authRequired, adminRequired, csrfProtection, async (req, res) => {
+  const { id } = req.params;
+  const status = (req.body && req.body.status) ? String(req.body.status).trim() : '';
+  const supabase = masterClient();
+
+  const allowed = ['processing', 'packed', 'awaiting_shipment', 'shipped', 'in_transit', 'delivered', 'canceled', 'cancelled', 'refunded', 'on_hold'];
+  const desired = String(status || '').toLowerCase();
+  if (!allowed.includes(desired)) {
+    if (req.session) req.session.flash = { error: 'Invalid order status.' };
+    return res.redirect('/admin/orders');
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .update({ status: desired, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+    dbStats.increment();
+
+    if (req.session) {
+      req.session.flash = {
+        error: (error || !data) ? 'Failed to update order status.' : null,
+        success: (data && !error) ? 'Order status updated.' : null,
+      };
+    }
+    return res.redirect('/admin/order/' + id);
+  } catch (err) {
+    console.error('Error updating order status:', err);
+    if (req.session) req.session.flash = { error: 'Failed to update order status.' };
+    return res.redirect('/admin/orders');
   }
 });
 
