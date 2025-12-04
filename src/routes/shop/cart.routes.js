@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const productDB = require('../../models/productDatabase');
-const { getCart, addToCart, updateCartItem, removeFromCart } = require('../../models/cart');
+const { getCart, addToCart, updateCartItem, removeFromCart, clearCart } = require('../../models/cart');
 const errorManager = require('../../controllers/errorManager.js');
 const { bind } = require('express-page-registry');
 const util = require('../../controllers/util');
@@ -165,6 +165,16 @@ router.post('/cart/remove', (req, res, next) => {
     if (product_id) removeFromCart(req, product_id);
     errors.throwSuccess('Item removed from your cart.', '/cart');
 
+  } catch (err) {
+    next(err);
+  }
+});
+/* ─────────────────────────────────────────────
+ * POST /cart/clear – clear cart
+ * ────────────────────────────────────────────*/
+router.post('/cart/clear', (req, res, next) => {
+  try {
+    clearCart(req);
   } catch (err) {
     next(err);
   }
