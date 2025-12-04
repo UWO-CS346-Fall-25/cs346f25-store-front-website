@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
 const { bind } = require('express-page-registry');
-const db = require('../../../models/productDatabase.js');
 const { masterClient } = require('../../../models/supabase.js');
 const { authRequired, adminRequired } = require('../../../middleware/accountRequired.js');
 const dbStats = require('../../../controllers/dbStats.js');
@@ -15,6 +14,7 @@ const utilities = require('../../../models/admin-utilities.js');
 const supabase = require('../../../models/supabase.js');
 const cache = require('../../../controllers/cache.js');
 const page_data = require('../../../models/admin-page-data.js');
+const productDB = require('../../../models/productDatabase.js');
 
 bind(router, {
   route: '/orders',
@@ -106,8 +106,8 @@ bind(router, {
 
 bind(router, {
   route: '/order/:id',
-  view: 'admin/order-details',
-  meta: { title: 'Order Details' },
+  view: 'admin/admin_panel',
+  meta: {},
   middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
   getData: async function (req, res) {
     const supabase = masterClient();
@@ -204,7 +204,7 @@ bind(router, {
         placed_at_display,
       };
 
-      return { flash, order };
+      return { flash, order, ...page_data.order_details(order) };
     } catch (err) {
       console.error('Exception loading admin order detail:', err);
       res.status(500);

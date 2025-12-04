@@ -113,6 +113,19 @@ const page_data = {
     body: './products-new',
     cssFiles: ['admin/dashboard.css', 'admin.css'],
     scripts: ['photo-view.js']
+  },
+  order_details: function (order) {
+    return {
+      title: `Order #${order.number}`,
+      subtitle: `Order was placed on ${order.placed_at_display}`,
+      backLink: { name: 'Back to Orders', href: '/admin/orders', icon: 'back' },
+      postLink: null,
+      resetLink: null,
+      preBody: null,
+      body: './order-details',
+      cssFiles: ['account.css', 'admin/dashboard.css', 'admin.css'],
+      scripts: []
+    }
   }
 }
 
