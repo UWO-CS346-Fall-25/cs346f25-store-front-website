@@ -1,135 +1,106 @@
-<!DOCTYPE html>
-<html lang="en">
-<%- include('../partials/head', { title: 'Admin · Orders', cssFiles: ['admin/dashboard.css', 'admin.css', 'admin/logs.css'], scripts: [] }) %>
-<body>
-  <%- include('../partials/navbar') %>
 
-  <main id="main-content">
-    <header class="admin-header">
-      <h1>Orders</h1>
-      <p class="subtitle">View and manage customer orders.</p>
-    </header>
-    <section class="section" aria-labelledby="admin-orders-heading">
-      <div class="container">
+<% 
+  const rows = orders || []; 
+  const page = (filters && filters.page) || 1; 
+  const pageSize = (filters && filters.pageSize) || 20; 
+  const totalPages = (filters && filters.totalPages) || 1; 
+  const qVal = (filters && filters.q) || ''; 
+  const statusFilter = (filters && filters.status) || '';
+  const orderFilter = (filters && filters.order) || 'asc';
 
-        <%- include('../partials/flash') %>
+  const statusLabel = (s) => {
+    if (!s) return '—';
+    const map = {
+      processing: 'Processing',
+      packed: 'Packed',
+      awaiting_shipment: 'Awaiting shipment',
+      shipped: 'Shipped',
+      in_transit: 'In transit',
+      delivered: 'Delivered',
+      refunded: 'Refunded',
+      on_hold: 'On hold',
+    };
+    return map[String(s).toLowerCase()] || s;
+  };
+%>
+<form method="get" action="" style="margin:0.75rem 0;display:flex;gap:0.5rem;align-items:center;">
+  <input type="text" name="q" value="<%= qVal %>" placeholder="Search order number" style="flex:1;padding:0.4rem;border:1px solid #ddd;border-radius:4px;" />
+  <select name="status" style="padding:0.4rem;border:1px solid #ddd;border-radius:4px;">
+    <option value="">All statuses</option>
+    <option value="pending" <%= statusFilter==='pending' ? 'selected' : '' %>>Pending</option>
+    <option value="processing" <%= statusFilter==='processing' ? 'selected' : '' %>>Processing</option>
+    <option value="packed" <%= statusFilter==='packed' ? 'selected' : '' %>>Packed</option>
+    <option value="awaiting_shipment" <%= statusFilter==='awaiting_shipment' ? 'selected' : '' %>>Awaiting shipment</option>
+    <option value="shipped" <%= statusFilter==='shipped' ? 'selected' : '' %>>Shipped</option>
+    <option value="in_transit" <%= statusFilter==='in_transit' ? 'selected' : '' %>>In transit</option>
+    <option value="delivered" <%= statusFilter==='delivered' ? 'selected' : '' %>>Delivered</option>
+    <option value="refunded" <%= statusFilter==='refunded' ? 'selected' : '' %>>Refunded</option>
+  </select>
+  <select name="order" style="padding:0.4rem;border:1px solid #ddd;border-radius:4px;">
+    <option value="asc" <%= orderFilter==='asc' ? 'selected' : '' %>>Ascending</option>
+    <option value="desc" <%= orderFilter==='desc' ? 'selected' : '' %>>Descending</option>
+  </select>
+  <input type="hidden" name="pageSize" value="<%= pageSize %>" />
+  <button class="button primary small" type="submit">Filter</button>
+  <% if (qVal || statusFilter) { %>
+    <a class="link" href="?pageSize=<%= pageSize %>">Clear</a>
+  <% } %>
+</form>
 
-        <section class="admin-panel">
-          <% 
-            const rows = orders || []; 
-            const page = (filters && filters.page) || 1; 
-            const pageSize = (filters && filters.pageSize) || 20; 
-            const totalPages = (filters && filters.totalPages) || 1; 
-            const qVal = (filters && filters.q) || ''; 
-            const statusFilter = (filters && filters.status) || '';
-            const orderFilter = (filters && filters.order) || 'asc';
+<% if (!rows.length) { %>
+  <p class="muted">No orders found.</p>
+<% } else { %>
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>User</th>
+          <th>Placed</th>
+          <th>Total</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.forEach(function (o) { %>
+          <tr>
+            <td><a class="link" href="/admin/order/<%= o.id %>"><%= o.number %></a></td>
+            <td>
+              <a class="link" href="/admin/users?q=<%= encodeURIComponent(o.email || o.user_id) %>">
+                <%= o.email ? o.email : (o.user_id || '—') %>
+              </a>
+            </td>
+            <td class="muted"><%= o.placed_at_display %></td>
+            <td><%= o.total_display %></td>
+            <td>
+              <% const s = o.status || ''; const sClass = 'badge badge--status badge--' + String(s || '').replace(/\s+/g,'_'); %>
+              <span class="<%= sClass %>"><%= statusLabel(s) %></span>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
 
-            const statusLabel = (s) => {
-              if (!s) return '—';
-              const map = {
-                processing: 'Processing',
-                packed: 'Packed',
-                awaiting_shipment: 'Awaiting shipment',
-                shipped: 'Shipped',
-                in_transit: 'In transit',
-                delivered: 'Delivered',
-                refunded: 'Refunded',
-                on_hold: 'On hold',
-              };
-              return map[String(s).toLowerCase()] || s;
-            };
-          %>
-
-          <a href="/admin" class="link--button link" id="back-to-dashboard">
-            <%- include('../icon', { name: 'back' }) %> Back to Dashboard
-          </a>
-
-          <form method="get" action="" style="margin:0.75rem 0;display:flex;gap:0.5rem;align-items:center;">
-            <input type="text" name="q" value="<%= qVal %>" placeholder="Search order number" style="flex:1;padding:0.4rem;border:1px solid #ddd;border-radius:4px;" />
-            <select name="status" style="padding:0.4rem;border:1px solid #ddd;border-radius:4px;">
-              <option value="">All statuses</option>
-              <option value="pending" <%= statusFilter==='pending' ? 'selected' : '' %>>Pending</option>
-              <option value="processing" <%= statusFilter==='processing' ? 'selected' : '' %>>Processing</option>
-              <option value="packed" <%= statusFilter==='packed' ? 'selected' : '' %>>Packed</option>
-              <option value="awaiting_shipment" <%= statusFilter==='awaiting_shipment' ? 'selected' : '' %>>Awaiting shipment</option>
-              <option value="shipped" <%= statusFilter==='shipped' ? 'selected' : '' %>>Shipped</option>
-              <option value="in_transit" <%= statusFilter==='in_transit' ? 'selected' : '' %>>In transit</option>
-              <option value="delivered" <%= statusFilter==='delivered' ? 'selected' : '' %>>Delivered</option>
-              <option value="refunded" <%= statusFilter==='refunded' ? 'selected' : '' %>>Refunded</option>
-            </select>
-            <select name="order" style="padding:0.4rem;border:1px solid #ddd;border-radius:4px;">
-              <option value="asc" <%= orderFilter==='asc' ? 'selected' : '' %>>Ascending</option>
-              <option value="desc" <%= orderFilter==='desc' ? 'selected' : '' %>>Descending</option>
-            </select>
-            <input type="hidden" name="pageSize" value="<%= pageSize %>" />
-            <button class="button primary small" type="submit">Filter</button>
-            <% if (qVal || statusFilter) { %>
-              <a class="link" href="?pageSize=<%= pageSize %>">Clear</a>
-            <% } %>
-          </form>
-
-          <% if (!rows.length) { %>
-            <p class="muted">No orders found.</p>
-          <% } else { %>
-            <div class="admin-table-wrapper">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>Order #</th>
-                    <th>User</th>
-                    <th>Placed</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% rows.forEach(function (o) { %>
-                    <tr>
-                      <td><a class="link" href="/admin/order/<%= o.id %>"><%= o.number %></a></td>
-                      <td>
-                        <a class="link" href="/admin/users?q=<%= encodeURIComponent(o.email || o.user_id) %>">
-                          <%= o.email ? o.email : (o.user_id || '—') %>
-                        </a>
-                      </td>
-                      <td class="muted"><%= o.placed_at_display %></td>
-                      <td><%= o.total_display %></td>
-                      <td>
-                        <% const s = o.status || ''; const sClass = 'badge badge--status badge--' + String(s || '').replace(/\s+/g,'_'); %>
-                        <span class="<%= sClass %>"><%= statusLabel(s) %></span>
-                      </td>
-                    </tr>
-                  <% }); %>
-                </tbody>
-              </table>
-            </div>
-
-            <div class="admin-table-pagination" style="display:flex;align-items:center;justify-content:space-between;padding-top:0.75rem;">
-              <div class="muted">Page <%= page %> of <%= totalPages %></div>
-              <div>
-                <% const qs = (p) => {
-                     const parts = ['page=' + p];
-                     if (qVal) parts.push('q=' + encodeURIComponent(qVal));
-                     if (statusFilter) parts.push('status=' + encodeURIComponent(statusFilter));
-                     if (orderFilter) parts.push('order=' + encodeURIComponent(orderFilter));
-                     if (pageSize) parts.push('pageSize=' + pageSize);
-                     return parts.join('&');
-                   };
-                %>
-                <% if (page > 1) { %>
-                  <a class="link" href="?<%= qs(page - 1) %>">← Prev</a>
-                <% } %>
-                <% if (page < totalPages) { %>
-                  <% if (page > 1) { %> &nbsp; &middot; &nbsp; <% } %>
-                  <a class="link" href="?<%= qs(page + 1) %>">Next →</a>
-                <% } %>
-              </div>
-            </div>
-          <% } %>
-        </section>
-      </div>
-    </section>
-  </main>
-
-  <%- include('../partials/footer') %>
-</body>
-</html>
+  <div class="admin-table-pagination" style="display:flex;align-items:center;justify-content:space-between;padding-top:0.75rem;">
+    <div class="muted">Page <%= page %> of <%= totalPages %></div>
+    <div>
+      <% const qs = (p) => {
+            const parts = ['page=' + p];
+            if (qVal) parts.push('q=' + encodeURIComponent(qVal));
+            if (statusFilter) parts.push('status=' + encodeURIComponent(statusFilter));
+            if (orderFilter) parts.push('order=' + encodeURIComponent(orderFilter));
+            if (pageSize) parts.push('pageSize=' + pageSize);
+            return parts.join('&');
+          };
+      %>
+      <% if (page > 1) { %>
+        <a class="link" href="?<%= qs(page - 1) %>">← Prev</a>
+      <% } %>
+      <% if (page < totalPages) { %>
+        <% if (page > 1) { %> &nbsp; &middot; &nbsp; <% } %>
+        <a class="link" href="?<%= qs(page + 1) %>">Next →</a>
+      <% } %>
+    </div>
+  </div>
+<% } %>

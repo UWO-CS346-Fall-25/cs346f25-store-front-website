@@ -21,6 +21,16 @@ const page_data = {
     body: './logs',
     cssFiles: ['admin/dashboard.css', 'admin.css', 'admin/logs.css'],
     scripts: ['admin/logs.js']
+  },
+  orders: {
+    title: 'Orders Dashboard',
+    subtitle: 'Manage customer orders and track their status.',
+    backLink: { name: 'Back to Dashboard', href: '/admin', icon: 'back' },
+    postLink: null,
+    preBody: null,
+    body: './orders',
+    cssFiles: ['admin/dashboard.css', 'admin.css', 'admin/logs.css'],
+    scripts: []
   }
 }
 
