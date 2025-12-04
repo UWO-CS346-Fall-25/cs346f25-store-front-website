@@ -39,8 +39,8 @@ bind(router, {
 
 bind(router, {
   route: '/products/archived',
-  view: 'admin/products-archived',
-  meta: { title: 'Archived Products' },
+  view: 'admin/admin_panel',
+  meta: pageData.archived,
   middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
   getData: async function (req) {
     const products = await db.bindCategories(await db.bindPrimaryImage(await db.getArchived()));

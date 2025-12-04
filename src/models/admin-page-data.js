@@ -31,6 +31,16 @@ const page_data = {
     body: './orders',
     cssFiles: ['admin/dashboard.css', 'admin.css', 'admin/logs.css'],
     scripts: []
+  },
+  archived: {
+    title: 'Archived Products',
+    subtitle: 'Manage archived products in your store.',
+    backLink: { name: 'Back to Dashboard', href: '/admin', icon: 'back' },
+    postLink: null,
+    preBody: null,
+    body: './products-archived',
+    cssFiles: ['admin/dashboard.css', 'admin.css'],
+    scripts: []
   }
 }
 
