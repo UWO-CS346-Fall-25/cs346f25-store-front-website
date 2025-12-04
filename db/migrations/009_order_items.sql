@@ -106,23 +106,6 @@ after update on public.orders
 for each row execute procedure public.tg_recalc_order_totals_on_order();
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- Convenience View: orders + addresses + aggregated items
--- ─────────────────────────────────────────────────────────────────────────────
-create or replace view public.orders_view as
-select
-  o.*,
-  to_jsonb(sa) - 'user_id' - 'created_at' - 'updated_at' as shipping_address,
-  to_jsonb(ba) - 'user_id' - 'created_at' - 'updated_at' as billing_address,
-  coalesce((
-    select jsonb_agg(to_jsonb(oi) - 'order_id')
-    from public.order_items oi
-    where oi.order_id = o.id
-  ), '[]'::jsonb) as items
-from public.orders o
-join public.addresses sa on sa.id = o.shipping_address_id
-join public.addresses ba on ba.id = o.billing_address_id;
-
--- ─────────────────────────────────────────────────────────────────────────────
 -- RPC: order_summary_counts(user_id) → {open, shipped, delivered}
 -- ─────────────────────────────────────────────────────────────────────────────
 create or replace function public.order_summary_counts(p_user_id uuid)

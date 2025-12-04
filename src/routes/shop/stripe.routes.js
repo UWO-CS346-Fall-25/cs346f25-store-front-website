@@ -71,17 +71,25 @@ router.post('/checkout', async (req, res, next) => {
       return errors.throwError('No purchasable items in your cart.');
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionCreatePayload = {
       mode: 'payment',
       payment_method_types: ['card'],
       line_items,
       success_url: `${BASE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${BASE_URL}/cart`,
-      metadata: {
-        user_id: String(ctx.id),
+      billing_address_collection: 'required',
+      shipping_address_collection: {
+        allowed_countries: ['US'],
       },
       ...(ctx.user?.email ? { customer_email: ctx.user.email } : {}),
-    });
+    };
+
+    // Only include user_id metadata when we have a valid user id
+    if (ctx && ctx.id) {
+      sessionCreatePayload.metadata = { user_id: String(ctx.id) };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionCreatePayload);
 
 
     // This should send the browser straight to Stripe
@@ -149,12 +157,9 @@ bind(router, {
           // "Cannot set headers after they are sent to the client").
           if (!res.headersSent) {
             clearCart(req);
-            // Update locals so the navbar / templates reflect the cleared cart
             try {
               res.locals.cartCount = 0;
-            } catch (e) {
-              // ignore
-            }
+            } catch { }
           } else {
             console.warn('Skipping clearCart because headers already sent for session', session.id);
           }

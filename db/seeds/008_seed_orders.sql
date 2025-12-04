@@ -50,42 +50,19 @@ orders_with_addresses as (
     b.placed_at_raw as placed_at,
     b.placed_at_raw as updated_at,
 
-    -- choose random shipping/billing addresses for that user
-    case
-      when b.user_id = '11111111-1111-1111-1111-111111111111'::uuid
-      then (
-        select id
-        from public.addresses a
-        where a.user_id = '11111111-1111-1111-1111-111111111111'::uuid
-        order by random()
-        limit 1
-      )
-      else (
-        select id
-        from public.addresses a
-        where a.user_id = '22222222-2222-2222-2222-222222222222'::uuid
-        order by random()
-        limit 1
-      )
-    end as shipping_address_id,
+    -- generate new UUIDs for shipping/billing address references (addresses table may not exist in some setups)
+    gen_random_uuid() as shipping_address_id,
+    gen_random_uuid() as billing_address_id,
 
-    case
-      when b.user_id = '11111111-1111-1111-1111-111111111111'::uuid
-      then (
-        select id
-        from public.addresses a
-        where a.user_id = '11111111-1111-1111-1111-111111111111'::uuid
-        order by random()
-        limit 1
-      )
-      else (
-        select id
-        from public.addresses a
-        where a.user_id = '22222222-2222-2222-2222-222222222222'::uuid
-        order by random()
-        limit 1
-      )
-    end as billing_address_id
+    -- generate fake address snapshot fields
+    (case when b.user_id = '11111111-1111-1111-1111-111111111111'::uuid then ('Admin User '||b.i) else ('Customer '||b.i) end) as address_full_name,
+    ( (trunc(random()*999)::int + 1)::text || ' ' || (array['Maple St','Oak Ave','Main St','Market St','Broadway'])[(trunc(random()*5)::int + 1)] ) as address_line1,
+    null as address_line2,
+    (array['Springfield','Ravenwood','Lakeside','Brookfield','Fairview'])[(trunc(random()*5)::int + 1)] as address_city,
+    (array['CA','NY','WA','OR','TX'])[(trunc(random()*5)::int + 1)] as address_region,
+    lpad((10000 + (random() * 89999)::int)::text,5,'0') as address_postal_code,
+    'US' as address_country_code,
+    ('+1' || lpad((1000000000 + (random() * 899999999)::int)::text,10,'0')) as address_phone
   from base_orders b
 )
 insert into public.orders (
@@ -96,13 +73,19 @@ insert into public.orders (
   total_cents,
   currency,
   status,
+  address_full_name,
+  address_line1,
+  address_line2,
+  address_city,
+  address_region,
+  address_postal_code,
+  address_country_code,
+  address_phone,
   placed_at,
   updated_at,
   carrier,
   tracking_code,
   shipping_eta,
-  shipping_address_id,
-  billing_address_id,
   notes
 )
 select
@@ -113,6 +96,15 @@ select
   0,
   'USD',
   o.status,
+  -- use generated snapshot address fields
+  o.address_full_name,
+  o.address_line1,
+  o.address_line2,
+  o.address_city,
+  o.address_region,
+  o.address_postal_code,
+  o.address_country_code,
+  o.address_phone,
   o.placed_at,
   o.updated_at,
 
@@ -134,9 +126,5 @@ select
     then o.placed_at + interval '3 days'
     else null
   end as shipping_eta,
-
-  o.shipping_address_id,
-  o.billing_address_id,
-
   'Seeded test order #' || o.i as notes
 from orders_with_addresses o;

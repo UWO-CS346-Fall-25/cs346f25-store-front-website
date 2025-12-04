@@ -56,6 +56,7 @@ app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev", {
 }));
 
 // Body parsing middleware
+app.use('/webhooks', require('./routes/shop/stripe.webhooks.routes.js'))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -140,7 +141,6 @@ app.use('/', require('./routes/shop.routes'));
 
 app.use('/', require('./routes/shop/cart.routes'));
 app.use('/', require('./routes/shop/stripe.routes.js'));
-app.use('/webhooks', require('./routes/shop/stripe.webhooks.routes.js'));
 
 app.use('/account', require('./routes/account/account.routes'));
 app.use('/account', require('./routes/account/address.routes.js'));
