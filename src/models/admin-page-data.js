@@ -41,6 +41,16 @@ const page_data = {
     body: './products-archived',
     cssFiles: ['admin/dashboard.css', 'admin.css'],
     scripts: []
+  },
+  users: {
+    title: 'Users Dashboard',
+    subtitle: 'Manage users in your store.',
+    backLink: { name: 'Back to Dashboard', href: '/admin', icon: 'back' },
+    postLink: null,
+    preBody: null,
+    body: './users',
+    cssFiles: ['admin/dashboard.css', 'admin.css', 'admin/logs.css'],
+    scripts: []
   }
 }
 
