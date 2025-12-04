@@ -410,3 +410,36 @@ form[action^="/admin/orders/"] .button.button--compact:hover {
   justify-content: space-between;
   align-items: center;
 }
+
+
+.admin-inline-form {
+  margin: 0;
+  /* kill default top/bottom margins */
+  padding: 0;
+  display: inline-flex;
+  /* or `flex` – `inline-flex` feels nicer here */
+  align-items: center;
+  /* vertically center the button inside */
+}
+
+.simple {
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.25rem;
+  border-radius: .4rem .4rem 0 0;
+  border: 0;
+  padding: .5rem .6rem;
+  transition: transform .15s ease, background .2s ease, color .2s ease;
+  background: transparent;
+  cursor: pointer;
+  margin: 0;
+  gap: 0.35rem;
+}
+
+.simple:hover,
+.simple:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--foreground) 10%, transparent);
+  transition: background .2s ease, color .2s ease;
+}

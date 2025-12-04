@@ -27,6 +27,31 @@
                 <%- include('../icon', { name: postLink.icon }) %> <%- postLink.name %>
             </a>
           <% } %>
+          <% if(resetLink != null) { %>
+            <form
+              method="post"
+              action="<%- resetLink.href %>"
+              class="admin-inline-form"
+              onsubmit="return confirm('<%- resetLink.body %>');">
+              <% if (csrfToken) { %>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <% } %>
+              <span class="helper-popup" tabindex="0" aria-haspopup="true">
+                <%- include('../partials/confirm-button', {
+                  btnClasses: 'link button--compact simple',
+                  iconName: resetLink.icon,
+                  label: resetLink.name,
+                  modalTitle: resetLink.name,
+                  modalBody: resetLink.body,
+                  confirmText: resetLink.confirm,
+                  cancelText: 'Cancel',
+                  btnText: resetLink.name_small
+                }) %>
+                <span class="helper-popup__text" role="tooltip"><%- resetLink.confirm %></span>
+              </span>
+            </form>
+          <% } %>
+
         </div>
         <section class="admin-panel-inner">
           <%- include(body) %>
