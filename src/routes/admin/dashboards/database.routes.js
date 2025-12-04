@@ -13,11 +13,12 @@ const csrfProtection = csrf({ cookie: false });
 const logs = require('../../../controllers/debug.js');
 const utilities = require('../../../models/admin-utilities.js');
 const supabase = require('../../../models/supabase.js');
+const pageData = require('../../../models/admin-page-data.js');
 
 bind(router, {
   route: '/stats',
-  view: 'admin/stats',
-  meta: { title: 'Database', flash: {} },
+  view: 'admin/admin_panel',
+  meta: { ...pageData.database, flash: [] },
   middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
 });
 
@@ -31,7 +32,7 @@ router.get('/stats/data', authRequired, adminRequired, (req, res) => {
 // Reset endpoint (POST) — protected and CSRF-protected
 router.post('/stats/reset', authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js'), (req, res) => {
   dbStats.reset();
-  res.json({ ok: true });
+  res.redirect('/admin/stats');
 });
 
 module.exports = router;
