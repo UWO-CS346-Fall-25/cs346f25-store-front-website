@@ -15,9 +15,18 @@ if (!global.__LOG_MESSAGES__) {
    */
   global.__LOG_MESSAGES__ = new Map();
 }
+if (!global.__LOG_UNREAD_COUNT__) {
+  global.__LOG_UNREAD_COUNT__ = 0;
+}
 
 function getStore() {
   return global.__LOG_MESSAGES__;
+}
+function getUnreadCount() {
+  return global.__LOG_UNREAD_COUNT__;
+}
+function resetUnreadCount() {
+  global.__LOG_UNREAD_COUNT__ = 0;
 }
 
 function ensureContext(context) {
@@ -35,6 +44,10 @@ function createLogger(context = 'App') {
     const now = new Date();
     const isoTs = now.toISOString();
     const prefix = `[${isoTs}][${context}]`;
+
+    if (level === 'error') {
+      global.__LOG_UNREAD_COUNT__ += 1;
+    }
 
     // Normalize main message to string
     const msgText =
@@ -69,7 +82,7 @@ function createLogger(context = 'App') {
     l = l.append(prefix + ' ');
     l = l.bold().append(msgText).reset();
 
-    if (details.length > 0 && level !== 'error') {
+    if (details.length > 0 && level === 'error') {
       for (var i = 0; i < details.length; i++) {
         details[i] = ' ' + details[i];
       }
@@ -111,3 +124,5 @@ function getAllLogs() {
 module.exports = createLogger;
 module.exports.getLogStore = getLogStore;
 module.exports.getAllLogs = getAllLogs;
+module.exports.getUnreadCount = getUnreadCount;
+module.exports.resetUnreadCount = resetUnreadCount;

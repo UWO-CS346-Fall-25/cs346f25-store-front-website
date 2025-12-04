@@ -66,19 +66,7 @@ bind(router, {
       return e;
     });
 
-    // Mark any error-level logs present on this page as viewed for this session
-    try {
-      if (req.session) {
-        const viewed = new Set(req.session.viewedLogs || []);
-        for (const e of normalized) {
-          if (String(e.level || '').toLowerCase() === 'error') viewed.add(e.id);
-        }
-        req.session.viewedLogs = Array.from(viewed);
-      }
-    } catch (e) {
-      // don't block on session errors
-      console.error('Error marking logs as viewed in session:', e);
-    }
+    logs.resetUnreadCount();
 
     return {
       flash,
