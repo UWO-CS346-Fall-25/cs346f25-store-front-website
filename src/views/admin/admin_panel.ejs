@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head' ) %>
+  <body>
+    <%- include('../partials/navbar') %>
+    <header class="admin-header">
+      <h1><%- title %></h1>
+      <p class="subtitle"><%- subtitle %></p>
+    </header>
+
+    <div class="container">
+      <%- include('../partials/flash') %>
+
+      <% if(preBody != null) { %>
+        <%- include(preBody); %>
+      <% } %>
+
+      <div class="admin-panel">
+        <div class="admin-panel-upper">
+          <% if(backLink != null) { %>
+            <a href="<%- backLink.href %>" class="link--button link">
+                <%- include('../icon', { name: backLink.icon }) %> <%- backLink.name %>
+            </a>
+          <% } %>
+          <% if(postLink != null) { %>
+            <a href="<%- postLink.href %>" class="link--button link">
+                <%- include('../icon', { name: postLink.icon }) %> <%- postLink.name %>
+            </a>
+          <% } %>
+        </div>
+        <section class="admin-panel-inner">
+          <%- include(body) %>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>

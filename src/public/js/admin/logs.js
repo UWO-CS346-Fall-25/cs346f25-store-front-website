@@ -1,7 +1,7 @@
 // Admin logs interactions: toggle details, simple client-side filtering
 
 document.addEventListener('DOMContentLoaded', function () {
-  const table = document.querySelector('.logs-panel table');
+  const table = document.querySelector('.admin-panel table');
   if (!table) return;
 
   // Toggle details when clicking a main row (or pressing Enter/Space when focused on it).
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (levelFilter) {
     levelFilter.addEventListener('change', function () {
       const val = levelFilter.value;
-      document.querySelectorAll('.logs-panel tbody tr').forEach(tr => {
+      document.querySelectorAll('.admin-panel tbody tr').forEach(tr => {
         if (!val) {
           tr.style.display = '';
         } else {
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
       clearTimeout(timer);
       timer = setTimeout(() => {
         const q = (search.value || '').toLowerCase().trim();
-        document.querySelectorAll('.logs-panel tbody tr').forEach(tr => {
+        document.querySelectorAll('.admin-panel tbody tr').forEach(tr => {
           const text = tr.textContent.toLowerCase();
           tr.style.display = q ? (text.includes(q) ? '' : 'none') : '';
         });

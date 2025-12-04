@@ -36,7 +36,7 @@ section {
   color: var(--foreground);
 }
 
-#back-to-dashboard {
+.admin-panel-upper a {
   color: var(--tint-1);
 }
 
@@ -403,4 +403,10 @@ form[action^="/admin/orders/"] .button.button--compact:hover {
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(12, 18, 28, 0.06);
   overflow: hidden;
+}
+
+.admin-panel-upper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

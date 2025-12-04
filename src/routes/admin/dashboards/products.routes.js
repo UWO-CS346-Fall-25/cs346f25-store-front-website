@@ -15,13 +15,13 @@ const utilities = require('../../../models/admin-utilities.js');
 const supabase = require('../../../models/supabase.js');
 const { uploadProductImages } = require('../../../middleware/uploads.js');
 const { uncacheProduct, uncacheArchived } = require('../../../models/productDatabase.js');
-
+const pageData = require('../../../models/admin-page-data.js');
 
 
 bind(router, {
   route: '/products',
-  view: 'admin/products',
-  meta: { title: 'Products' },
+  view: 'admin/admin_panel',
+  meta: pageData.products,
   middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
   getData: async function (req) {
     const products = await db.bindCategories(await db.bindPrimaryImage(await db.getAll()));

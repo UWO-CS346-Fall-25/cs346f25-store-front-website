@@ -13,13 +13,14 @@ const csrfProtection = csrf({ cookie: false });
 const logs = require('../../../controllers/debug.js');
 const utilities = require('../../../models/admin-utilities.js');
 const supabase = require('../../../models/supabase.js');
+const page_data = require('../../../models/admin-page-data.js');
 
 
 bind(router, {
   route: '/logs',
-  view: 'admin/logs',
+  view: 'admin/admin_panel',
   middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
-  meta: { title: 'Admin Logs' },
+  meta: page_data.logs,
   getData: async function (req) {
     const flash = req.session?.flash;
     if (req.session) {
