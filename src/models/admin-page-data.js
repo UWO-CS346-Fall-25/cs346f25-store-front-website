@@ -56,6 +56,17 @@ const page_data = {
     cssFiles: ['admin/dashboard.css', 'admin.css', 'admin/logs.css'],
     scripts: []
   },
+  messages: {
+    title: 'Messages',
+    subtitle: 'View and manage user messages.',
+    backLink: { name: 'Back to Dashboard', href: '/admin', icon: 'back' },
+    postLink: null,
+    resetLink: null,
+    preBody: null,
+    body: './message-senders',
+    cssFiles: ['admin/dashboard.css', 'admin.css', 'admin/logs.css'],
+    scripts: []
+  },
   database: {
     title: 'Database Stats',
     subtitle: 'View and manage database statistics.',
