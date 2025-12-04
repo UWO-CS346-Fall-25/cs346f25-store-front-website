@@ -73,6 +73,24 @@ const page_data = {
     body: './stats',
     cssFiles: ['admin/dashboard.css', 'admin.css'],
     scripts: ['admin/stats.js']
+  },
+  cache: {
+    title: 'Cache',
+    subtitle: 'View and manage cache entries.',
+    backLink: { name: 'Back to Dashboard', href: '/admin', icon: 'back' },
+    postLink: null,
+    resetLink: {
+      name: 'Clear Cache',
+      name_small: "Clear",
+      href: '/admin/cache/delete',
+      icon: 'admin-reset-cache',
+      confirm: "Clear",
+      body: "Clear cache? This cannot be undone."
+    },
+    preBody: null,
+    body: './cache',
+    cssFiles: ['admin/dashboard.css', 'admin.css', 'admin/logs.css'],
+    scripts: ['admin/logs.js']
   }
 }
 
