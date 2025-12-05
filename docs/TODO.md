@@ -4,11 +4,9 @@
 ### General Next Steps
 * [x] Complete Account pages
 * [x] Complete Account pages
-* [ ] Apply Stripe buying products
 * [ ] Add Account info into admin dashboard
 * [ ] Add Stock properties to products
 * [ ] Cleanup Account pages styling
-* [ ] Cart / Checkout
 * [ ] View / Modify order fulfilment
 * [ ] CHAT GPT integration into order creations
 
@@ -18,8 +16,8 @@ The following developer tasks were completed recently and are tracked in the rep
 * [x] Annotated `src/app.js` with inline comments (middleware, CSP, sessions, routing order)
 * [x] Annotated `src/routes/shop.routes.js` with inline comments (redirects, CSRF, pagination, related items)
 * [x] Rewrote `README.md` with a professional overview and a clear Quick Start (PowerShell)
-
-These changes improve maintainability and onboarding for new contributors.
+* [x] Apply Stripe buying products
+* [x] Cart / Checkout
 
 
 ## Customer-Facing Pages
@@ -42,15 +40,16 @@ These changes improve maintainability and onboarding for new contributors.
 * [x] Related or recommended products
 
 ### Cart / Checkout
-* [ ] Shopping cart page
-* [ ] Editable item quantities
-* [ ] Shipping and payment forms
-* [ ] Order summary and confirmation page
+* [x] Shopping cart page
+* [x] Editable item quantities
+* [x] Shipping and payment forms
+* [x] Order summary and confirmation page
 
 ### Contact
 * [ ] Contact form (name, email, message)
 * [ ] Business email & social media links
 * [ ] Optional FAQ or "response time" notice
+* [x] Direct messages
 
 ### Policies
 * [ ] Shipping Policy
@@ -61,7 +60,7 @@ These changes improve maintainability and onboarding for new contributors.
 ### Account
 * [x] Login / Signup / Logout pages
 * [x] View order history
-* [ ] Wishlist (optional)
+* [ ] Wishlist
 * [x] Saved addresses / payment methods
 
 
@@ -69,7 +68,7 @@ These changes improve maintainability and onboarding for new contributors.
 ### Admin
 * [ ] Dashboard overview (sales, stock, analytics)
 * [x] Product management (add / edit / delete)
-* [ ] Orders management (status updates, fulfillment)
+* [x] Orders management (status updates, fulfillment)
 * [ ] Customer database
 * [ ] Analytics charts
 * [ ] Settings for payments, shipping, and branding
@@ -99,20 +98,3 @@ These changes improve maintainability and onboarding for new contributors.
 ### Newsletter / Community
 * [ ] Email signup form
 * [ ] Connect to mailing service (Mailchimp, etc.)
-
-### Suggested priorities and improvements
-These are recommended next steps to make the app production-ready and easier to maintain.
-
-- [ ] Implement Cart page and Checkout flow (critical path)
-- [ ] Complete Stripe integration (server/webhook tests, payment flows)
-- [ ] Add order management in admin (view, update status, export)
-- [ ] Add product `stock` and availability checks (prevent oversell)
-- [ ] Add automated tests: unit tests for models/controllers and smoke tests for routes
-- [ ] CI pipeline: run lint, tests, and migrations on PRs
-- [ ] Add logging/monitoring (structured logs, request tracing)
-- [ ] Harden security: review CSP, session cookie settings, rate limiting
-- [ ] Prepare a Dockerfile and deployment instructions (Heroku/Vercel/Azure/GCP)
-- [ ] Improve seed data to include more realistic orders and customers for testing
-- [ ] Add E2E tests for core flows (browse, add-to-cart, checkout)
-- [ ] Accessibility audit of templates (WCAG basics)
-- [ ] Performance checks for image sizes and asset caching
