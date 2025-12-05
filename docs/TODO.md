@@ -3,6 +3,7 @@
 ## Important
 ### General Next Steps
 * [x] Complete Account pages
+* [x] Complete Account pages
 * [ ] Apply Stripe buying products
 * [ ] Add Account info into admin dashboard
 * [ ] Add Stock properties to products
@@ -10,6 +11,15 @@
 * [ ] Cart / Checkout
 * [ ] View / Modify order fulfilment
 * [ ] CHAT GPT integration into order creations
+
+### Recent work (completed)
+The following developer tasks were completed recently and are tracked in the repo:
+
+* [x] Annotated `src/app.js` with inline comments (middleware, CSP, sessions, routing order)
+* [x] Annotated `src/routes/shop.routes.js` with inline comments (redirects, CSRF, pagination, related items)
+* [x] Rewrote `README.md` with a professional overview and a clear Quick Start (PowerShell)
+
+These changes improve maintainability and onboarding for new contributors.
 
 
 ## Customer-Facing Pages
@@ -89,3 +99,20 @@
 ### Newsletter / Community
 * [ ] Email signup form
 * [ ] Connect to mailing service (Mailchimp, etc.)
+
+### Suggested priorities and improvements
+These are recommended next steps to make the app production-ready and easier to maintain.
+
+- [ ] Implement Cart page and Checkout flow (critical path)
+- [ ] Complete Stripe integration (server/webhook tests, payment flows)
+- [ ] Add order management in admin (view, update status, export)
+- [ ] Add product `stock` and availability checks (prevent oversell)
+- [ ] Add automated tests: unit tests for models/controllers and smoke tests for routes
+- [ ] CI pipeline: run lint, tests, and migrations on PRs
+- [ ] Add logging/monitoring (structured logs, request tracing)
+- [ ] Harden security: review CSP, session cookie settings, rate limiting
+- [ ] Prepare a Dockerfile and deployment instructions (Heroku/Vercel/Azure/GCP)
+- [ ] Improve seed data to include more realistic orders and customers for testing
+- [ ] Add E2E tests for core flows (browse, add-to-cart, checkout)
+- [ ] Accessibility audit of templates (WCAG basics)
+- [ ] Performance checks for image sizes and asset caching
