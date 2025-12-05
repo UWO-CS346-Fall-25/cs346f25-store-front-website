@@ -51,7 +51,16 @@ bind(router, {
         return copy;
       });
 
-      return { flash, utilities };
+      // Build grouped structure from the computed copies (so counts are preserved)
+      const groupedMap = new Map();
+      utilities.forEach(u => {
+        const cat = u.category || 'General';
+        if (!groupedMap.has(cat)) groupedMap.set(cat, []);
+        groupedMap.get(cat).push(u);
+      });
+      const groupedUtilities = Array.from(groupedMap.entries()).map(([category, items]) => ({ category, items }));
+
+      return { flash, utilities, groupedUtilities };
     } catch (err) {
       console.error('Error preparing admin dashboard data:', err);
       return { flash, utilities: require('../../models/admin-utilities.js') };

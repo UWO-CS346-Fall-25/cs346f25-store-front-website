@@ -8,6 +8,7 @@ const utilities = [
     description: 'Manage store products',
     path: '/admin/products',
     icon: 'admin-products',
+    category: 'Store',
   },
   {
     id: 'orders',
@@ -15,6 +16,7 @@ const utilities = [
     description: 'Manage customer orders',
     path: '/admin/orders',
     icon: 'admin-orders',
+    category: 'Store',
   },
   {
     id: 'archived-products',
@@ -22,6 +24,7 @@ const utilities = [
     description: 'View and restore archived products',
     path: '/admin/products/archived',
     icon: 'admin-archive',
+    category: 'Store',
   },
   {
     id: 'users',
@@ -29,6 +32,7 @@ const utilities = [
     description: 'Manage user accounts and profiles',
     path: '/admin/users',
     icon: 'admin-users',
+    category: 'Store',
   },
   {
     id: 'logs',
@@ -36,6 +40,7 @@ const utilities = [
     description: 'View and filter application logs',
     path: '/admin/logs',
     icon: 'admin-log',
+    category: 'System',
   },
   {
     id: 'todo',
@@ -43,6 +48,7 @@ const utilities = [
     description: 'View development TODOs and tasks',
     path: '/admin/todo',
     icon: 'admin-todo',
+    category: 'Developer',
   },
   {
     id: 'database',
@@ -50,6 +56,7 @@ const utilities = [
     description: 'View and manage database connections',
     path: '/admin/stats',
     icon: 'admin-database',
+    category: 'System',
   },
   {
     id: 'cache',
@@ -57,6 +64,7 @@ const utilities = [
     description: 'View and manage in-memory cache',
     path: '/admin/cache',
     icon: 'admin-cache',
+    category: 'System',
   },
   {
     id: 'messages',
@@ -64,6 +72,7 @@ const utilities = [
     description: 'View and manage user messages',
     path: '/admin/message-senders',
     icon: 'admin-messages',
+    category: 'Content',
   },
   {
     id: 'health',
@@ -71,6 +80,7 @@ const utilities = [
     description: 'Basic health checks and diagnostics',
     path: '/health',
     icon: 'admin-health',
+    category: 'System',
   },
   // Add more as you build them:
   // {
@@ -83,3 +93,19 @@ const utilities = [
 ];
 
 module.exports = utilities;
+
+// Helper: return utilities grouped by the `category` property.
+// Returns an array of { category, items } where items is an array of utilities.
+utilities.getGrouped = function () {
+  const map = new Map();
+  (utilities || []).forEach(u => {
+    const cat = u.category || 'General';
+    if (!map.has(cat)) map.set(cat, []);
+    map.get(cat).push(u);
+  });
+  // Convert to array preserving insertion order of categories
+  return Array.from(map.entries()).map(([category, items]) => ({ category, items }));
+};
+
+// Backwards compat: also expose grouped as property
+utilities.grouped = utilities.getGrouped();
