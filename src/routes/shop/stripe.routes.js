@@ -110,7 +110,7 @@ bind(router, {
   meta: {
     title: 'Checkout Successful - Thank You!',
   },
-  getData: async function (req, res, next) {
+  getData: async function (req, res) {
     const sessionId = req.query.session_id;
     if (!sessionId) {
       return {
@@ -128,7 +128,7 @@ bind(router, {
         payment_status: session?.payment_status,
         payment_intent: session?.payment_intent,
       });
-    } catch (e) {
+    } catch {
       // ignore
     }
 
@@ -172,7 +172,9 @@ bind(router, {
             clearCart(req);
             try {
               res.locals.cartCount = 0;
-            } catch {}
+            } catch {
+              // ignore
+            }
           } else {
             debug.warn(
               'Skipping clearCart because headers already sent for session',

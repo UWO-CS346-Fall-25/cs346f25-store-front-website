@@ -1,6 +1,7 @@
 const supabase = require('./supabase.js');
 const dbStats = require('../controllers/dbStats.js');
-const debug = require('debug')('app:admin-badges');
+const debug = require('../controllers/debug.js')('app:admin-badges');
+const fs = require('fs').promises;
 
 async function orders() {
   try {
@@ -35,7 +36,7 @@ async function todo() {
       const matches = md.match(/- \[ \]/g);
       return matches ? matches.length : 0;
     }
-  } catch (e) {
+  } catch {
     // ignore if file not present
   }
   return 0;

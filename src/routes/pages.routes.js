@@ -6,8 +6,6 @@ const db = require('../models/productDatabase.js');
 
 const csrfProtection = csrf({ cookie: false });
 const { authRequired } = require('../middleware/accountRequired');
-const { authClient } = require('../models/supabase');
-const dbStats = require('../controllers/dbStats');
 
 bind(router, {
   route: '/',
@@ -53,7 +51,6 @@ bind(router, {
     csrfProtection,
     require('../middleware/csrfLocals'),
   ],
-  getData: async (req, res) => {},
 });
 
 module.exports = router;

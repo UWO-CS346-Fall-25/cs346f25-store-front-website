@@ -4,7 +4,7 @@ const router = express.Router();
 const database = require('../models/productDatabase.js');
 const { authClient, masterClient } = require('../models/supabase');
 const { adminRequired } = require('../middleware/accountRequired');
-const debug = require('debug')('Routes.API');
+const debug = require('../controllers/debug.js')('Routes.API');
 
 // Messages API
 // GET /api/messages -> returns messages for current user (RLS will enforce visibility)
@@ -31,7 +31,7 @@ router.post('/api/messages', async (req, res) => {
   try {
     if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
     const supabase = authClient(req);
-    const { body, parent_id } = req.body || {};
+    const { body } = req.body || {};
     if (!body || typeof body !== 'string' || !body.trim())
       return res.status(400).json({ error: 'Message body required' });
 
@@ -67,7 +67,7 @@ router.post('/api/messages', async (req, res) => {
 // Admin: create a message as the server/admin for a given user
 router.post('/api/admin/messages', adminRequired, async (req, res) => {
   try {
-    const { recipient, body, parent_id } = req.body || {};
+    const { recipient, body } = req.body || {};
     if (!recipient || typeof recipient !== 'string' || !recipient.trim())
       return res.status(400).json({ error: 'Recipient required' });
     if (!body || typeof body !== 'string' || !body.trim())

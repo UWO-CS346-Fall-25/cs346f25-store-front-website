@@ -14,7 +14,7 @@ bind(router, {
   view: 'account/profile',
   meta: { title: 'Account Profile' },
   middleware: [authRequired, csrfProtection, csrfLocals],
-  getData: async function (req) {
+  getData: async function (req, _, next) {
     const flash = req.session?.flash || {};
     let ctx = await userDatabase.getUser(req);
     if (ctx.error) return next(ctx.errorDetail || new Error(ctx.error));

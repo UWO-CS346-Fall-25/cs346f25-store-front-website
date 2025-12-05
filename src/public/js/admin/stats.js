@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
     );
     const json = await res.json();
     const series = json.series || [];
-    const minutesWindow = Number(minutes) || 60;
+    // const minutesWindow = Number(minutes) || 60;
     const labels = series.map((s) => {
       const d = new Date(s.ts);
       return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });

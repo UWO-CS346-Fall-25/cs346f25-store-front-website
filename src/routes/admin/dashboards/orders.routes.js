@@ -11,13 +11,10 @@ const dbStats = require('../../../controllers/dbStats.js');
 
 const csrfProtection = csrf({ cookie: false });
 
-const logs = require('../../../controllers/debug.js');
-const utilities = require('../../../models/admin-utilities.js');
-const supabase = require('../../../models/supabase.js');
 const cache = require('../../../controllers/cache.js');
 const page_data = require('../../../models/admin-page-data.js');
 const productDB = require('../../../models/productDatabase.js');
-const debug = require('debug')('Routes.Admin.Dashboards');
+const debug = require('../../../controllers/debug.js')('Routes.Admin.Dashboards');
 
 bind(router, {
   route: '/orders',
@@ -48,8 +45,8 @@ bind(router, {
       req.query.order === undefined
         ? 'asc'
         : String(req.query.order || '')
-            .trim()
-            .toLowerCase();
+          .trim()
+          .toLowerCase();
     const order = orderParam === 'desc' ? 'desc' : 'asc';
 
     try {
@@ -203,20 +200,20 @@ bind(router, {
       // Format dates and currency
       const placed_at_display = row.placed_at
         ? new Date(row.placed_at).toLocaleString(undefined, {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-          })
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+        })
         : '';
 
       const shipping_eta_display = row.shipping_eta
         ? new Date(row.shipping_eta).toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-          })
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        })
         : null;
 
       const currency = row.currency || 'USD';
@@ -252,12 +249,12 @@ bind(router, {
           ...it,
           product: p
             ? {
-                id: p.id,
-                name: p.name,
-                slug: p.slug,
-                url: p.slug ? `/shop/${p.slug}` : null,
-                image: p.image || null,
-              }
+              id: p.id,
+              name: p.name,
+              slug: p.slug,
+              url: p.slug ? `/shop/${p.slug}` : null,
+              image: p.image || null,
+            }
             : null,
         };
       });

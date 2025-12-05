@@ -11,7 +11,7 @@
 
 const { Pool } = require('pg');
 const dbStats = require('../controllers/dbStats');
-const debug = require('debug')('app:db');
+const debug = require('../controllers/debug')('app:db');
 
 // Create connection pool
 const pool = new Pool({
@@ -27,7 +27,7 @@ const pool = new Pool({
 });
 
 // Test connection
-pool.on('connect', () => {});
+pool.on('connect', () => { });
 
 pool.on('error', (err) => {
   debug.error('Unexpected error on idle client', err);
@@ -44,7 +44,7 @@ const query = (text, params) => {
   // record every call through this helper
   try {
     dbStats.increment(1);
-  } catch (e) {
+  } catch {
     /* never crash on stats */
   }
   return pool.query(text, params);
@@ -61,7 +61,7 @@ const getClient = async () => {
   client.query = (...args) => {
     try {
       dbStats.increment(1);
-    } catch (e) {
+    } catch {
       /* ignore */
     }
     return origQuery(...args);

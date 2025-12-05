@@ -6,7 +6,7 @@ const { bind } = require('express-page-registry');
 const { authRequired } = require('../../middleware/accountRequired.js');
 const errorManager = require('../../controllers/errorManager.js');
 const dbStats = require('../../controllers/dbStats.js');
-const debug = require('debug')('Routes.Account.Security');
+const debug = require('../../controllers/debug.js')('Routes.Account.Security');
 
 // =================================================
 // =================== SECURITY ====================
@@ -16,7 +16,7 @@ bind(router, {
   view: 'account/security',
   meta: { title: 'Login & security' },
   middleware: [authRequired],
-  getData: async function (req, res) {
+  getData: async function (req) {
     const flash = req.session?.flash || {};
     let ctx = await userDatabase.getUser(req);
     const email = ctx.user.email || '';
@@ -30,7 +30,6 @@ bind(router, {
       flash,
     };
 
-    debug.log(data.user);
     return data;
   },
 });

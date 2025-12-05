@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const j = await r.json();
       const msgs = j.messages || [];
       renderMessages(msgs);
-    } catch (e) {
+    } catch {
       list.innerHTML =
         '<div class="messages-empty muted">Error loading messages.</div>';
     }

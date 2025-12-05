@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
 const { bind } = require('express-page-registry');
-const db = require('../../../models/productDatabase.js');
-const { masterClient } = require('../../../models/supabase.js');
 const {
   authRequired,
   adminRequired,
@@ -12,9 +10,6 @@ const dbStats = require('../../../controllers/dbStats.js');
 
 const csrfProtection = csrf({ cookie: false });
 
-const logs = require('../../../controllers/debug.js');
-const utilities = require('../../../models/admin-utilities.js');
-const supabase = require('../../../models/supabase.js');
 const pageData = require('../../../models/admin-page-data.js');
 
 bind(router, {

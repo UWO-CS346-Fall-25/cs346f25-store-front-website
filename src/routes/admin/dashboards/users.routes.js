@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
 const { bind } = require('express-page-registry');
-const db = require('../../../models/productDatabase.js');
 const { masterClient } = require('../../../models/supabase.js');
 const {
   authRequired,
@@ -12,11 +11,8 @@ const dbStats = require('../../../controllers/dbStats.js');
 
 const csrfProtection = csrf({ cookie: false });
 
-const logs = require('../../../controllers/debug.js');
-const utilities = require('../../../models/admin-utilities.js');
-const supabase = require('../../../models/supabase.js');
 const pageData = require('../../../models/admin-page-data.js');
-const debug = require('debug')('Routes.Admin.Dashboards');
+const debug = require('../../../controllers/debug.js')('Routes.Admin.Dashboards');
 
 bind(router, {
   route: '/users',
@@ -180,15 +176,15 @@ router.post(
           await supabase.auth.admin.getUserById(id);
         dbStats.increment();
         if (!getErr && getData) targetUser = getData.user || getData;
-      } catch (e) {
+      } catch {
         // ignore fetch error; we'll defensively block if we can't determine
       }
 
       const targetRole =
         targetUser && (targetUser?.app_metadata?.role || targetUser?.role)
           ? String(
-              targetUser.app_metadata?.role || targetUser.role
-            ).toLowerCase()
+            targetUser.app_metadata?.role || targetUser.role
+          ).toLowerCase()
           : null;
 
       // Disallow modifying admins (nobody can modify admin accounts)
@@ -247,15 +243,15 @@ router.post(
           await supabase.auth.admin.getUserById(id);
         dbStats.increment();
         if (!getErr && getData) targetUser = getData.user || getData;
-      } catch (e) {
+      } catch {
         // ignore
       }
 
       const targetRole =
         targetUser && (targetUser?.app_metadata?.role || targetUser?.role)
           ? String(
-              targetUser.app_metadata?.role || targetUser.role
-            ).toLowerCase()
+            targetUser.app_metadata?.role || targetUser.role
+          ).toLowerCase()
           : null;
       if (targetRole === 'admin') {
         if (req.session)

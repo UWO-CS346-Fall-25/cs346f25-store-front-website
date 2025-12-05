@@ -5,7 +5,7 @@ const productDB = require('./productDatabase.js');
 const NAMESPACE = 'userDB';
 const TTL = 60_000 * 30; // 30 minutes
 const PAGE_SIZE = 10;
-const debug = require('debug')('User Database');
+const debug = require('../controllers/debug.js')('User Database');
 
 const fmtCurrency = (cents, currency = 'USD', locale = 'en-US') =>
   new Intl.NumberFormat(locale, { style: 'currency', currency }).format(
@@ -227,20 +227,20 @@ async function bindOrderDetail(user, orderId) {
 
     const placed_at_display = row.placed_at
       ? new Date(row.placed_at).toLocaleString(undefined, {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-        })
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      })
       : '';
 
     const shipping_eta_display = row.shipping_eta
       ? new Date(row.shipping_eta).toLocaleDateString(undefined, {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-        })
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      })
       : null;
 
     const currency = row.currency || 'USD';
@@ -276,12 +276,12 @@ async function bindOrderDetail(user, orderId) {
         ...it,
         product: p
           ? {
-              id: p.id,
-              name: p.name,
-              slug: p.slug,
-              url: productUrl,
-              image: p.image || null,
-            }
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            url: productUrl,
+            image: p.image || null,
+          }
           : null,
       };
     });

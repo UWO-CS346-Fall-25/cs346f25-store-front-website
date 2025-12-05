@@ -52,7 +52,7 @@ bind(router, {
   meta: {
     title: 'Your Cart',
   },
-  getData: async function (req, res, next) {
+  getData: async function (req) {
     const cart = getCart(req);
 
     if (!cart.length) {

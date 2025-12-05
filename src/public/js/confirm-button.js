@@ -25,7 +25,9 @@
       document.body.style.overflow = '';
       try {
         trigger.focus();
-      } catch (e) {}
+      } catch {
+        // ignore
+      }
     }
 
     trigger.addEventListener('click', function (e) {

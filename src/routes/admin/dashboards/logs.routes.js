@@ -2,19 +2,14 @@ const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
 const { bind } = require('express-page-registry');
-const db = require('../../../models/productDatabase.js');
-const { masterClient } = require('../../../models/supabase.js');
 const {
   authRequired,
   adminRequired,
 } = require('../../../middleware/accountRequired.js');
-const dbStats = require('../../../controllers/dbStats.js');
 
 const csrfProtection = csrf({ cookie: false });
 
 const logs = require('../../../controllers/debug.js');
-const utilities = require('../../../models/admin-utilities.js');
-const supabase = require('../../../models/supabase.js');
 const page_data = require('../../../models/admin-page-data.js');
 
 bind(router, {
@@ -60,7 +55,7 @@ bind(router, {
                 : JSON.stringify(parsed, null, 2),
             ];
           }
-        } catch (err) {
+        } catch {
           // Not JSON — split on escaped or real newlines if present, otherwise wrap
           if (d.indexOf('\n') !== -1) {
             d = d.split(/\\n+/).map((s) => s);

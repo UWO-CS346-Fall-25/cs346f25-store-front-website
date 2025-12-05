@@ -1,4 +1,4 @@
-const debug = require('debug')('app:errorManager');
+const debug = require('../controllers/debug')('app:errorManager');
 
 function applyContext(object, ctx) {
   if (ctx == undefined) {

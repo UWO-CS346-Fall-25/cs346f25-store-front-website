@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
 const { bind } = require('express-page-registry');
-const db = require('../../models/productDatabase.js');
+
 const {
   authRequired,
   adminRequired,
@@ -11,7 +11,7 @@ const {
 const csrfProtection = csrf({ cookie: false });
 
 const badges = require('../../models/admin-badges.js');
-const debug = require('debug')('Routes.Admin.Dashboard');
+const debug = require('../../controllers/debug.js')('Routes.Admin.Dashboard');
 
 bind(router, {
   route: '/',

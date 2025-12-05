@@ -8,17 +8,17 @@ const { bind } = require('express-page-registry');
 // Routes that render forms should include `csrfProtection` so the
 // token is available to templates and validated on submit.
 const csrfProtection = csrf({ cookie: false });
-const debug = require('debug')('Routes.Shop');
+const debug = require('../controllers/debug.js')('Routes.Shop');
 
 // Short redirect for legacy `/shop` URL — currently redirects to
 // the home page which may render featured/shop listings.
-router.get('/shop', async (req, res, next) => {
+router.get('/shop', async (req, res) => {
   res.redirect('/');
 });
 
 // Backwards-compatible route: `/product/:slug` redirects to the
 // canonical `/shop/:slug` detail path. Keeps older links functional.
-router.get('/product/:slug', async (req, res, next) => {
+router.get('/product/:slug', async (req, res) => {
   res.redirect(`/shop/${req.params.slug}`);
 });
 

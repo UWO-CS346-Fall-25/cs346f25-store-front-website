@@ -61,7 +61,7 @@ module.exports = function (csrfProtection) {
       sameSite: 'lax',
     });
 
-    const redirectTo = (req.session && req.session.returnTo) || '/';
+    let redirectTo = (req.session && req.session.returnTo) || '/';
     if (redirectTo === '/login') redirectTo = '/';
 
     if (req.session) {

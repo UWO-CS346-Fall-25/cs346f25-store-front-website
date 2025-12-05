@@ -2,21 +2,14 @@ const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
 const { bind } = require('express-page-registry');
-const db = require('../../../models/productDatabase.js');
-const { masterClient } = require('../../../models/supabase.js');
 const {
   authRequired,
   adminRequired,
 } = require('../../../middleware/accountRequired.js');
-const dbStats = require('../../../controllers/dbStats.js');
 
 const csrfProtection = csrf({ cookie: false });
-
-const logs = require('../../../controllers/debug.js');
-const utilities = require('../../../models/admin-utilities.js');
-const supabase = require('../../../models/supabase.js');
 const pageData = require('../../../models/admin-page-data.js');
-const debug = require('debug')('Routes.Admin.Dashboards');
+const debug = require('../../../controllers/debug.js')('Routes.Admin.Dashboards');
 
 // Admin: Cache viewer
 bind(router, {
@@ -49,17 +42,17 @@ bind(router, {
             try {
               const parsed = JSON.parse(val);
               preview = JSON.stringify(parsed, null, 2);
-            } catch (e) {
+            } catch {
               preview = val;
             }
           } else {
             try {
               preview = JSON.stringify(val, null, 2);
-            } catch (e) {
+            } catch {
               preview = String(val);
             }
           }
-        } catch (e) {
+        } catch {
           preview = '<unserializable>';
         }
         // Truncate very large previews to avoid rendering huge blocks in the admin UI
