@@ -27,8 +27,7 @@ const pool = new Pool({
 });
 
 // Test connection
-pool.on('connect', () => {
-});
+pool.on('connect', () => {});
 
 pool.on('error', (err) => {
   debug.error('Unexpected error on idle client', err);
@@ -43,7 +42,11 @@ pool.on('error', (err) => {
  */
 const query = (text, params) => {
   // record every call through this helper
-  try { dbStats.increment(1); } catch (e) { /* never crash on stats */ }
+  try {
+    dbStats.increment(1);
+  } catch (e) {
+    /* never crash on stats */
+  }
   return pool.query(text, params);
 };
 
@@ -56,7 +59,11 @@ const getClient = async () => {
   // Wrap client's query so queries done via transaction clients are counted too
   const origQuery = client.query.bind(client);
   client.query = (...args) => {
-    try { dbStats.increment(1); } catch (e) { /* ignore */ }
+    try {
+      dbStats.increment(1);
+    } catch (e) {
+      /* ignore */
+    }
     return origQuery(...args);
   };
   return client;

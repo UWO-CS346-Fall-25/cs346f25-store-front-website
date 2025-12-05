@@ -15,7 +15,9 @@ function increment(count = 1) {
   try {
     const b = _currentBucket();
     buckets.set(b, (buckets.get(b) || 0) + count);
-  } catch (e) { /* ignore */ }
+  } catch (e) {
+    /* ignore */
+  }
 }
 
 function getSeries(minutes = 60) {

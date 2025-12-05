@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { stripe } = require('../../models/stripe');
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const supabase = require('../../models/supabase.js');
@@ -25,7 +26,7 @@ router.post(
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
       try {
-        await handleCheckoutCompleted(session, db);  // your big function
+        await handleCheckoutCompleted(session, db); // your big function
       } catch (e) {
         debug.error('Failed to handle checkout.session.completed:', e);
         return res.sendStatus(500); // let Stripe retry
@@ -66,7 +67,6 @@ async function handleCheckoutCompleted(session, db) {
       product_id_meta: li.price?.product?.metadata?.product_id,
     })),
   });
-
 
   // 3) Derive address from session (shipping preferred, else customer_details.address)
   const { customer_details, shipping, total_details } = session;
@@ -179,8 +179,8 @@ async function handleCheckoutCompleted(session, db) {
 
     itemsPayload.push({
       order_id: order.id,
-      product_id: productId,              // <- your products.id from metadata
-      sku: productMeta.sku || null,       // if you add sku to metadata later
+      product_id: productId, // <- your products.id from metadata
+      sku: productMeta.sku || null, // if you add sku to metadata later
       name: item.description || product.name || 'Product',
       quantity,
       unit_price_cents: unitPriceCents,
@@ -213,9 +213,6 @@ async function handleCheckoutCompleted(session, db) {
   }
 
   debug.log('Order and items successfully inserted for session', session.id);
-
 }
-
-
 
 module.exports = router;

@@ -30,7 +30,10 @@ async function getTodoHtml() {
     const html = marked.parse(md || '');
     return html;
   } catch (err) {
-    debug.error('Error reading TODO.md:', err && err.message ? err.message : err);
+    debug.error(
+      'Error reading TODO.md:',
+      err && err.message ? err.message : err
+    );
     return '<p style="color:darkred">Unable to load TODO.md</p>';
   }
 }

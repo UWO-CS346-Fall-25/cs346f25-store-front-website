@@ -10,20 +10,20 @@
   z-index: 50;
   background: var(--primary-1);
   color: var(--foreground);
-  box-shadow: 0 5px 30px rgba(0, 0, 0, .25);
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.25);
 }
 
 .site-header .container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: .75rem 0;
+  padding: 0.75rem 0;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: .6rem;
+  gap: 0.6rem;
   text-decoration: none;
   color: inherit;
 }
@@ -34,7 +34,6 @@
   width: auto;
   object-fit: contain;
 }
-
 
 .brand-title {
   font-weight: 700;
@@ -59,14 +58,14 @@
 .nav-list li {
   display: inline-flex;
   gap: 0.35rem;
-  padding: .5rem .3rem;
+  padding: 0.5rem 0.3rem;
   text-decoration: none;
   color: inherit;
-  border-radius: .4rem;
+  border-radius: 0.4rem;
   font-size: large;
 }
 
-.nav-list a[aria-current="page"] {
+.nav-list a[aria-current='page'] {
   font-weight: bold;
 }
 
@@ -77,19 +76,17 @@
   padding: 0;
 }
 
-
 .link--button {
   display: inline-flex;
-  padding: .5rem .6rem;
+  padding: 0.5rem 0.6rem;
   text-decoration: none;
   color: inherit;
-  border-radius: .4rem .4rem 0 0;
+  border-radius: 0.4rem 0.4rem 0 0;
   font-size: 1rem;
   background-color: transparent;
   border: 0;
   gap: 0.35rem;
 }
-
 
 .nav-list a:hover,
 .nav-list a:focus-visible,
@@ -97,17 +94,18 @@
 .link--button:focus-visible {
   outline: none;
   background: color-mix(in srgb, var(--foreground) 10%, transparent);
-  transition: background .2s ease, color .2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
-
-
 
 /* ---------- Mobile overrides (apply tint theme + stacked layout) ---------- */
 @media (max-width: 950px) {
   .site-header {
     background: var(--primary-1);
     color: var(--foreground);
-    border-bottom: 1px solid color-mix(in srgb, var(--foreground) 20%, transparent);
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--foreground) 20%, transparent);
   }
 
   .hide-on-mobile {
@@ -122,7 +120,7 @@
     flex-shrink: 0;
   }
 
-  .nav-list a[aria-current="page"] {
+  .nav-list a[aria-current='page'] {
     color: var(--tint-1);
   }
 
@@ -140,15 +138,15 @@
     display: block;
     flex-direction: column;
     align-items: center;
-    gap: .5rem;
-    padding: .75rem 0;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
   }
 
   .brand {
     flex-direction: row;
     display: flex;
     align-items: center;
-    gap: .6rem;
+    gap: 0.6rem;
     margin-bottom: 0;
     text-align: left;
   }
@@ -162,7 +160,7 @@
     justify-content: center;
     flex-wrap: wrap;
     /* wrap links if tight */
-    gap: .5rem .75rem;
+    gap: 0.5rem 0.75rem;
     padding: 0;
   }
 }
@@ -182,7 +180,7 @@ nav .link--button {
 
 nav a::after,
 nav .link--button::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 0%;
   height: 2px;

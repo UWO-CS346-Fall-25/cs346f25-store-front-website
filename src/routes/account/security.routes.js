@@ -8,7 +8,6 @@ const errorManager = require('../../controllers/errorManager.js');
 const dbStats = require('../../controllers/dbStats.js');
 const debug = require('debug')('Routes.Account.Security');
 
-
 // =================================================
 // =================== SECURITY ====================
 // =================================================
@@ -33,9 +32,8 @@ bind(router, {
 
     debug.log(data.user);
     return data;
-  }
+  },
 });
-
 
 // =================================================
 // =============== Change display name =============
@@ -85,7 +83,6 @@ router.post('/security/profile', authRequired, async (req, res, next) => {
   }
 });
 
-
 // =================================================
 // =============== Change email ====================
 // =================================================
@@ -118,10 +115,7 @@ router.post('/security/email', authRequired, async (req, res, next) => {
     if (!currentPassword) {
       errors.addError('Current password is required', 'currentPasswordEmail');
     }
-    if (
-      newEmail &&
-      !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(newEmail)
-    ) {
+    if (newEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(newEmail)) {
       errors.addError('Please enter a valid email address', 'newEmail');
     }
 
@@ -160,7 +154,6 @@ router.post('/security/email', authRequired, async (req, res, next) => {
   }
 });
 
-
 // =================================================
 // =============== Change password =================
 // =================================================
@@ -179,7 +172,12 @@ router.post('/security/password', authRequired, async (req, res, next) => {
     const newPassword = (body.newPassword || '').trim();
     const confirmPassword = (body.confirmPassword || '').trim();
 
-    errors.passwordChecker({ newAccount: false, currentPassword, newPassword, confirmPassword });
+    errors.passwordChecker({
+      newAccount: false,
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    });
 
     if (errors.has()) return errors.throwError();
 
@@ -190,12 +188,16 @@ router.post('/security/password', authRequired, async (req, res, next) => {
       password: currentPassword,
     });
     dbStats.increment();
-    if (errors.verify(signInError, 'currentPassword')) return errors.throwError();
+    if (errors.verify(signInError, 'currentPassword'))
+      return errors.throwError();
 
     // 2) Update password via admin client
-    const { error: updateErr } = await masterClient().auth.admin.updateUserById(userId, {
-      password: newPassword,
-    });
+    const { error: updateErr } = await masterClient().auth.admin.updateUserById(
+      userId,
+      {
+        password: newPassword,
+      }
+    );
     dbStats.increment();
     if (errors.verify(updateErr)) return errors.throwError();
 

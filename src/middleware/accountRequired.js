@@ -7,9 +7,8 @@ function authRequired(req, res, next) {
     return res.redirect('/login');
   }
 
-
   next();
-};
+}
 function accountRequired(req, res, next) {
   // Check if the user is authenticated
   if (!req.user) {
@@ -28,7 +27,6 @@ function accountRequired(req, res, next) {
   next();
 }
 
-
 function adminRequired(req, res, next) {
   // Must be logged in
   if (!req.user) {
@@ -38,7 +36,9 @@ function adminRequired(req, res, next) {
 
   // auth middleware sets `req.isAdmin` (true/false) — fall back to checking role
   // Treat 'staff' as an elevated role equivalent to admin for back-office access
-  const isAdmin = (['admin', 'staff'].includes(String(req.user?.app_metadata?.role || '').toLowerCase()));
+  const isAdmin = ['admin', 'staff'].includes(
+    String(req.user?.app_metadata?.role || '').toLowerCase()
+  );
   if (!isAdmin) {
     if (req.session) req.session.flash = { error: 'Admin access required.' };
     return res.redirect('/');
@@ -48,4 +48,3 @@ function adminRequired(req, res, next) {
 }
 
 module.exports = { authRequired, accountRequired, adminRequired };
-

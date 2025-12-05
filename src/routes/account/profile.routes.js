@@ -1,5 +1,3 @@
-
-
 const express = require('express');
 const router = express.Router();
 const { bind } = require('express-page-registry');
@@ -11,7 +9,6 @@ const csrfLocals = require('../../middleware/csrfLocals.js');
 const errorManager = require('../../controllers/errorManager.js');
 const dbStats = require('../../controllers/dbStats.js');
 
-
 bind(router, {
   route: '/profile',
   view: 'account/profile',
@@ -22,25 +19,22 @@ bind(router, {
     let ctx = await userDatabase.getUser(req);
     if (ctx.error) return next(ctx.errorDetail || new Error(ctx.error));
 
-
     const profile = {
       firstName: ctx.user.firstName || '',
       lastName: ctx.user.lastName || '',
       email: ctx.user.email || '',
       displayName: ctx.user.displayName || '',
       phone: ctx.user.phone || '',
-      newsletter: !!(ctx.user.newsletterOptIn),
+      newsletter: !!ctx.user.newsletterOptIn,
     };
 
     return {
       ...ctx,
       profile,
       errors: flash.errorList || {},
-    }
-  }
+    };
+  },
 });
-
-
 
 router.post('/profile', authRequired, async (req, res, next) => {
   const errors = errorManager(req, res, next, { url: '/account/profile' });
@@ -61,22 +55,26 @@ router.post('/profile', authRequired, async (req, res, next) => {
     };
 
     // Make names optional or required as you prefer:
-    if (!profile.firstName) errors.addError('First name is required', 'firstName');
+    if (!profile.firstName)
+      errors.addError('First name is required', 'firstName');
     if (!profile.lastName) errors.addError('Last name is required', 'lastName');
 
     if (errors.has()) return errors.throwError();
 
     // Update auth user metadata in Supabase
     // Adjust keys here to match how you want to store them in user_metadata
-    const { error: updateErr } = await supabase.auth.admin.updateUserById(user.id, {
-      user_metadata: {
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        displayName: profile.displayName || null,
-        phone: profile.phone || null,
-        newsletter_opt_in: profile.newsletter,
-      },
-    });
+    const { error: updateErr } = await supabase.auth.admin.updateUserById(
+      user.id,
+      {
+        user_metadata: {
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          displayName: profile.displayName || null,
+          phone: profile.phone || null,
+          newsletter_opt_in: profile.newsletter,
+        },
+      }
+    );
     dbStats.increment();
 
     if (errors.verify(updateErr, 'profileUpdate')) return errors.throwError();
@@ -94,11 +92,5 @@ router.post('/profile', authRequired, async (req, res, next) => {
     next(err);
   }
 });
-
-
-
-
-
-
 
 module.exports = router;

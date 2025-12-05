@@ -3,7 +3,10 @@ const router = express.Router();
 const csrf = require('csurf');
 const { bind } = require('express-page-registry');
 const db = require('../../models/productDatabase.js');
-const { authRequired, adminRequired } = require('../../middleware/accountRequired.js');
+const {
+  authRequired,
+  adminRequired,
+} = require('../../middleware/accountRequired.js');
 
 const csrfProtection = csrf({ cookie: false });
 
@@ -13,7 +16,12 @@ const debug = require('debug')('Routes.Admin.Dashboard');
 bind(router, {
   route: '/',
   view: 'admin/dashboard',
-  middleware: [authRequired, adminRequired, csrfProtection, require('../../middleware/csrfLocals.js')],
+  middleware: [
+    authRequired,
+    adminRequired,
+    csrfProtection,
+    require('../../middleware/csrfLocals.js'),
+  ],
   meta: { title: 'Admin Dashboard' },
   getData: async function (req) {
     const flash = req.session?.flash;
@@ -33,20 +41,17 @@ bind(router, {
       let draftProductsCount = await badges.products();
       let messagesCount = await badges.messages();
 
-
-      const utilities = utilList.map(u => {
+      const utilities = utilList.map((u) => {
         const copy = Object.assign({}, u);
         if (copy.id === 'orders') copy.count = pendingOrdersCount || 0;
         else if (copy.id === 'products') {
           // show number of drafts on Products Manager
           copy.count = draftProductsCount || 0;
-        }
-        else if (copy.id === 'logs') {
+        } else if (copy.id === 'logs') {
           // For logs we provide both overall count and errorCount; show error badge for errors
           copy.count = logsCount || 0;
           copy.errorCount = logsErrorCount || 0;
-        }
-        else if (copy.id === 'todo') copy.count = todoOpenCount || 0;
+        } else if (copy.id === 'todo') copy.count = todoOpenCount || 0;
         else if (copy.id === 'messages') copy.count = messagesCount || 0;
         else copy.count = 0;
         return copy;
@@ -57,9 +62,8 @@ bind(router, {
       debug.error('Error preparing admin dashboard data:', err);
       return { flash, utilities: require('../../models/admin-utilities.js') };
     }
-  }
+  },
 });
-
 
 router.use('/', require('./dashboards/cache.routes.js'));
 router.use('/', require('./dashboards/database.routes.js'));
@@ -69,8 +73,5 @@ router.use('/', require('./dashboards/orders.routes.js'));
 router.use('/', require('./dashboards/products.routes.js'));
 router.use('/', require('./dashboards/todo.routes.js'));
 router.use('/', require('./dashboards/users.routes.js'));
-
-
-
 
 module.exports = router;

@@ -1,11 +1,13 @@
-
 const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
 const { bind } = require('express-page-registry');
 const db = require('../../../models/productDatabase.js');
 const { masterClient, authClient } = require('../../../models/supabase.js');
-const { authRequired, adminRequired } = require('../../../middleware/accountRequired.js');
+const {
+  authRequired,
+  adminRequired,
+} = require('../../../middleware/accountRequired.js');
 const dbStats = require('../../../controllers/dbStats.js');
 
 const csrfProtection = csrf({ cookie: false });
@@ -14,7 +16,10 @@ const logs = require('../../../controllers/debug.js');
 const utilities = require('../../../models/admin-utilities.js');
 const supabase = require('../../../models/supabase.js');
 const { uploadProductImages } = require('../../../middleware/uploads.js');
-const { uncacheProduct, uncacheArchived } = require('../../../models/productDatabase.js');
+const {
+  uncacheProduct,
+  uncacheArchived,
+} = require('../../../models/productDatabase.js');
 const pageData = require('../../../models/admin-page-data.js');
 const debug = require('debug')('Routes.Admin.Dashboards');
 
@@ -22,9 +27,16 @@ bind(router, {
   route: '/products',
   view: 'admin/admin_panel',
   meta: pageData.products,
-  middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
+  middleware: [
+    authRequired,
+    adminRequired,
+    csrfProtection,
+    require('../../../middleware/csrfLocals.js'),
+  ],
   getData: async function (req) {
-    const products = await db.bindCategories(await db.bindPrimaryImage(await db.getAll()));
+    const products = await db.bindCategories(
+      await db.bindPrimaryImage(await db.getAll())
+    );
 
     const flash = req.session?.flash;
     if (req.session) {
@@ -34,16 +46,23 @@ bind(router, {
       products,
       flash,
     };
-  }
+  },
 });
 
 bind(router, {
   route: '/products/archived',
   view: 'admin/admin_panel',
   meta: pageData.archived,
-  middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
+  middleware: [
+    authRequired,
+    adminRequired,
+    csrfProtection,
+    require('../../../middleware/csrfLocals.js'),
+  ],
   getData: async function (req) {
-    const products = await db.bindCategories(await db.bindPrimaryImage(await db.getArchived()));
+    const products = await db.bindCategories(
+      await db.bindPrimaryImage(await db.getArchived())
+    );
 
     const flash = req.session?.flash;
     if (req.session) {
@@ -53,13 +72,18 @@ bind(router, {
       products,
       flash,
     };
-  }
+  },
 });
 bind(router, {
   route: '/products/new',
   view: 'admin/admin_panel',
   meta: pageData.product_new,
-  middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
+  middleware: [
+    authRequired,
+    adminRequired,
+    csrfProtection,
+    require('../../../middleware/csrfLocals.js'),
+  ],
   getData: async function (req) {
     // const products = await db.bindCategories(await db.bindPrimaryImage(await db.getAll()));
 
@@ -71,16 +95,20 @@ bind(router, {
       mode: 'create',
       flash: { error, success },
     };
-  }
+  },
 });
 
 bind(router, {
   route: '/products/:id/edit',
   view: 'admin/admin_panel',
   meta: pageData.product_new,
-  middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
+  middleware: [
+    authRequired,
+    adminRequired,
+    csrfProtection,
+    require('../../../middleware/csrfLocals.js'),
+  ],
   getData: async function (req, res) {
-
     const error = req.flash ? req.flash('error')[0] : null;
     const success = req.flash ? req.flash('success')[0] : null;
     const id = req.params.id;
@@ -104,17 +132,8 @@ bind(router, {
       res.redirect('/admin/products');
       return {};
     }
-
-
-  }
+  },
 });
-
-
-
-
-
-
-
 
 // ====================================================
 // ======================= CREATE =====================
@@ -215,9 +234,10 @@ router.post(
         const file = files[i];
 
         // Create a storage path like products/{productId}/timestamp-index.ext
-        const ext = (file.originalname && file.originalname.includes('.'))
-          ? file.originalname.substring(file.originalname.lastIndexOf('.'))
-          : '';
+        const ext =
+          file.originalname && file.originalname.includes('.')
+            ? file.originalname.substring(file.originalname.lastIndexOf('.'))
+            : '';
         const filename = `${Date.now()}-${i}${ext}`;
         const storagePath = `products/${productId}/${filename}`;
 
@@ -273,7 +293,6 @@ router.post(
       await uncacheProduct(productId);
       req.flash?.('success', 'Product created successfully.');
       return res.redirect(`/admin/products`);
-
     } catch (err) {
       debug.error('Unexpected error creating product:', err);
       return next(err);
@@ -319,7 +338,6 @@ router.post(
       const productStatus = status || 'draft';
       const productCurrency = currency || 'USD';
 
-
       const updateRow = {
         name,
         slug: slug && slug.trim().length ? slug.trim() : null,
@@ -348,7 +366,10 @@ router.post(
       }
       if (!product) {
         debug.error('No product found to update for id:', id);
-        req.flash?.('error', 'Product not found or you do not have permission to edit it.');
+        req.flash?.(
+          'error',
+          'Product not found or you do not have permission to edit it.'
+        );
         return res.redirect('/admin/products');
       }
 
@@ -359,9 +380,10 @@ router.post(
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const ext = (file.originalname && file.originalname.includes('.'))
-          ? file.originalname.substring(file.originalname.lastIndexOf('.'))
-          : '';
+        const ext =
+          file.originalname && file.originalname.includes('.')
+            ? file.originalname.substring(file.originalname.lastIndexOf('.'))
+            : '';
         const filename = `${Date.now()}-${i}${ext}`;
         const storagePath = `products/${product.id}/${filename}`;
 
@@ -392,7 +414,10 @@ router.post(
 
         if (imgError) {
           debug.error('Error inserting product_images on edit:', imgError);
-          req.flash?.('error', 'Product saved, but some images failed to upload.');
+          req.flash?.(
+            'error',
+            'Product saved, but some images failed to upload.'
+          );
           return res.redirect(`/admin/products/${id}/edit`);
         }
       }
@@ -410,80 +435,90 @@ router.post(
 // ====================== DELETE ======================
 // ====================================================
 
+router.post(
+  '/products/:id/delete',
+  authRequired,
+  adminRequired,
+  csrfProtection,
+  async (req, res) => {
+    const { id } = req.params;
+    const supabase = authClient(req);
 
-router.post('/products/:id/delete', authRequired, adminRequired, csrfProtection, async (req, res) => {
-  const { id } = req.params;
-  const supabase = authClient(req);
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .update({
+          status: 'archived',
+          updated_at: new Date().toISOString(), // optional, if you have this column
+        })
+        .eq('id', id)
+        .select()
+        .maybeSingle();
+      dbStats.increment();
 
-  try {
-    const { data, error } = await supabase
-      .from('products')
-      .update({
-        status: 'archived',
-        updated_at: new Date().toISOString(), // optional, if you have this column
-      })
-      .eq('id', id)
-      .select()
-      .maybeSingle();
-    dbStats.increment();
+      debug.log(error, data);
+      if (req.session) {
+        req.session.flash = {
+          error: error || !data ? 'Failed to archive product.' : null,
+          success: data ? 'Product archived successfully.' : null,
+        };
+      }
+      await uncacheProduct(id);
+      await uncacheArchived();
 
-    debug.log(error, data);
-    if (req.session) {
-      req.session.flash = {
-        error: (error || !data) ? 'Failed to archive product.' : null,
-        success: data ? 'Product archived successfully.' : null
-      };
+      res.redirect('/admin/products');
+    } catch (err) {
+      debug.error('Error archiving product:', err);
+
+      if (req.session) {
+        req.session.flash = {
+          error: 'Failed to archive product. Please try again.',
+        };
+      }
+
+      res.redirect('/admin/products');
     }
-    await uncacheProduct(id);
-    await uncacheArchived();
-
-    res.redirect('/admin/products');
-  } catch (err) {
-    debug.error('Error archiving product:', err);
-
-    if (req.session) {
-      req.session.flash = { error: 'Failed to archive product. Please try again.' };
-    }
-
-    res.redirect('/admin/products');
   }
-});
+);
 
 // POST /admin/products/:id/unarchive
-router.post('/products/:id/unarchive', authRequired, adminRequired, csrfProtection, async (req, res) => {
-  const { id } = req.params;
-  const supabase = authClient(req);
+router.post(
+  '/products/:id/unarchive',
+  authRequired,
+  adminRequired,
+  csrfProtection,
+  async (req, res) => {
+    const { id } = req.params;
+    const supabase = authClient(req);
 
-  try {
-    const { data, error } = await supabase
-      .from('products')
-      .update({ status: 'active', updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .maybeSingle();
-    dbStats.increment();
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .update({ status: 'active', updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .select()
+        .maybeSingle();
+      dbStats.increment();
 
-    if (req.session) {
-      req.session.flash = {
-        error: (error || !data) ? 'Failed to unarchive product.' : null,
-        success: data ? 'Product restored successfully.' : null,
-      };
+      if (req.session) {
+        req.session.flash = {
+          error: error || !data ? 'Failed to unarchive product.' : null,
+          success: data ? 'Product restored successfully.' : null,
+        };
+      }
+      await uncacheProduct(id);
+      await uncacheArchived();
+      res.redirect('/admin/products/archived');
+    } catch (err) {
+      debug.error('Error unarchiving product:', err);
+      if (req.session) {
+        req.session.flash = {
+          error: 'Failed to unarchive product. Please try again.',
+        };
+      }
+      res.redirect('/admin/products/archived');
     }
-    await uncacheProduct(id);
-    await uncacheArchived();
-    res.redirect('/admin/products/archived');
-  } catch (err) {
-    debug.error('Error unarchiving product:', err);
-    if (req.session) {
-      req.session.flash = { error: 'Failed to unarchive product. Please try again.' };
-    }
-    res.redirect('/admin/products/archived');
   }
-});
-
-
-
-
-
+);
 
 module.exports = router;

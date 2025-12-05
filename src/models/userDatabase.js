@@ -7,9 +7,10 @@ const TTL = 60_000 * 30; // 30 minutes
 const PAGE_SIZE = 10;
 const debug = require('debug')('User Database');
 
-
 const fmtCurrency = (cents, currency = 'USD', locale = 'en-US') =>
-  new Intl.NumberFormat(locale, { style: 'currency', currency }).format((cents || 0) / 100);
+  new Intl.NumberFormat(locale, { style: 'currency', currency }).format(
+    (cents || 0) / 100
+  );
 
 const statusLabel = (s) => {
   if (!s) return 'Unknown';
@@ -28,21 +29,26 @@ const statusLabel = (s) => {
   return map[s.toLowerCase()] || s;
 };
 
-
 function unifyOrders(orders) {
-
-  const items = (orders || []).map(o => ({
+  const items = (orders || []).map((o) => ({
     ...o,
-    placed_at_display: new Date(o.placed_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }),
+    placed_at_display: new Date(o.placed_at).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }),
     total_display: fmtCurrency(o.total_cents, o.currency),
     status_display: statusLabel(o.status),
   }));
   return items;
 }
 
-
 async function getUser(req) {
-  if (!req.user?.id) return { error: 'Failed to fetch user data', errorDetail: "No user ID in request" };
+  if (!req.user?.id)
+    return {
+      error: 'Failed to fetch user data',
+      errorDetail: 'No user ID in request',
+    };
   const flash = req.session?.flash || null;
   if (req.session && req.session.flash) {
     delete req.session.flash;
@@ -63,7 +69,6 @@ async function getUser(req) {
 }
 const dbStats = require('../controllers/dbStats.js');
 
-
 async function bindOrders(user, { page = 1, status = '', q = '' }) {
   if (user.error) return user;
   const key = `${NAMESPACE}:${user.id}:orders:${page}:${status}:${q}`;
@@ -71,7 +76,10 @@ async function bindOrders(user, { page = 1, status = '', q = '' }) {
   return await cache.wrap(key, TTL, async () => {
     let query = user.supabase
       .from('orders_view')
-      .select('id, number, status, placed_at, total_cents, currency, carrier, tracking_code, shipping_eta', { count: 'exact' })
+      .select(
+        'id, number, status, placed_at, total_cents, currency, carrier, tracking_code, shipping_eta',
+        { count: 'exact' }
+      )
       .eq('user_id', user.id);
     dbStats.increment();
     if (status) query = query.eq('status', status);
@@ -97,23 +105,34 @@ async function bindOrders(user, { page = 1, status = '', q = '' }) {
     // Cheap approach: 3 small count queries; fast on typical user-sized datasets.
     const statusesToCount = ['', 'processing', 'shipped', 'delivered'];
     const tabCounts = {};
-    await Promise.all(statusesToCount.map(async (s) => {
-      let qc = user.supabase.from('orders_view').select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id);
-      dbStats.increment();
-      if (s) qc = qc.eq('status', s);
-      if (q) qc = qc.ilike('number', `%${q}%`);
-      const { count: c } = await qc;
-      tabCounts[s || 'all'] = c || 0;
-    }));
+    await Promise.all(
+      statusesToCount.map(async (s) => {
+        let qc = user.supabase
+          .from('orders_view')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id);
+        dbStats.increment();
+        if (s) qc = qc.eq('status', s);
+        if (q) qc = qc.ilike('number', `%${q}%`);
+        const { count: c } = await qc;
+        tabCounts[s || 'all'] = c || 0;
+      })
+    );
 
     return {
       ...user,
-      filters: { page, status, q, pageSize: PAGE_SIZE, total, totalPages, tabCounts },
+      filters: {
+        page,
+        status,
+        q,
+        pageSize: PAGE_SIZE,
+        total,
+        totalPages,
+        tabCounts,
+      },
       orders: items,
     };
   });
-
 }
 
 async function bindOrderSummary(user) {
@@ -123,25 +142,35 @@ async function bindOrderSummary(user) {
   return await cache.wrap(key, TTL, async () => {
     const { data: recentOrdersRaw, error: ordersErr } = await user.supabase
       .from('orders_view')
-      .select('id, number, status, placed_at, total_cents, currency, carrier, tracking_code, shipping_eta')
+      .select(
+        'id, number, status, placed_at, total_cents, currency, carrier, tracking_code, shipping_eta'
+      )
       .eq('user_id', user.id)
       .order('placed_at', { ascending: false })
       .limit(5);
     dbStats.increment();
     if (ordersErr) {
       debug.error('Error fetching recent orders:', ordersErr);
-      return { ...user, error: 'Failed to fetch recent orders', errorDetail: ordersErr };
+      return {
+        ...user,
+        error: 'Failed to fetch recent orders',
+        errorDetail: ordersErr,
+      };
     }
     const recentOrders = unifyOrders(recentOrdersRaw);
 
-    const { data: counts, error: countsErr } = await user.supabase
-      .rpc('order_summary_counts', { p_user_id: user.id });
+    const { data: counts, error: countsErr } = await user.supabase.rpc(
+      'order_summary_counts',
+      { p_user_id: user.id }
+    );
     if (countsErr) {
       debug.error('Error fetching order counts:', countsErr);
-      return { ...user, error: 'Failed to fetch order counts', errorDetail: countsErr };
+      return {
+        ...user,
+        error: 'Failed to fetch order counts',
+        errorDetail: countsErr,
+      };
     }
-
-
 
     const { open = 0, shipped = 0, delivered = 0 } = counts[0] || {};
     const orders_total = open + shipped + delivered;
@@ -155,17 +184,15 @@ async function bindOrderSummary(user) {
         returns: 0,
       },
       recentOrders,
-    }
+    };
   });
 }
-
 
 async function bindOrderDetail(user, orderId) {
   if (user.error) return user;
   const key = `${NAMESPACE}:${user.id}:orderDetail:${orderId}`;
 
   return await cache.wrap(key, TTL, async () => {
-
     const { supabase, id: userId } = user;
 
     if (!orderId) {
@@ -182,7 +209,7 @@ async function bindOrderDetail(user, orderId) {
       .select('*')
       .eq('user_id', userId)
       .eq('id', orderId)
-      .maybeSingle();   // returns null if not found
+      .maybeSingle(); // returns null if not found
     dbStats.increment();
     if (error) {
       debug.error('Error fetching order detail:', error);
@@ -190,25 +217,30 @@ async function bindOrderDetail(user, orderId) {
     }
 
     if (!row) {
-      return { ...user, error: 'Order not found', errorDetail: 'not_found', notFound: true };
+      return {
+        ...user,
+        error: 'Order not found',
+        errorDetail: 'not_found',
+        notFound: true,
+      };
     }
 
     const placed_at_display = row.placed_at
       ? new Date(row.placed_at).toLocaleString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-      })
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+        })
       : '';
 
     const shipping_eta_display = row.shipping_eta
       ? new Date(row.shipping_eta).toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      })
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        })
       : null;
 
     const currency = row.currency || 'USD';
@@ -219,14 +251,8 @@ async function bindOrderDetail(user, orderId) {
       total_display: fmtCurrency(it.total_cents, currency),
     }));
 
-
-
     const productIds = [
-      ...new Set(
-        items
-          .map((it) => it.product_id)
-          .filter((id) => id != null)
-      ),
+      ...new Set(items.map((it) => it.product_id).filter((id) => id != null)),
     ];
 
     let productMap = {};
@@ -238,9 +264,7 @@ async function bindOrderDetail(user, orderId) {
 
       await productDB.bindPrimaryImage(products);
 
-      productMap = Object.fromEntries(
-        products.map((p) => [p.id, p])
-      );
+      productMap = Object.fromEntries(products.map((p) => [p.id, p]));
     }
 
     items = items.map((it) => {
@@ -252,18 +276,15 @@ async function bindOrderDetail(user, orderId) {
         ...it,
         product: p
           ? {
-            id: p.id,
-            name: p.name,
-            slug: p.slug,
-            url: productUrl,
-            image: p.image || null,
-          }
+              id: p.id,
+              name: p.name,
+              slug: p.slug,
+              url: productUrl,
+              image: p.image || null,
+            }
           : null,
       };
     });
-
-
-
 
     const order = {
       id: row.id,
@@ -303,4 +324,3 @@ module.exports = {
   bindOrderSummary,
   bindOrderDetail,
 };
-

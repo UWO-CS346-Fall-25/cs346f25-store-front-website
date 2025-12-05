@@ -16,40 +16,44 @@ bind(router, {
   middleware: [csrfProtection, require('../middleware/csrfLocals')],
   getData: async () => ({
     featuredProducts: await db.bindPrimaryImage(await db.getFeatured()),
-    categories: await db.categoryBindProductAndPrimaryImage(await db.getCategories()),
+    categories: await db.categoryBindProductAndPrimaryImage(
+      await db.getCategories()
+    ),
     newArrivals: await db.bindPrimaryImage(await db.getNewArrivals(8)),
-  })
+  }),
 });
 
-
-
-router.get('/contact', csrfProtection, require('../middleware/csrfLocals'), (req, res) => {
-  if (!req.user) {
-    res.redirect('/contact/email');
-  } else {
-    res.redirect('/messages');
+router.get(
+  '/contact',
+  csrfProtection,
+  require('../middleware/csrfLocals'),
+  (req, res) => {
+    if (!req.user) {
+      res.redirect('/contact/email');
+    } else {
+      res.redirect('/messages');
+    }
   }
-});
-
+);
 
 bind(router, {
   route: '/contact/email',
   view: 'messages/contact',
   meta: { title: 'Contact' },
   middleware: [csrfProtection, require('../middleware/csrfLocals')],
-  getData: async (_, __) => ({
-  })
+  getData: async (_, __) => ({}),
 });
-
 
 bind(router, {
   route: '/messages',
   view: 'messages/inbox',
   meta: { title: 'Messages', messages: [] },
-  middleware: [authRequired, csrfProtection, require('../middleware/csrfLocals')],
-  getData: async (req, res) => {
-  }
+  middleware: [
+    authRequired,
+    csrfProtection,
+    require('../middleware/csrfLocals'),
+  ],
+  getData: async (req, res) => {},
 });
-
 
 module.exports = router;
