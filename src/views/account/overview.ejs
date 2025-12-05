@@ -8,12 +8,13 @@
   <body>
     <%- include('../partials/navbar') %>
 
+
     <main id="main-content">
       <section class="section" aria-labelledby="account-title">
         <div class="container account">
           <header class="section__header">
             <h1 id="account-title">Your account</h1>
-            <a class="link" href="/shop">← Continue shopping</a>
+            <a class="link" href="/shop"><%- include('../icon', { name: 'back' }) %> Continue shopping</a>
           </header>
 
           <!-- Top summary row -->
@@ -65,34 +66,7 @@
               </div>
             </div>
 
-            <div class="card card--addresses" role="region" aria-labelledby="addr-h">
-              <div class="card__hd">
-                <h2 id="addr-h" class="card__title">Addresses</h2>
-                <a class="link link--sm" href="/account/addresses">Manage</a>
-              </div>
-              <div class="card__body">
-                <% if (addresses && addresses.length) { %>
-                  <div class="address">
-                    <% const addr = addresses?.find(a => a.is_default_shipping) || addresses?.[0]; %>
-                    <% if (addr) { %>
-                      <p><%= addr.full_name %> <% if (addr.label) { %><span class="badge"><%= addr.label %></span><% } %></p>
-                      <p><%= addr.line1 %><% if (addr.line2) { %>, <%= addr.line2 %><% } %></p>
-                      <p><%= addr.city %>, <%= addr.region || '' %> <%= addr.postal_code %></p>
-                      <p><%= addr.country_code %></p>
-                      <% if (addr.is_default_shipping) { %><span class="badge">Default shipping</span><% } %>
-                      <% if (addr.is_default_billing) { %><span class="badge">Default billing</span><% } %>
-                    <% } else { %>
-                      <p class="muted">No saved addresses yet.</p>
-                    <% } %>
-                  </div>
-                <% } else { %>
-                  <p class="muted">No saved addresses yet.</p>
-                <% } %>
-              </div>
-              <div class="card__ft">
-                <a href="/account/addresses/new" class="button ghost small">Add address</a>
-              </div>
-            </div>
+            <!-- Addresses are managed by Stripe; removed from account UI -->
           </div>
 
           <!-- Recent orders table -->
@@ -161,13 +135,7 @@
                 </div>
               </a>
 
-              <a class="quick-item" href="/account/addresses">
-                <div class="quick-item__icon" aria-hidden="true">🏠</div>
-                <div class="quick-item__text">
-                  <h3>Addresses</h3>
-                  <p>Add or edit saved addresses.</p>
-                </div>
-              </a>
+              <!-- Addresses moved to Stripe; quick link removed -->
 
               <a class="quick-item" href="/account/orders">
                 <div class="quick-item__icon" aria-hidden="true">📦</div>

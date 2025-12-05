@@ -1,0 +1,21 @@
+
+<div style="margin-top:1rem;">
+  <div style="display:flex;gap:1rem;align-items:center;">
+    <div><strong>Total DB calls:</strong> <span id="total-calls">0</span></div>
+    <div>
+      <label for="minutes">Window:</label>
+      <select id="minutes">
+        <option value="15">15m</option>
+        <option value="60" selected>60m</option>
+        <option value="240">4h</option>
+        <option value="1440">24h</option>
+      </select>
+    </div>
+  </div>
+
+  <div style="margin-top:1rem;">
+    <canvas id="dbChart" width="800" height="300" aria-label="DB calls chart"></canvas>
+  </div>
+</div>
+<!-- Chart.js from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>

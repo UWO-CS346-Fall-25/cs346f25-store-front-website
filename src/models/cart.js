@@ -51,10 +51,14 @@ function removeFromCart(req, productId) {
   const next = cart.filter((i) => i.productId !== productId);
   saveCart(req, next);
 }
+function clearCart(req) {
+  saveCart(req, []);
+}
 
 module.exports = {
   getCart,
   addToCart,
   updateCartItem,
   removeFromCart,
+  clearCart,
 };

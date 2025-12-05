@@ -1,178 +1,133 @@
-<!DOCTYPE html>
-<html lang="en">
-<%- include('../partials/head', {
-  title: 'Admin · Products',
-  cssFiles: ['admin.css'],
-  scripts: []
-}) %>
-<body>
-  <%- include('../partials/navbar') %>
-
-  <main id="main-content">
-    <section class="section" aria-labelledby="admin-products-heading">
-      <div class="container">
-        <div class="section__header admin-page-header">
-          <div>
-            <h1 id="admin-products-heading" class="section__title">
-              Product admin
-            </h1>
-            <p class="muted">
-              Create, update, and retire products shown in your shop.
-            </p>
-          </div>
-
-          <a href="/admin/products/new" class="link--button link" id="new-product">
-            + New product
-          </a>
-        </div>
-
-        <% if (flash && (flash.error || flash.success)) { %>
-          <div class="admin-alert-wrapper">
-            <% if (flash.error) { %>
-              <div class="admin-alert admin-alert--error" role="alert">
-                <span><%= flash.error %></span>
-              </div>
-            <% } %>
-            <% if (flash.success) { %>
-              <div class="admin-alert admin-alert--success" role="status">
-                <span><%= flash.success %></span>
-              </div>
-            <% } %>
-          </div>
-        <% } %>
 
 
-        <!-- Summary chips -->
-        <% const items = products || []; %>
-        <% const activeCount = items.filter(p => p.status === 'active').length; %>
-        <div class="admin-summary">
-          <div class="admin-summary-card">
-            <p class="admin-summary-label">Total products</p>
-            <p class="admin-summary-value"><%= items.length %></p>
-          </div>
-          <div class="admin-summary-card">
-            <p class="admin-summary-label">Active products</p>
-            <p class="admin-summary-value"><%= activeCount %></p>
-          </div>
-        </div>
-
-        <!-- Product list -->
-        <section aria-label="Current products" class="admin-panel">
-          <% if (items.length) { %>
-            <div class="admin-table-wrapper">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Last Updated</th>
-                    <th>Category</th>
-                    <th class="admin-col-actions">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% items.forEach(function (product) { %>
-                    <tr class="admin-product--status-<%= product.status %>">
-                      <td>
-                        <div class="admin-product-main">
-                          <img
-                            class="admin-product-thumb"
-                            src="<%= product.image.url %>"
-                            alt="<%= product.image.alt || 'Product image' %>">
-                          <div>
-                            <div class="admin-product-name">
-                              <%= product.name || 'Untitled product' %>
-                            </div>
-                            <div class="admin-product-meta muted price">
-                              <% if (typeof util !== 'undefined' && util.formatPrice) { %>
-                                <%= util.formatPrice(product) %>
-                              <% } else { %>
-                                $<%= (product.price_cents || 0) / 100 %>
-                              <% } %>
-                            </div>
-                            
-                            <% product.categories.forEach(cat => { %>
-                              <span class="badge badge--info category"><%= cat.name %></span>
-                            <% }); %>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td>
-                        <div class="admin-product-meta muted">
-                          <% if (typeof util !== 'undefined' && util.formatPrice) { %>
-                            <%= util.formatPrice(product) %>
-                          <% } else { %>
-                            $<%= (product.price_cents || 0) / 100 %>
-                          <% } %>
-                        </div>
-                      </td>
-
-
-                      <td>
-                        <span class="admin-product-meta muted">
-                          <%= product.updated_at
-                            ? new Date(product.updated_at).toLocaleDateString('en-US')
-                            : '—' %>
-                        </span>
-                      </td>
-
-
-                      <td>
-                        <% product.categories.forEach(cat => { %>
-                          <span class="badge badge--info"><%= cat.name %></span>
-                        <% }); %>
-                      </td>
-
-
-                      <td>
-                        <div class="admin-actions">
-                          <!-- View on storefront -->
-                          
-                            <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
-                              <span class="sr-only">View</span>
-                              <%- include('../svg/view') %>
-                            </a>
-                          <% if (product.status == 'active') { %>
-                            <a class="link link--icon" href="/admin/products/<%= product.id %>/edit">
-                              <span class="sr-only">Edit</span>
-                              <%- include('../svg/edit') %>
-                            </a>
-                          <% } else { %>
-                            <a class="link link--icon" href="/admin/products/<%= product.id %>/edit">
-                              <span class="sr-only">Draft</span>
-                              <%- include('../svg/draft') %>
-                            </a>
-                          <% } %>
-
-                          <!-- Delete (POST/DELETE) -->
-                          <form
-                            method="post"
-                            action="/admin/products/<%= product.id %>/delete"
-                            class="admin-inline-form"
-                            onsubmit="return confirm('Delete this product? This cannot be undone.');">
-                            <% if (csrfToken) { %>
-                              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                            <% } %>
-                            <button type="submit" class="link link--danger admin-delete-link link--icon">
-                              <span class="sr-only">Edit</span>
-                              <%- include('../svg/trash') %>
-                            </button>
-                          </form>
-                        </div>
-                      </td>
-                    </tr>
+<% const items = products || []; %>
+<% const activeCount = items.filter(p => p.status === 'active').length; %>
+<% if (items.length) { %>
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Last Updated</th>
+          <th>Category</th>
+          <th class="admin-col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(function (product) { %>
+          <tr class="admin-product--status-<%= product.status %>">
+            <td>
+              <div class="admin-product-main">
+                <img
+                  class="admin-product-thumb"
+                  src="<%= product.image.url %>"
+                  alt="<%= product.image.alt || 'Product image' %>">
+                <div>
+                  <div class="admin-product-name">
+                    <%= product.name || 'Untitled product' %>
+                  </div>
+                  <div class="admin-product-meta muted price">
+                    <% if (typeof util !== 'undefined' && util.formatPrice) { %>
+                      <%= util.formatPrice(product) %>
+                    <% } else { %>
+                      $<%= (product.price_cents || 0) / 100 %>
+                    <% } %>
+                  </div>
+                  
+                  <% product.categories.forEach(cat => { %>
+                    <span class="badge badge--info category"><%= cat.name %></span>
                   <% }); %>
-                </tbody>
-              </table>
-            </div>
-          <% } else { %>
-            <p class="muted">No products yet. Create your first one below.</p>
-          <% } %>
-        </section>
+                </div>
+              </div>
+            </td>
 
-  </main>
+            <td>
+              <div class="admin-product-meta muted">
+                <% if (typeof util !== 'undefined' && util.formatPrice) { %>
+                  <%= util.formatPrice(product) %>
+                <% } else { %>
+                  $<%= (product.price_cents || 0) / 100 %>
+                <% } %>
+              </div>
+            </td>
 
-  <%- include('../partials/footer') %>
-</body>
-</html>
+
+            <td>
+              <span class="admin-product-meta muted">
+                <%= product.updated_at
+                  ? new Date(product.updated_at).toLocaleDateString('en-US')
+                  : '—' %>
+              </span>
+            </td>
+
+
+            <td>
+              <% product.categories.forEach(cat => { %>
+                <span class="badge badge--info"><%= cat.name %></span>
+              <% }); %>
+            </td>
+
+
+            <td>
+              <div class="admin-actions">
+                <!-- View on storefront -->
+                
+                <% if (product.status == 'active') { %>
+                  <span class="helper-popup hide-on-mobile" tabindex="0" aria-haspopup="true">
+                    <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
+                      <span class="sr-only">View</span>
+                      <%- include('../icon', { name: 'eye-open' }) %>
+                    </a>
+                    <span class="helper-popup__text" role="tooltip">View</span>
+                  </span>
+                <% } else { %>
+                  <span class="helper-popup hide-on-mobile" tabindex="0" aria-haspopup="true">
+                    <a class="link link--icon" href="/shop/<%= product.slug %>" target="_blank" rel="noopener">
+                      <span class="sr-only">View Draft</span>
+                      <%- include('../icon', { name: 'eye-closed-danger' }) %>
+                    </a>
+                    <span class="helper-popup__text" role="tooltip">View Draft</span>
+                  </span>
+                <% } %>
+
+                <span class="helper-popup" tabindex="0" aria-haspopup="true">
+                  <a class="link link--icon" href="/admin/products/<%= product.id %>/edit">
+                    <span class="sr-only">Edit</span>
+                    <%- include('../icon', { name: 'edit' }) %>
+                  </a>
+                  <span class="helper-popup__text" role="tooltip">Edit</span>
+                </span>
+                <!-- Delete (POST/DELETE) -->
+                <form
+                  method="post"
+                  action="/admin/products/<%= product.id %>/delete"
+                  class="admin-inline-form"
+                  onsubmit="return confirm('Delete this product? This cannot be undone.');">
+                  <% if (csrfToken) { %>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <% } %>
+                  <span class="helper-popup" tabindex="0" aria-haspopup="true">
+                    <%- include('../partials/confirm-button', {
+                      btnClasses: 'link link--danger admin-delete-link link--icon',
+                      iconName: 'trash',
+                      label: 'Delete',
+                      modalTitle: 'Delete product',
+                      modalBody: 'Delete this product? This cannot be undone.',
+                      confirmText: 'Delete',
+                      cancelText: 'Cancel'
+                    }) %>
+                    <span class="helper-popup__text" role="tooltip">Delete</span>
+                  </span>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } else { %>
+  <p class="muted">No products yet. Create your first one below.</p>
+<% } %>
+</section>

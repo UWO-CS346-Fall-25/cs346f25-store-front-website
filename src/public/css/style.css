@@ -429,3 +429,83 @@ textarea:focus {
   /* sits above the ::before circle */
   display: block;
 }
+
+
+/* ---- Flash / Alert styles ---- */
+.alerts {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 6px 18px rgba(12, 18, 28, 0.05);
+  font-size: 0.95rem;
+}
+
+.alert__content {
+  flex: 1 1 auto;
+}
+
+.alert__close {
+  background: transparent;
+  border: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0 0.25rem;
+  cursor: pointer;
+  color: inherit;
+}
+
+.alert--error {
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  color: #7f1d1d;
+}
+
+.alert--success {
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #065f46;
+}
+
+.alert--dismissible {
+  position: relative;
+}
+
+
+/* Ensure quantity selects look consistent across cart and product detail */
+.cart-item__qty-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  min-width: 3.25rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--muted-bg, #d1d5db);
+  background: #fff;
+  font: inherit;
+  line-height: 1.4;
+  color: var(--foreground, #0f172a);
+}
+
+/* Small spacing when used inside product action forms */
+.product-actions .cart-item__qty-select,
+.product-actions label select {
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+/* Add a subtle focus ring matching inputs */
+.cart-item__qty-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(155, 135, 245, 0.15);
+  border-color: #9b87f5;
+}

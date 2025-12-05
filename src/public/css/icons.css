@@ -1,0 +1,31 @@
+.icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  display: inline-block;
+  vertical-align: middle;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon .thick {
+  stroke-width: 3;
+}
+
+.site-header__logo .icon {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.feature-card__icon .icon,
+.utility-card__icon .icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.icon-eye-closed-danger,
+.icon-trash {
+  color: var(--error);
+}

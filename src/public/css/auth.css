@@ -89,18 +89,21 @@
 }
 
 /* Swap icons via aria-pressed */
-.password-toggle .icon-eye,
-.password-toggle .icon-eye-off {
+.password-toggle .icon-eye-closed,
+.password-toggle .icon-eye-open {
   display: none;
   fill: currentColor;
 }
 
-.password-toggle[aria-pressed="false"] .icon-eye {
+.password-toggle[aria-pressed="false"] .icon-eye-closed {
   display: block;
+  fill: none;
 }
 
-.password-toggle[aria-pressed="true"] .icon-eye-off {
+.password-toggle[aria-pressed="true"] .icon-eye-open {
   display: block;
+  fill: none;
+
 }
 
 /* Small layout tidy for any helper cluster under the field */

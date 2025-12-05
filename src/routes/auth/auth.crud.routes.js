@@ -1,5 +1,6 @@
 const express = require('express');
 const { authClient } = require('../../models/supabase');
+const dbStats = require('../../controllers/dbStats');
 
 module.exports = function (csrfProtection) {
   const router = express.Router();
@@ -19,6 +20,7 @@ module.exports = function (csrfProtection) {
       email,
       password,
     });
+    dbStats.increment();
 
     if (error || !data?.session) {
       if (req.flash) {
@@ -94,9 +96,11 @@ module.exports = function (csrfProtection) {
       options: {
         data: {
           display_name: name,
+          role: 'user',
         },
       },
     });
+    dbStats.increment();
 
     if (error) {
       if (req.flash) {

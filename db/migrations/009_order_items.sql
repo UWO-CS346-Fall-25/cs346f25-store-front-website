@@ -5,7 +5,7 @@
 create table if not exists public.order_items (
   id                 uuid primary key default gen_random_uuid(),
   order_id           uuid not null references public.orders(id) on delete cascade,
-  product_id         uuid,                      -- optional FK to products(id) if UUID
+  product_id         uuid not null references public.products(id),
   sku                text,
   name               text not null,             -- snapshot name
   quantity           integer not null check (quantity > 0),
@@ -49,8 +49,8 @@ drop policy if exists "Admins manage all order_items" on public.order_items;
 create policy "Admins manage all order_items"
 on public.order_items for all
 to authenticated
-using (coalesce((auth.jwt() ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() ->> 'role') in ('admin','staff'), false))
+with check (coalesce((auth.jwt() ->> 'role') in ('admin','staff'), false));
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Keep orders.subtotal_cents and total_cents in sync with order_items
@@ -106,23 +106,6 @@ after update on public.orders
 for each row execute procedure public.tg_recalc_order_totals_on_order();
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- Convenience View: orders + addresses + aggregated items
--- ─────────────────────────────────────────────────────────────────────────────
-create or replace view public.orders_view as
-select
-  o.*,
-  to_jsonb(sa) - 'user_id' - 'created_at' - 'updated_at' as shipping_address,
-  to_jsonb(ba) - 'user_id' - 'created_at' - 'updated_at' as billing_address,
-  coalesce((
-    select jsonb_agg(to_jsonb(oi) - 'order_id')
-    from public.order_items oi
-    where oi.order_id = o.id
-  ), '[]'::jsonb) as items
-from public.orders o
-join public.addresses sa on sa.id = o.shipping_address_id
-join public.addresses ba on ba.id = o.billing_address_id;
-
--- ─────────────────────────────────────────────────────────────────────────────
 -- RPC: order_summary_counts(user_id) → {open, shipped, delivered}
 -- ─────────────────────────────────────────────────────────────────────────────
 create or replace function public.order_summary_counts(p_user_id uuid)
@@ -149,3 +132,66 @@ $$;
 
 revoke all on function public.order_summary_counts(uuid) from public;
 grant execute on function public.order_summary_counts(uuid) to authenticated;
+-- Create or replace a view 'orders_view' that aggregates order items and embeds
+-- shipping/billing address objects from orders table columns.
+
+
+create or replace view public.orders_view as
+select
+  o.id,
+  o.user_id,
+  o.number,
+  o.subtotal_cents,
+  o.shipping_cents,
+  o.tax_cents,
+  o.total_cents,
+  o.currency,
+  o.status,
+  o.placed_at,
+  o.updated_at,
+  o.carrier,
+  o.tracking_code,
+  o.shipping_eta,
+  o.notes,
+
+  -- Build shipping_address and billing_address as JSON objects from address_* columns
+  json_build_object(
+    'full_name', o.address_full_name,
+    'line1', o.address_line1,
+    'line2', o.address_line2,
+    'city', o.address_city,
+    'region', o.address_region,
+    'postal_code', o.address_postal_code,
+    'country_code', o.address_country_code,
+    'phone', o.address_phone
+  ) as shipping_address,
+  json_build_object(
+    'full_name', o.address_full_name,
+    'line1', o.address_line1,
+    'line2', o.address_line2,
+    'city', o.address_city,
+    'region', o.address_region,
+    'postal_code', o.address_postal_code,
+    'country_code', o.address_country_code,
+    'phone', o.address_phone
+  ) as billing_address,
+
+  -- Aggregate order items into JSON array
+  (select coalesce(json_agg(json_build_object(
+      'id', oi.id,
+      'product_id', oi.product_id,
+      'sku', oi.sku,
+      'name', oi.name,
+      'quantity', oi.quantity,
+      'unit_price_cents', oi.unit_price_cents,
+      'total_cents', oi.total_cents
+    ) order by oi.id), '[]'::json)
+   from public.order_items oi
+   where oi.order_id = o.id
+  ) as items
+
+from public.orders o;
+
+-- Grant select on view to authenticated role (used by Supabase)
+revoke all on public.orders_view from public;
+grant select on public.orders_view to authenticated;

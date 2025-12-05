@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head' ) %>
+  <body>
+    <%- include('../partials/navbar') %>
+    <header class="admin-header">
+      <h1><%- title %></h1>
+      <p class="subtitle"><%- subtitle %></p>
+    </header>
+
+    <div class="container">
+      <%- include('../partials/flash') %>
+
+      <% if(preBody != null) { %>
+        <%- include(preBody); %>
+      <% } %>
+
+      <div class="admin-panel">
+        <div class="admin-panel-upper">
+          <% if(backLink != null) { %>
+            <a href="<%- backLink.href %>" class="link--button link">
+                <%- include('../icon', { name: backLink.icon }) %> <%- backLink.name %>
+            </a>
+          <% } %>
+          <% if(postLink != null) { %>
+            <a href="<%- postLink.href %>" class="link--button link" id="postLink">
+                <%- include('../icon', { name: postLink.icon }) %> <%- postLink.name %>
+            </a>
+          <% } %>
+          <% if(resetLink != null) { %>
+            <form
+              method="post"
+              action="<%- resetLink.href %>"
+              class="admin-inline-form"
+              onsubmit="return confirm('<%- resetLink.body %>');">
+              <% if (csrfToken) { %>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <% } %>
+              <span class="helper-popup" tabindex="0" aria-haspopup="true">
+                <%- include('../partials/confirm-button', {
+                  btnClasses: 'link button--compact simple',
+                  iconName: resetLink.icon,
+                  label: resetLink.name,
+                  modalTitle: resetLink.name,
+                  modalBody: resetLink.body,
+                  confirmText: resetLink.confirm,
+                  cancelText: 'Cancel',
+                  btnText: resetLink.name_small
+                }) %>
+                <span class="helper-popup__text" role="tooltip"><%- resetLink.confirm %></span>
+              </span>
+            </form>
+          <% } %>
+
+        </div>
+        <section class="admin-panel-inner">
+          <%- include(body) %>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>

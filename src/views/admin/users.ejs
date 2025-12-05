@@ -1,0 +1,160 @@
+
+<% const rows = users || []; const page = (paging && paging.page) || 1; const perPage = (paging && paging.perPage) || 10; const totalPages = (paging && paging.totalPages) || 1; const qVal = (typeof q !== 'undefined' && q) ? q : (typeof query !== 'undefined' && query.q ? query.q : ''); %>
+
+<form method="get" action="" style="margin-bottom:0.75rem;display:flex;gap:0.5rem;align-items:center;">
+  <input type="text" name="q" value="<%= qVal %>" placeholder="Search users by email, name, or metadata" style="flex:1;padding:0.4rem;border:1px solid #ddd;border-radius:4px;" />
+  <input type="hidden" name="perPage" value="<%= perPage %>" />
+  <button class="button primary small" type="submit">Search</button>
+  <% if (qVal) { %>
+    <a class="link" href="?perPage=<%= perPage %>">Clear</a>
+  <% } %>
+</form>
+<% if (!rows.length) { %>
+  <p class="muted">No users found.</p>
+<% } else { %>
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Email</th>
+          <th>Name</th>
+          <th>Created</th>
+          <th>Last sign in</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% 
+          const roleClassFor = (role) => {
+            if (!role) return 'level-info';
+            const r = String(role).toLowerCase();
+            switch (r) {
+              case 'admin':
+                return 'level-warn';
+              case 'staff':
+              case 'manager':
+                return 'level-system';
+              case 'moderator':
+                return 'level-warn';
+              case 'banned':
+              case 'suspended':
+                return 'level-error';
+              case 'user':
+              default:
+                return 'level-info';
+            }
+          };
+        %>
+        <% rows.forEach(function (u) { %>
+          <% 
+            // Determine role from app metadata (raw_app_meta_data), fallback to user/app metadata or u.role
+            let rawRole = null;
+            if (u && u.raw_app_meta_data) {
+              rawRole = u.raw_app_meta_data.role || u.raw_app_meta_data.app && u.raw_app_meta_data.app.role;
+            }
+            if (!rawRole && u && u.app_metadata) rawRole = u.app_metadata.role;
+            if (!rawRole && u && u.user_metadata) rawRole = u.user_metadata.role;
+            if (!rawRole && u && u.role) rawRole = u.role;
+            const normRole = rawRole ? String(rawRole).toLowerCase() : 'user';
+            const roleDisplay = normRole ? (normRole.charAt(0).toUpperCase() + normRole.slice(1)) : '—';
+          %>
+          <tr class="<%= String(user && user.id) === String(u.id) ? 'current-user-row' : '' %>">
+            <td class="col-role"><div class="<%= roleClassFor(normRole) %>"><span class="badge"><%= roleDisplay %></span></div></td>
+            <td><%= u.email %></td>
+            <td><%= u.user_metadata.display_name || '—' %></td>
+            <td class="muted"><%= u.created_at ? new Date(u.created_at).toLocaleString() : '—' %></td>
+            <td class="muted"><%= u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString() : '—' %></td>
+            <td>
+              <% const canModify = !(user && String(user.id) === String(u.id)) && normRole !== 'admin'; %>
+              <% if (!canModify) { %>
+                <span class="muted">Protected</span>
+              <% } else { %>
+                <!-- Set role form (promote to staff instead of admin) -->
+                <% if (normRole !== 'staff') { %>
+                  <form method="post" action="/admin/users/<%= u.id %>/set-role" style="display:inline;margin-right:6px;">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <input type="hidden" name="role" value="staff" />
+                    <%- include('../partials/confirm-button', {
+                      btnClasses: 'admin-simple',
+                      iconName: 'admin-promote',
+                      label: 'Make Staff',
+                      modalTitle: 'Make staff',
+                      modalBody: 'Promote this user to staff? This will grant additional privileges.',
+                      confirmText: 'Make Staff',
+                      cancelText: 'Cancel'
+                    }) %>
+                  </form>
+                <% } else { %>
+                  <form method="post" action="/admin/users/<%= u.id %>/set-role" style="display:inline;margin-right:6px;">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <input type="hidden" name="role" value="user" />
+                    <%- include('../partials/confirm-button', {
+                      btnClasses: 'admin-simple',
+                      iconName: 'admin-demote',
+                      label: 'Revoke Staff',
+                      modalTitle: 'Revoke staff',
+                      modalBody: 'Revoke staff privileges for this user?',
+                      confirmText: 'Revoke',
+                      cancelText: 'Cancel'
+                    }) %>
+                  </form>
+                <% } %>
+
+                <!-- Ban/unban form -->
+                <% if (normRole !== 'banned') { %>
+                  <form method="post" action="/admin/users/<%= u.id %>/ban" style="display:inline;">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <input type="hidden" name="action" value="ban" />
+                    <%- include('../partials/confirm-button', {
+                      btnClasses: 'admin-simple',
+                      iconName: 'admin-ban',
+                      label: 'Ban',
+                      modalTitle: 'Ban user',
+                      modalBody: 'Ban this user? They will not be able to sign in.',
+                      confirmText: 'Ban',
+                      cancelText: 'Cancel'
+                    }) %>
+                  </form>
+                <% } else { %>
+                  <form method="post" action="/admin/users/<%= u.id %>/ban" style="display:inline;">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <input type="hidden" name="action" value="unban" />
+                    <%- include('../partials/confirm-button', {
+                      btnClasses: 'admin-simple',
+                      iconName: 'admin-unban',
+                      label: 'Unban',
+                      modalTitle: 'Unban user',
+                      modalBody: 'Unban this user?',
+                      confirmText: 'Unban',
+                      cancelText: 'Cancel'
+                    }) %>
+                  </form>
+                <% } %>
+              <% } %>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+  <div class="admin-table-pagination" style="display:flex;align-items:center;justify-content:space-between;padding-top:0.75rem;">
+    <div class="muted">Page <%= page %> of <%= totalPages %></div>
+    <div>
+      <% const qs = (p) => {
+            const parts = ['page=' + p];
+            if (qVal) parts.push('q=' + encodeURIComponent(qVal));
+            if (perPage) parts.push('perPage=' + perPage);
+            return parts.join('&');
+          };
+      %>
+      <% if (page > 1) { %>
+        <a class="link" href="?<%= qs(page - 1) %>">← Prev</a>
+      <% } %>
+      <% if (page < totalPages) { %>
+        <% if (page > 1) { %> &nbsp; &middot; &nbsp; <% } %>
+        <a class="link" href="?<%= qs(page + 1) %>">Next →</a>
+      <% } %>
+    </div>
+  </div>
+<% } %>

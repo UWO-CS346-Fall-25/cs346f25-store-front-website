@@ -1,0 +1,13 @@
+
+<% const items = products || []; %>
+<% const activeCount = items.filter(p => p.status === 'active').length; %>
+<div class="admin-summary">
+  <div class="admin-summary-card">
+    <p class="admin-summary-label">Total products</p>
+    <p class="admin-summary-value"><%= items.length %></p>
+  </div>
+  <div class="admin-summary-card">
+    <p class="admin-summary-label">Active products</p>
+    <p class="admin-summary-value"><%= activeCount %></p>
+  </div>
+</div>

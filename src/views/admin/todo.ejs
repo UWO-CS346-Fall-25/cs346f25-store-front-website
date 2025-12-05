@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head', { cssFiles: ['admin/dashboard.css','admin/todo.css','vendor/highlight.css'], scripts: ['admin/todo-cards.js'] }) %>
+  <body>
+    <%- include('../partials/navbar') %>
+    <header class="admin-header">
+      <h1>Admin TODO</h1>
+      <p class="subtitle">Project TODO (from <code>docs/TODO.md</code>)</p>
+    </header>
+    <main class="admin-content">
+      <section class="todo-markdown">
+        <a href="/admin" class="link--button link" id="back-to-dashboard">
+          <%- include('../icon', { name: 'back' }) %> Back to Dashboard
+        </a>
+        <%- todoHtml %>
+      </section>
+    </main>
+  </body>
+</html>

@@ -5,7 +5,6 @@ async function authMiddleware(req, res, next) {
   const token = req.cookies['sb-access-token'];
   res.locals.user = null;
   res.locals.isAdmin = false;
-
   if (!token) {
     req.user = null;
     req.isAdmin = false;
@@ -13,6 +12,7 @@ async function authMiddleware(req, res, next) {
   }
 
   const { data, error } = await supabase.auth.getUser(token);
+  require('../controllers/dbStats.js').increment();
 
   if (error || !data?.user) {
     // invalid/expired token
@@ -25,12 +25,11 @@ async function authMiddleware(req, res, next) {
   const role = user.app_metadata?.role;
 
   req.user = user;
-  req.isAdmin = role === 'admin';
+  req.isAdmin = role === 'admin' || role === 'staff';
 
   res.locals.user = user;
   res.locals.isAdmin = req.isAdmin;
-
-  next();
+  return next();
 }
 
 module.exports = authMiddleware;

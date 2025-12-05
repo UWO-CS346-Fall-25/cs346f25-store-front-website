@@ -26,7 +26,7 @@ create sequence if not exists public.order_number_seq;
 
 create table if not exists public.orders (
   id                 uuid primary key default gen_random_uuid(),
-  user_id            uuid not null,
+  user_id            uuid default null,
   number             text not null unique default lpad(nextval('public.order_number_seq')::text, 8, '0'),
 
   subtotal_cents     integer not null default 0 check (subtotal_cents >= 0),
@@ -37,6 +37,15 @@ create table if not exists public.orders (
 
   status             public.order_status not null default 'processing',
 
+  address_full_name     text not null,
+  address_line1         text not null,
+  address_line2         text,
+  address_city          text not null,
+  address_region        text,
+  address_postal_code   text not null,
+  address_country_code  text not null,
+  address_phone         text,
+
   placed_at          timestamptz not null default now(),
   updated_at         timestamptz not null default now(),
 
@@ -45,17 +54,11 @@ create table if not exists public.orders (
   tracking_code      text,
   shipping_eta       timestamptz,
 
-  -- normalized addresses (snapshot by reference)
-  shipping_address_id uuid not null references public.addresses(id) on delete restrict,
-  billing_address_id  uuid not null references public.addresses(id) on delete restrict,
-
   notes              text
 );
 
 create index if not exists orders_user_id_placed_idx on public.orders (user_id, placed_at desc);
 create index if not exists orders_status_idx        on public.orders (status);
-create index if not exists orders_shipping_addr_idx on public.orders (shipping_address_id);
-create index if not exists orders_billing_addr_idx  on public.orders (billing_address_id);
 
 drop trigger if exists set_orders_updated_at on public.orders;
 create trigger set_orders_updated_at
@@ -82,5 +85,5 @@ drop policy if exists "Admins manage all orders" on public.orders;
 create policy "Admins manage all orders"
 on public.orders for all
 to authenticated
-using (coalesce((auth.jwt() ->> 'role') = 'admin', false))
-with check (coalesce((auth.jwt() ->> 'role') = 'admin', false));
+using (coalesce((auth.jwt() ->> 'role') in ('admin','staff'), false))
+with check (coalesce((auth.jwt() ->> 'role') in ('admin','staff'), false));

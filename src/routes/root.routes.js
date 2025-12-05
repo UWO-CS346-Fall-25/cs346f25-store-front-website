@@ -73,7 +73,7 @@ function makeETag(content) {
   return `W/"${content.length.toString(16)}-${h}"`;
 }
 
-router.get("/css/root.css", async (req, res) => {
+router.get("/css/_root.css", async (req, res) => {
   const themeData = createTheme(await require("../models/themeDatabase.js").getCurrentTheme());
   const themeName = pickTheme(req, themeData);
 

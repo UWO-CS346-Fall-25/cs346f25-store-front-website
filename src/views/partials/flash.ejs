@@ -1,0 +1,21 @@
+<% if (flash && (flash.error || flash.success)) { %>
+  <div class="alerts" aria-live="polite">
+    <% if (flash.error) {
+      const errors = Array.isArray(flash.error) ? flash.error : [flash.error];
+      errors.forEach(function (msg) { %>
+        <div class="alert alert--error alert--dismissible" role="alert">
+          <div class="alert__content"><%= msg %></div>
+          <button type="button" class="alert__close" aria-label="Dismiss notification">×</button>
+        </div>
+    <% }); } %>
+
+    <% if (flash.success) {
+      const succs = Array.isArray(flash.success) ? flash.success : [flash.success];
+      succs.forEach(function (msg) { %>
+        <div class="alert alert--success alert--dismissible" role="status">
+          <div class="alert__content"><%= msg %></div>
+          <button type="button" class="alert__close" aria-label="Dismiss notification">×</button>
+        </div>
+    <% }); } %>
+  </div>
+<% } %>
