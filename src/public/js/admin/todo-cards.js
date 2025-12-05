@@ -49,7 +49,10 @@ document.addEventListener('DOMContentLoaded', function () {
       for (; j < nodes.length; j++) {
         const next = nodes[j];
         if (!next) continue;
-        if (next.nodeType === Node.ELEMENT_NODE && (next.tagName === 'H2' || next.tagName === 'H3')) {
+        if (
+          next.nodeType === Node.ELEMENT_NODE &&
+          (next.tagName === 'H2' || next.tagName === 'H3')
+        ) {
           break; // stop before next heading
         }
         body.appendChild(next.cloneNode(true));
@@ -113,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function addItemCheckboxes(root) {
   if (!root) return;
   const listItems = Array.from(root.querySelectorAll('li'));
-  listItems.forEach(li => {
+  listItems.forEach((li) => {
     if (li.dataset.todoCheckboxProcessed) return;
     li.dataset.todoCheckboxProcessed = '1';
 
@@ -176,12 +179,18 @@ function addItemCheckboxes(root) {
 
 function stripLeadingMarker(li, markerText) {
   // Walk text nodes and remove markerText from the first text node that contains it
-  const walker = document.createTreeWalker(li, NodeFilter.SHOW_TEXT, null, false);
+  const walker = document.createTreeWalker(
+    li,
+    NodeFilter.SHOW_TEXT,
+    null,
+    false
+  );
   let n;
   while ((n = walker.nextNode())) {
     const idx = n.nodeValue.indexOf(markerText);
     if (idx !== -1) {
-      n.nodeValue = n.nodeValue.slice(0, idx) + n.nodeValue.slice(idx + markerText.length);
+      n.nodeValue =
+        n.nodeValue.slice(0, idx) + n.nodeValue.slice(idx + markerText.length);
       break;
     }
   }

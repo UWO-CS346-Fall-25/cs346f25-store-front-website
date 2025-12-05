@@ -1,4 +1,3 @@
-
 function csrfLocals(req, res, next) {
   if (typeof req.csrfToken === 'function') {
     try {

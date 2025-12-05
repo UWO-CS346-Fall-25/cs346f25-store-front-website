@@ -5,7 +5,7 @@ const { bind } = require('express-page-registry');
 const router = express.Router();
 
 async function callback(req, res, next) {
-  console.log("eBay search callback invoked");
+  console.log('eBay search callback invoked');
   try {
     const q = (req.query.q || '').toString();
     const limit = Number(req.query.limit || 24);
@@ -22,13 +22,13 @@ async function callback(req, res, next) {
       // sort: '-price' // see docs for options
     });
 
-    const items = (data.itemSummaries || []).map(it => ({
+    const items = (data.itemSummaries || []).map((it) => ({
       id: it.itemId,
       title: it.title,
       price: it.price,
       imageUrl: it.image?.imageUrl,
       // Prefer affiliate URL if header is set & field is returned
-      url: it.itemAffiliateWebUrl || it.itemWebUrl
+      url: it.itemAffiliateWebUrl || it.itemWebUrl,
     }));
     console.log(q);
     console.log(limit);
@@ -42,14 +42,11 @@ async function callback(req, res, next) {
   }
 }
 
-
-
-
 bind(router, {
   route: '/search',
   view: 'ebay/search',
   meta: { title: 'eBay Search' },
-  middleware: [callback]
+  middleware: [callback],
 });
 
 module.exports = router;

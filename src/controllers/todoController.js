@@ -2,6 +2,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const { marked } = require('marked');
 const hljs = require('highlight.js');
+const debug = require('../controllers/debug')('app:todoController');
 
 // Configure marked to use highlight.js for code blocks
 marked.setOptions({
@@ -14,7 +15,7 @@ marked.setOptions({
         return hljs.highlight(code, { language: lang }).value;
       }
       return hljs.highlightAuto(code).value;
-    } catch (e) {
+    } catch {
       // Fallback to escaped code if highlighting fails
       return code;
     }
@@ -29,7 +30,10 @@ async function getTodoHtml() {
     const html = marked.parse(md || '');
     return html;
   } catch (err) {
-    console.error('Error reading TODO.md:', err && err.message ? err.message : err);
+    debug.error(
+      'Error reading TODO.md:',
+      err && err.message ? err.message : err
+    );
     return '<p style="color:darkred">Unable to load TODO.md</p>';
   }
 }

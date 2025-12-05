@@ -1,6 +1,6 @@
 (function () {
   // Show/hide toggles for both password fields
-  document.querySelectorAll('.password-toggle').forEach(btn => {
+  document.querySelectorAll('.password-toggle').forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-target');
       const input = document.getElementById(id);
@@ -18,7 +18,10 @@
 
   function updateMatch() {
     if (!pw || !cf || !hint) return;
-    if (!pw.value && !cf.value) { hint.textContent = ''; return; }
+    if (!pw.value && !cf.value) {
+      hint.textContent = '';
+      return;
+    }
     if (pw.value === cf.value) {
       hint.textContent = 'Passwords match ✅';
       hint.style.color = '#2e7d32';
@@ -33,4 +36,3 @@
     cf.addEventListener('input', updateMatch);
   }
 })();
-

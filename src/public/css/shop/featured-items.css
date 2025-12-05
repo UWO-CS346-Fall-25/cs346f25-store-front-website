@@ -17,16 +17,15 @@
   gap: 1rem;
   margin-bottom: 1rem;
   border-bottom: 0;
-  padding-bottom: .5rem;
+  padding-bottom: 0.5rem;
 }
 
 .featured .section__header h2 {
   margin: 0;
   font-size: clamp(1.35rem, 2.2vw, 1.8rem);
   font-weight: 700;
-  letter-spacing: .2px;
+  letter-spacing: 0.2px;
 }
-
 
 /* Track (merged) */
 .hscroll__track {
@@ -35,10 +34,12 @@
 
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: calc((100% - (var(--items-per-view) - 1)*var(--gap)) / var(--items-per-view));
+  grid-auto-columns: calc(
+    (100% - (var(--items-per-view) - 1) * var(--gap)) / var(--items-per-view)
+  );
   gap: var(--gap);
 
-  padding: .25rem 0 .5rem;
+  padding: 0.25rem 0 0.5rem;
   margin: 0;
   list-style: none;
 
@@ -85,16 +86,18 @@
   place-items: center;
   cursor: pointer;
   z-index: 5;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
-  transition: transform .15s ease, opacity .15s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
 }
 
 .hscroll__nav--prev {
-  left: -.5rem;
+  left: -0.5rem;
 }
 
 .hscroll__nav--next {
-  right: -.5rem;
+  right: -0.5rem;
 }
 
 .hscroll__nav:hover {
@@ -102,7 +105,7 @@
 }
 
 .hscroll__nav:disabled {
-  opacity: .35;
+  opacity: 0.35;
   cursor: not-allowed;
   box-shadow: none;
 }
@@ -166,8 +169,8 @@
     background: transparent;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    padding: .75rem .9rem;
-    margin-top: .25rem;
+    padding: 0.75rem 0.9rem;
+    margin-top: 0.25rem;
     border-radius: 0;
     opacity: 1;
     transform: none;
@@ -175,13 +178,13 @@
 
   .product__name,
   .product__price {
-    font-size: .95rem;
+    font-size: 0.95rem;
   }
 
   .product__reveal {
     position: static;
     transform: none;
-    padding: .25rem .9rem .9rem;
+    padding: 0.25rem 0.9rem 0.9rem;
     border-top: 0;
     display: none;
     /* hide on tiny screens */
@@ -193,13 +196,6 @@
     transform: none;
   }
 }
-
-
-
-
-
-
-
 
 /* Reset UA defaults and make the whole card clickable area behave like a block */
 .product__media {
@@ -251,7 +247,7 @@ figure.product__media {
 }
 
 /* Keep your hover zoom */
-@media (hover:hover) {
+@media (hover: hover) {
   .card.product:hover .product__media img.product__img {
     transform: scale(1.03);
   }
@@ -260,7 +256,7 @@ figure.product__media {
 /* Fallback for browsers without aspect-ratio */
 @supports not (aspect-ratio: 1 / 1) {
   .card.product .product__media::before {
-    content: "";
+    content: '';
     display: block;
     padding-top: 100%;
     /* square by width */

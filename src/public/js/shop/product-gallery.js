@@ -7,7 +7,7 @@
   const supportsHover = window.matchMedia('(hover: hover)').matches;
 
   function selectThumb(btn) {
-    scroller.querySelectorAll('.pg-thumb').forEach(el => {
+    scroller.querySelectorAll('.pg-thumb').forEach((el) => {
       el.classList.remove('is-selected');
       el.setAttribute('aria-selected', 'false');
     });

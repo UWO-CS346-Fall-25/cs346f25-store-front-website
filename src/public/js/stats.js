@@ -10,31 +10,35 @@ document.addEventListener('DOMContentLoaded', function () {
       type: 'line',
       data: {
         labels: labels,
-        datasets: [{
-          label: 'DB calls',
-          data: data,
-          borderColor: 'rgba(33,150,243,1)',
-          backgroundColor: 'rgba(33,150,243,0.1)',
-          fill: true,
-        }]
+        datasets: [
+          {
+            label: 'DB calls',
+            data: data,
+            borderColor: 'rgba(33,150,243,1)',
+            backgroundColor: 'rgba(33,150,243,0.1)',
+            fill: true,
+          },
+        ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
           x: { display: true },
-          y: { display: true, beginAtZero: true }
-        }
-      }
+          y: { display: true, beginAtZero: true },
+        },
+      },
     });
   }
 
   async function load(minutes) {
-    const res = await fetch('/admin/stats/data?minutes=' + encodeURIComponent(minutes));
+    const res = await fetch(
+      '/admin/stats/data?minutes=' + encodeURIComponent(minutes)
+    );
     const json = await res.json();
     const series = json.series || [];
-    const labels = series.map(s => new Date(s.ts).toLocaleString());
-    const data = series.map(s => s.count);
+    const labels = series.map((s) => new Date(s.ts).toLocaleString());
+    const data = series.map((s) => s.count);
     const totalEl = document.getElementById('total-calls');
     if (totalEl) totalEl.textContent = json.total || 0;
     createChart(labels, data);
@@ -44,14 +48,21 @@ document.addEventListener('DOMContentLoaded', function () {
   const refreshBtn = document.getElementById('refresh');
   const resetBtn = document.getElementById('reset');
 
-  refreshBtn && refreshBtn.addEventListener('click', () => load(minutesEl.value));
-  minutesEl && minutesEl.addEventListener('change', () => load(minutesEl.value));
+  refreshBtn &&
+    refreshBtn.addEventListener('click', () => load(minutesEl.value));
+  minutesEl &&
+    minutesEl.addEventListener('change', () => load(minutesEl.value));
 
-  resetBtn && resetBtn.addEventListener('click', async () => {
-    if (!confirm('Reset collected DB stats?')) return;
-    await fetch('/admin/stats/reset', { method: 'POST', credentials: 'same-origin', headers: { 'x-csrf-token': window._csrfToken || '' } });
-    load(minutesEl.value);
-  });
+  resetBtn &&
+    resetBtn.addEventListener('click', async () => {
+      if (!confirm('Reset collected DB stats?')) return;
+      await fetch('/admin/stats/reset', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'x-csrf-token': window._csrfToken || '' },
+      });
+      load(minutesEl.value);
+    });
 
   // Ensure Chart.js is available, otherwise dynamically load it.
   function ensureChartJs() {
@@ -66,7 +77,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  ensureChartJs().then(() => load(minutesEl.value)).catch((err) => {
-    console.error('Could not load Chart.js', err);
-  });
+  ensureChartJs()
+    .then(() => load(minutesEl.value))
+    .catch((err) => {
+      console.error('Could not load Chart.js', err);
+    });
 });
