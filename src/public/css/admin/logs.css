@@ -22,6 +22,9 @@
   --info: #75dc9a;
   --info-2: #2d8e74;
 
+  --debug: #9ca3af;
+  --debug-2: #6b7280;
+
 }
 
 
@@ -157,6 +160,10 @@ td {
   background: linear-gradient(90deg, var(--system), var(--system-2));
 }
 
+.level-debug .badge {
+  background: linear-gradient(90deg, var(--debug), var(--debug-2));
+}
+
 /* If the HTML uses plain text classes (old style), provide colored text fallback */
 .level-info {
   color: var(--info);
@@ -172,6 +179,10 @@ td {
 
 .level-system {
   color: var(--system);
+}
+
+.level-debug {
+  color: var(--debug);
 }
 
 /* Preformatted payloads */

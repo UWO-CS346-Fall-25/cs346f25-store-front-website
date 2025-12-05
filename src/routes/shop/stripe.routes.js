@@ -11,6 +11,7 @@ const { getCart, clearCart } = require('../../models/cart.js');
 const errorManager = require('../../controllers/errorManager.js');
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const debug = require('../../controllers/debug.js')('Stripe.Routes');
 
 
 // ==================================================================
@@ -30,6 +31,7 @@ router.post('/checkout', async (req, res, next) => {
 
     const cartItems = await getCart(req);
     if (!cartItems.length) {
+      debug.warn('Attempted checkout with empty cart');
       return errors.throwError('Your cart is empty.');
     }
 
@@ -70,6 +72,7 @@ router.post('/checkout', async (req, res, next) => {
     }
 
     if (!line_items.length) {
+      debug.warn('No purchasable items found in cart during checkout');
       return errors.throwError('No purchasable items in your cart.');
     }
 
@@ -93,7 +96,7 @@ router.post('/checkout', async (req, res, next) => {
     const session = await stripe.checkout.sessions.create(sessionCreatePayload);
     return res.redirect(303, session.url);
   } catch (err) {
-    console.error('Error creating checkout session:', err);
+    debug.error('Error creating checkout session:', err);
     next(err);
   }
 });
@@ -123,7 +126,7 @@ bind(router, {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     // Debug: log the session payment status to help diagnose clearing issues.
     try {
-      console.debug('Stripe checkout session retrieved:', { id: session?.id, payment_status: session?.payment_status, payment_intent: session?.payment_intent });
+      debug.log('Stripe checkout session retrieved:', { id: session?.id, payment_status: session?.payment_status, payment_intent: session?.payment_intent });
     } catch (e) {
       // ignore
     }
@@ -142,11 +145,11 @@ bind(router, {
             const piId = typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent.id;
             if (piId) {
               const paymentIntent = await stripe.paymentIntents.retrieve(piId);
-              console.debug('Stripe PaymentIntent status:', { id: paymentIntent.id, status: paymentIntent.status });
+              debug.debug('Stripe PaymentIntent status:', { id: paymentIntent.id, status: paymentIntent.status });
               if (paymentIntent.status === 'succeeded') paid = true;
             }
           } catch (piErr) {
-            console.error('Error retrieving PaymentIntent for session', session.id, piErr);
+            debug.error('Error retrieving PaymentIntent for session', session.id, piErr);
           }
         }
 
@@ -160,15 +163,15 @@ bind(router, {
               res.locals.cartCount = 0;
             } catch { }
           } else {
-            console.warn('Skipping clearCart because headers already sent for session', session.id);
+            debug.warn('Skipping clearCart because headers already sent for session', session.id);
           }
         } else {
-          console.info('Checkout session not yet marked paid; skipping cart clear for session', session.id, session.payment_status);
+          debug.info('Checkout session not yet marked paid; skipping cart clear for session', session.id, session.payment_status);
         }
       }
     } catch (err) {
       // Don't block rendering the success page if clearing the cart fails.
-      console.error('Failed to clear cart after successful checkout:', err);
+      debug.error('Failed to clear cart after successful checkout:', err);
     }
 
     return {

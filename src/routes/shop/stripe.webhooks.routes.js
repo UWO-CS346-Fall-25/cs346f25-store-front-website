@@ -6,6 +6,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const supabase = require('../../models/supabase.js');
+const debug = require('../../controllers/debug.js')('Stripe');
 
 router.post(
   '/stripe',
@@ -17,7 +18,7 @@ router.post(
     try {
       event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (err) {
-      console.error('Webhook signature failed:', err.message);
+      debug.error('Webhook signature failed:', err.message);
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
@@ -26,7 +27,7 @@ router.post(
       try {
         await handleCheckoutCompleted(session, db);  // your big function
       } catch (e) {
-        console.error('Failed to handle checkout.session.completed:', e);
+        debug.error('Failed to handle checkout.session.completed:', e);
         return res.sendStatus(500); // let Stripe retry
       }
     }
@@ -41,7 +42,7 @@ async function handleCheckoutCompleted(session, db) {
     typeof userIdRaw === 'string' && UUID_RE.test(userIdRaw) ? userIdRaw : null;
 
   if (!userId) {
-    console.warn('Creating order without user_id (guest checkout)', {
+    debug.warn('Creating order without user_id (guest checkout)', {
       sessionId: session.id,
       userIdRaw,
     });
@@ -53,7 +54,7 @@ async function handleCheckoutCompleted(session, db) {
     expand: ['data.price.product'],
   });
 
-  console.log('Completed checkout:', {
+  debug.log('Completed checkout:', {
     sessionId: session.id,
     userId,
     lineItems: lineItems.data.map((li) => ({
@@ -78,7 +79,7 @@ async function handleCheckoutCompleted(session, db) {
     !addressSource.postal_code ||
     !addressSource.country
   ) {
-    console.error('Missing required address fields on checkout session', {
+    debug.error('Missing required address fields on checkout session', {
       sessionId: session.id,
       shipping,
       customer_details,
@@ -110,7 +111,7 @@ async function handleCheckoutCompleted(session, db) {
     address_phone: customer_details?.phone || null,
   };
 
-  console.log('Inserting order with payload:', orderPayload);
+  debug.log('Inserting order with payload:', orderPayload);
 
   // 5) Insert order
   const { data: order, error: orderError } = await db
@@ -120,11 +121,11 @@ async function handleCheckoutCompleted(session, db) {
     .single();
 
   if (orderError) {
-    console.error('Error inserting order for session', session.id, orderError);
+    debug.error('Error inserting order for session', session.id, orderError);
     throw orderError;
   }
 
-  console.log('Order inserted for session', session.id, {
+  debug.log('Order inserted for session', session.id, {
     order_id: order.id,
     order_number: order.number,
   });
@@ -150,7 +151,7 @@ async function handleCheckoutCompleted(session, db) {
     const productId = productMeta.product_id;
 
     if (!productId) {
-      console.error(
+      debug.error(
         'Missing product_id in product.metadata; did you set product_data.metadata.product_id when creating the session?',
         {
           sessionId: session.id,
@@ -169,7 +170,7 @@ async function handleCheckoutCompleted(session, db) {
     const unitPriceCents = price.unit_amount;
 
     if (unitPriceCents == null) {
-      console.error('Missing unit_amount on price', {
+      debug.error('Missing unit_amount on price', {
         sessionId: session.id,
         priceId: price.id,
       });
@@ -188,14 +189,14 @@ async function handleCheckoutCompleted(session, db) {
   }
 
   if (itemsPayload.length === 0) {
-    console.warn(
+    debug.warn(
       'No line items found for session; order will have no order_items',
       { sessionId: session.id }
     );
     return;
   }
 
-  console.log('Inserting order_items:', itemsPayload);
+  debug.log('Inserting order_items:', itemsPayload);
 
   const { error: itemsError } = await db
     .from('order_items')
@@ -211,7 +212,7 @@ async function handleCheckoutCompleted(session, db) {
     throw itemsError;
   }
 
-  console.log('Order and items successfully inserted for session', session.id);
+  debug.log('Order and items successfully inserted for session', session.id);
 
 }
 

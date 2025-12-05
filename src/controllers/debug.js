@@ -41,6 +41,9 @@ function createLogger(context = 'App') {
   ensureContext(context);
 
   function write(level, message, ...details) {
+    if (process.env.DEBUG_MODE !== 'true' && level === 'debug') {
+      return; // skip debug logs if not in debug mode
+    }
     const now = new Date();
     const isoTs = now.toISOString();
     const prefix = `[${isoTs}][${context}]`;
@@ -71,8 +74,9 @@ function createLogger(context = 'App') {
     const color =
       level === 'error' ? 'red'
         : level === 'system' ? 'cyan'
-          : level === 'warn' ? 'yellow'
-            : 'green'; // info/log
+          : level === 'debug' ? 'white'
+            : level === 'warn' ? 'yellow'
+              : 'green'; // info/log
 
     // Build styled console output with node-color-log:
     // [time][context] normal
@@ -95,10 +99,11 @@ function createLogger(context = 'App') {
 
   return {
     // "log" == info level
-    log: (message, ...details) => write('info', message, ...details),
+    log: (message, ...details) => write('debug', message, ...details),
     info: (message, ...details) => write('info', message, ...details),
     warn: (message, ...details) => write('warn', message, ...details),
     error: (message, ...details) => write('error', message, ...details),
+    debug: (message, ...details) => write('debug', message, ...details),
     system: (message, ...details) => write('system', message, ...details),
   };
 }
