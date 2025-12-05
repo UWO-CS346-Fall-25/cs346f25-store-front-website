@@ -29,8 +29,7 @@ async function authMiddleware(req, res, next) {
 
   res.locals.user = user;
   res.locals.isAdmin = req.isAdmin;
-
-  next();
+  return next();
 }
 
 module.exports = authMiddleware;

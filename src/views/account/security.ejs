@@ -14,7 +14,9 @@
                 Manage how you sign in and keep your account secure.
               </p>
             </div>
-            <a class="link" href="/account"><%- include('../icon', { name: 'back' }) %> Back to account</a>
+            <a class="link" href="/account">
+              <%- include('../icon', { name: 'back' }) %> Back to account
+            </a>
           </header>
 
           <% if (flash && flash.error) { %>
@@ -27,8 +29,47 @@
               <%= flash.success %>
             </div>
           <% } %>
+          <!-- PROFILE / DISPLAY NAME -->
+          <section class="security-section" aria-labelledby="sec-profile-h">
+            <div class="security-section__header">
+              <div>
+                <h2 id="sec-profile-h" class="security-section__title">Profile</h2>
+                <p class="security-section__subtitle">
+                  This name may be shown on your account page and in emails.
+                </p>
+              </div>
+            </div>
 
-          <!-- Email card -->
+            <div class="security-section__body">
+              <form class="form form--stacked" method="post" action="/account/security/profile">
+                <% if (csrfToken) { %>
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <% } %>
+
+                <div class="form-row">
+                  <label for="display_name">Display name</label>
+                  <input
+                    id="display_name"
+                    name="display_name"
+                    type="text"
+                    autocomplete="name"
+                    value="<%= security.display_name || '' %>"
+                  >
+                  <% if (errors && errors.display_name) { %>
+                    <p class="form-error"><%= errors.display_name %></p>
+                  <% } %>
+                  <p class="security-help">Use the name you’d like associated with your account.</p>
+                </div>
+
+                <div class="form-row form-actions">
+                  <button class="button primary" type="submit">Update name</button>
+                  <a class="button ghost" href="/account">Cancel</a>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- EMAIL UPDATE -->
           <section class="security-section" aria-labelledby="sec-email-h">
             <div class="security-section__header">
               <div>
@@ -38,16 +79,50 @@
                 </p>
               </div>
             </div>
+
             <div class="security-section__body">
               <div class="security-email">
                 <span class="security-email__value"><%= security.email %></span>
-                <span class="security-email__hint">
-                  Email changes will be managed here in the future.
-                </span>
               </div>
-              <!-- Later: add a "Change email" flow / link -->
+
+              <form class="form form--stacked" method="post" action="/account/security/email">
+                <% if (csrfToken) { %>
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <% } %>
+
+                <div class="form-row">
+                  <label for="newEmail">New email</label>
+                  <input id="newEmail" name="newEmail" type="email" autocomplete="email">
+                  <% if (errors && errors.newEmail) { %>
+                    <p class="form-error"><%= errors.newEmail %></p>
+                  <% } %>
+                </div>
+
+                <div class="form-row">
+                  <label for="confirmEmail">Confirm new email</label>
+                  <input id="confirmEmail" name="confirmEmail" type="email" autocomplete="email">
+                  <% if (errors && errors.confirmEmail) { %>
+                    <p class="form-error"><%= errors.confirmEmail %></p>
+                  <% } %>
+                </div>
+
+                <div class="form-row">
+                  <label for="currentPasswordEmail">Current password</label>
+                  <input id="currentPasswordEmail" name="currentPasswordEmail" type="password" autocomplete="current-password">
+                  <% if (errors && errors.currentPasswordEmail) { %>
+                    <p class="form-error"><%= errors.currentPasswordEmail %></p>
+                  <% } %>
+                  <p class="security-help">We require your password to verify ownership before changing the email.</p>
+                </div>
+
+                <div class="form-row form-actions">
+                  <button class="button primary" type="submit">Update email</button>
+                  <a class="button ghost" href="/account">Cancel</a>
+                </div>
+              </form>
             </div>
           </section>
+
 
           <!-- Password card -->
           <section class="security-section" aria-labelledby="sec-password-h">
@@ -68,7 +143,12 @@
 
                 <div class="form-row">
                   <label for="currentPassword">Current password</label>
-                  <input id="currentPassword" name="currentPassword" type="password" autocomplete="current-password">
+                  <input
+                    id="currentPassword"
+                    name="currentPassword"
+                    type="password"
+                    autocomplete="current-password"
+                  >
                   <% if (errors && errors.currentPassword) { %>
                     <p class="form-error"><%= errors.currentPassword %></p>
                   <% } %>
@@ -76,7 +156,12 @@
 
                 <div class="form-row">
                   <label for="newPassword">New password</label>
-                  <input id="newPassword" name="newPassword" type="password" autocomplete="new-password">
+                  <input
+                    id="newPassword"
+                    name="newPassword"
+                    type="password"
+                    autocomplete="new-password"
+                  >
                   <% if (errors && errors.newPassword) { %>
                     <p class="form-error"><%= errors.newPassword %></p>
                   <% } %>
@@ -87,7 +172,12 @@
 
                 <div class="form-row">
                   <label for="confirmPassword">Confirm new password</label>
-                  <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password">
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    autocomplete="new-password"
+                  >
                   <% if (errors && errors.confirmPassword) { %>
                     <p class="form-error"><%= errors.confirmPassword %></p>
                   <% } %>
