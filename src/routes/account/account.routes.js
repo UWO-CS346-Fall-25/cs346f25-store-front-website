@@ -17,7 +17,7 @@ bind(router, {
   middleware: [authRequired, csrfProtection, csrfLocals],
   getData: async function (req) {
     let user = await userDatabase.getUser(req);
-    user = await userDatabase.bindAddresses(user);
+    // user = await userDatabase.bindAddresses(user);
     user = await userDatabase.bindOrderSummary(user);
 
     return { ...user, user: req.user };

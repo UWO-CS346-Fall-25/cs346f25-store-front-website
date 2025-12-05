@@ -32,6 +32,7 @@ create table if not exists public.products (
 
   -- Product state
   status           text not null default 'draft' check (status in ('draft','active','archived')),
+  stripe_price_id  text unique,
 
   -- SEO niceties (optional, but handy)
   seo_title        text,

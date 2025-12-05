@@ -34,34 +34,41 @@ router.post(
     res.sendStatus(200);
   }
 );
-
 async function handleCheckoutCompleted(session, db) {
-  // 1) Optional user_id from metadata (can be null for guests)
+  // 1) user_id from metadata (optional – allow guests)
   const userIdRaw = session.metadata?.user_id;
   const userId =
     typeof userIdRaw === 'string' && UUID_RE.test(userIdRaw) ? userIdRaw : null;
 
   if (!userId) {
-    console.warn('Order will be created without a user_id (guest checkout)', {
+    console.warn('Creating order without user_id (guest checkout)', {
       sessionId: session.id,
       userIdRaw,
     });
   }
 
-  // 2) Line items (still useful for order_items later)
+  // 2) Fetch line items with price expanded (to get metadata + unit_amount)
   const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
     limit: 100,
+    expand: ['data.price.product'],
   });
 
   console.log('Completed checkout:', {
     sessionId: session.id,
     userId,
-    lineItems: lineItems.data,
+    lineItems: lineItems.data.map((li) => ({
+      id: li.id,
+      description: li.description,
+      quantity: li.quantity,
+      price_id: li.price?.id,
+      product_meta: li.price?.product?.metadata,
+      product_id_meta: li.price?.product?.metadata?.product_id,
+    })),
   });
 
-  // 3) Get address from Stripe (shipping preferred, else billing-like)
-  const { customer_details, shipping, total_details } = session;
 
+  // 3) Derive address from session (shipping preferred, else customer_details.address)
+  const { customer_details, shipping, total_details } = session;
   const addressSource = shipping?.address || customer_details?.address;
 
   if (
@@ -76,21 +83,22 @@ async function handleCheckoutCompleted(session, db) {
       shipping,
       customer_details,
     });
-    // You can either throw (so Stripe retries) or just return.
     throw new Error('Missing required address fields on checkout session');
   }
 
   const address_full_name =
     shipping?.name || customer_details?.name || 'Guest Customer';
 
-  // 4) Build order payload for your new schema
+  // 4) Build order payload
+  // NOTE: subtotal_cents & total_cents will be recalculated by triggers
   const orderPayload = {
     user_id: userId, // can be null
-    subtotal_cents: session.amount_subtotal ?? 0,
     shipping_cents: total_details?.amount_shipping ?? 0,
     tax_cents: total_details?.amount_tax ?? 0,
-    total_cents: session.amount_total ?? 0,
+    // subtotal_cents & total_cents default to 0; triggers will fix them
+
     currency: (session.currency || 'usd').toUpperCase(),
+    status: 'processing',
 
     address_full_name,
     address_line1: addressSource.line1,
@@ -100,22 +108,20 @@ async function handleCheckoutCompleted(session, db) {
     address_postal_code: addressSource.postal_code,
     address_country_code: addressSource.country,
     address_phone: customer_details?.phone || null,
-
-    // status, number, placed_at, updated_at all have defaults
   };
 
   console.log('Inserting order with payload:', orderPayload);
 
-  // 5) Insert order via Supabase (db is your admin client)
-  const { data: order, error } = await db
+  // 5) Insert order
+  const { data: order, error: orderError } = await db
     .from('orders')
     .insert(orderPayload)
     .select()
     .single();
 
-  if (error) {
-    console.error('Error inserting order for session', session.id, error);
-    throw error; // let webhook handler return 500 so Stripe retries
+  if (orderError) {
+    console.error('Error inserting order for session', session.id, orderError);
+    throw orderError;
   }
 
   console.log('Order inserted for session', session.id, {
@@ -123,8 +129,92 @@ async function handleCheckoutCompleted(session, db) {
     order_number: order.number,
   });
 
-  // 6) TODO: insert order_items using `lineItems.data` if you have that table
+  // 6) Prepare order_items payload
+  // ... after successfully inserting the order
+
+  const itemsPayload = [];
+
+  for (const item of lineItems.data) {
+    const price = item.price;
+    const product = price?.product;
+
+    if (!price || !product) {
+      console.error('Line item missing price or product', {
+        sessionId: session.id,
+        lineItemId: item.id,
+      });
+      throw new Error('Line item missing price/product on checkout session');
+    }
+
+    const productMeta = product.metadata || {};
+    const productId = productMeta.product_id;
+
+    if (!productId) {
+      console.error(
+        'Missing product_id in product.metadata; did you set product_data.metadata.product_id when creating the session?',
+        {
+          sessionId: session.id,
+          lineItemId: item.id,
+          priceId: price.id,
+          productId: product.id,
+          productMeta,
+        }
+      );
+      throw new Error(
+        'Missing product_id in Stripe product metadata; cannot create order_items'
+      );
+    }
+
+    const quantity = item.quantity ?? 1;
+    const unitPriceCents = price.unit_amount;
+
+    if (unitPriceCents == null) {
+      console.error('Missing unit_amount on price', {
+        sessionId: session.id,
+        priceId: price.id,
+      });
+      throw new Error('Missing unit_amount on Stripe price');
+    }
+
+    itemsPayload.push({
+      order_id: order.id,
+      product_id: productId,              // <- your products.id from metadata
+      sku: productMeta.sku || null,       // if you add sku to metadata later
+      name: item.description || product.name || 'Product',
+      quantity,
+      unit_price_cents: unitPriceCents,
+      // total_cents is generated by DB
+    });
+  }
+
+  if (itemsPayload.length === 0) {
+    console.warn(
+      'No line items found for session; order will have no order_items',
+      { sessionId: session.id }
+    );
+    return;
+  }
+
+  console.log('Inserting order_items:', itemsPayload);
+
+  const { error: itemsError } = await db
+    .from('order_items')
+    .insert(itemsPayload);
+
+  if (itemsError) {
+    console.error(
+      'Error inserting order_items for session',
+      session.id,
+      itemsError
+    );
+    // optional: rollback the order
+    throw itemsError;
+  }
+
+  console.log('Order and items successfully inserted for session', session.id);
+
 }
+
 
 
 module.exports = router;

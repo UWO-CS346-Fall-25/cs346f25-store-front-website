@@ -60,53 +60,7 @@ async function getUser(req) {
     },
   };
 }
-
-
-
 const dbStats = require('../controllers/dbStats.js');
-async function bindAddresses(user) {
-  if (user.error) return user;
-
-  const key = `${NAMESPACE}:${user.id}:addresses`;
-  return await cache.wrap(key, TTL, async () => {
-    const { data: addresses, error: addrErr } = await user.supabase
-      .from('addresses')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('is_default_shipping', { ascending: false })
-      .order('is_default_billing', { ascending: false })
-      .order('updated_at', { ascending: false })
-      .limit(5);
-    dbStats.increment();
-    if (addrErr) {
-      console.error('Error fetching addresses:', addrErr);
-      return { ...user, error: 'Failed to fetch addresses', errorDetail: addrErr };
-    }
-    return { ...user, addresses };
-  });
-}
-
-// userDB.js
-async function bindAddressesList(user) {
-  if (user.error) return user;
-
-  const { supabase, id } = user;
-
-  const { data: addresses, error } = await supabase
-    .from('addresses')
-    .select('*')
-    .eq('user_id', id)
-    .order('is_default_shipping', { ascending: false })
-    .order('is_default_billing', { ascending: false })
-    .order('updated_at', { ascending: false });
-  dbStats.increment();
-  if (error) {
-    console.error('Error fetching addresses:', error);
-    return { ...user, error: 'Failed to fetch addresses', errorDetail: error };
-  }
-
-  return { ...user, addresses };
-}
 
 
 async function bindOrders(user, { page = 1, status = '', q = '' }) {
@@ -344,8 +298,6 @@ async function bindOrderDetail(user, orderId) {
 
 module.exports = {
   getUser,
-  bindAddresses,
-  bindAddressesList,
   bindOrders,
   bindOrderSummary,
   bindOrderDetail,

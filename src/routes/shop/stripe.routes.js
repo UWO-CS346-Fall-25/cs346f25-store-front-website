@@ -20,15 +20,13 @@ router.post('/checkout', async (req, res, next) => {
   try {
     const errors = errorManager(req, res, next, '/cart');
     const ctx = await userDatabase.getUser(req);
+
     if (!ctx || !ctx.id) {
       ctx.user = {
         email: req.body.email || '',
-        id: undefined,//req.user.id,
-      }
+        id: undefined,
+      };
     }
-    // if (errors.applyContext(ctx)) {
-    // return errors.throwError();
-    // }
 
     const cartItems = await getCart(req);
     if (!cartItems.length) {
@@ -38,7 +36,10 @@ router.post('/checkout', async (req, res, next) => {
     const productIds = cartItems.map(i => i.productId);
     const uniqueProductIds = [...new Set(productIds)];
 
-    const products = await Promise.all(uniqueProductIds.map(id => productDatabase.getByID(id)));
+    const products = await Promise.all(
+      uniqueProductIds.map(id => productDatabase.getByID(id))
+    );
+
     const productMap = Object.fromEntries(
       products.filter(Boolean).map(p => [p.id, p])
     );
@@ -54,13 +55,14 @@ router.post('/checkout', async (req, res, next) => {
       line_items.push({
         quantity: item.quantity,
         price_data: {
-          currency: p.currency || 'usd',
+          currency: (p.currency || 'usd').toLowerCase(),
           unit_amount: priceCents,
           product_data: {
             name: p.name,
             description: p.short_description || undefined,
             metadata: {
               product_id: String(p.id),
+              sku: p.sku || '',
             },
           },
         },
@@ -84,21 +86,18 @@ router.post('/checkout', async (req, res, next) => {
       ...(ctx.user?.email ? { customer_email: ctx.user.email } : {}),
     };
 
-    // Only include user_id metadata when we have a valid user id
     if (ctx && ctx.id) {
       sessionCreatePayload.metadata = { user_id: String(ctx.id) };
     }
 
     const session = await stripe.checkout.sessions.create(sessionCreatePayload);
-
-
-    // This should send the browser straight to Stripe
     return res.redirect(303, session.url);
   } catch (err) {
     console.error('Error creating checkout session:', err);
     next(err);
   }
 });
+
 
 
 

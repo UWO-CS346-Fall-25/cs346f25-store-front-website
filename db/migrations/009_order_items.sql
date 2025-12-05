@@ -132,3 +132,66 @@ $$;
 
 revoke all on function public.order_summary_counts(uuid) from public;
 grant execute on function public.order_summary_counts(uuid) to authenticated;
+-- Create or replace a view 'orders_view' that aggregates order items and embeds
+-- shipping/billing address objects from orders table columns.
+
+
+create or replace view public.orders_view as
+select
+  o.id,
+  o.user_id,
+  o.number,
+  o.subtotal_cents,
+  o.shipping_cents,
+  o.tax_cents,
+  o.total_cents,
+  o.currency,
+  o.status,
+  o.placed_at,
+  o.updated_at,
+  o.carrier,
+  o.tracking_code,
+  o.shipping_eta,
+  o.notes,
+
+  -- Build shipping_address and billing_address as JSON objects from address_* columns
+  json_build_object(
+    'full_name', o.address_full_name,
+    'line1', o.address_line1,
+    'line2', o.address_line2,
+    'city', o.address_city,
+    'region', o.address_region,
+    'postal_code', o.address_postal_code,
+    'country_code', o.address_country_code,
+    'phone', o.address_phone
+  ) as shipping_address,
+  json_build_object(
+    'full_name', o.address_full_name,
+    'line1', o.address_line1,
+    'line2', o.address_line2,
+    'city', o.address_city,
+    'region', o.address_region,
+    'postal_code', o.address_postal_code,
+    'country_code', o.address_country_code,
+    'phone', o.address_phone
+  ) as billing_address,
+
+  -- Aggregate order items into JSON array
+  (select coalesce(json_agg(json_build_object(
+      'id', oi.id,
+      'product_id', oi.product_id,
+      'sku', oi.sku,
+      'name', oi.name,
+      'quantity', oi.quantity,
+      'unit_price_cents', oi.unit_price_cents,
+      'total_cents', oi.total_cents
+    ) order by oi.id), '[]'::json)
+   from public.order_items oi
+   where oi.order_id = o.id
+  ) as items
+
+from public.orders o;
+
+-- Grant select on view to authenticated role (used by Supabase)
+revoke all on public.orders_view from public;
+grant select on public.orders_view to authenticated;
