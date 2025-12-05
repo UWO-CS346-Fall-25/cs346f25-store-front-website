@@ -9,7 +9,7 @@
         <div class="container container--narrow">
           <header class="section__header">
             <h1 id="address-form-title"><%= title %></h1>
-            <a class="link" href="/account/addresses">← Back to addresses</a>
+            <a class="link" href="/account/addresses"><%- include('../icon', { name: 'back' }) %> Back to addresses</a>
           </header>
 
           <% if (flash && flash.error) { %>

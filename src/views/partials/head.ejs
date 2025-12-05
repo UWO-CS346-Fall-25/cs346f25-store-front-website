@@ -4,11 +4,17 @@
   <title>
     <%= title %>
   </title>
+  <% if (typeof csrfToken !== 'undefined' && csrfToken) { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
   <link rel="stylesheet" href="/css/root.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/footer.css">
   <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="/css/icons.css">
   <script src="/js/nav.js" defer></script>
+  <script src="/js/flash.js" defer></script>
+  <script src="/js/confirm-button.js" defer></script>
 
   <% for(const _css of (cssFiles || [])) { %>
     <link rel="stylesheet" href="/css/<%= _css %>">

@@ -25,9 +25,9 @@ for all
 to authenticated
 using (
   bucket_id = 'product-images'
-  and (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false))
+  and (coalesce((auth.jwt() -> 'app_metadata' ->> 'role') in ('admin','staff'), false))
 )
 with check (
   bucket_id = 'product-images'
-  and coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false)
+  and coalesce((auth.jwt() -> 'app_metadata' ->> 'role') in ('admin','staff'), false)
 );

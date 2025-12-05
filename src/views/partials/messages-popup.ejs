@@ -1,0 +1,21 @@
+<div id="messages-popup" class="messages-popup" aria-live="polite">
+  <button id="messages-toggle" class="messages-toggle" aria-expanded="false" aria-controls="messages-panel">Messages</button>
+  <div id="messages-panel" class="messages-panel" role="dialog" aria-hidden="true">
+    <div class="messages-header">
+      <h3>Messages</h3>
+      <button id="messages-close" class="messages-close" aria-label="Close">×</button>
+    </div>
+    <div id="messages-list" class="messages-list" tabindex="0">
+      <div class="messages-empty muted">Loading messages…</div>
+    </div>
+    <form id="messages-form" class="messages-form" action="/api/messages" method="post">
+      <textarea id="messages-body" name="body" rows="3" placeholder="Type a message..."></textarea>
+      <div class="messages-form-actions">
+        <button type="submit" class="primary small">Send</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<link rel="stylesheet" href="/css/messages.css">
+<script src="/js/messages.js" defer></script>

@@ -10,6 +10,10 @@ router.get('/shop', async (req, res, next) => {
   res.redirect('/');
 });
 
+router.get('/product/:slug', async (req, res, next) => {
+  res.redirect(`/shop/${req.params.slug}`);
+});
+
 bind(router, {
   route: '/category/:slug',
   view: 'shop/list',

@@ -60,52 +60,7 @@ async function getUser(req) {
     },
   };
 }
-
-
-
-async function bindAddresses(user) {
-  if (user.error) return user;
-
-  const key = `${NAMESPACE}:${user.id}:addresses`;
-  return await cache.wrap(key, TTL, async () => {
-    const { data: addresses, error: addrErr } = await user.supabase
-      .from('addresses')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('is_default_shipping', { ascending: false })
-      .order('is_default_billing', { ascending: false })
-      .order('updated_at', { ascending: false })
-      .limit(5);
-
-    if (addrErr) {
-      console.error('Error fetching addresses:', addrErr);
-      return { ...user, error: 'Failed to fetch addresses', errorDetail: addrErr };
-    }
-    return { ...user, addresses };
-  });
-}
-
-// userDB.js
-async function bindAddressesList(user) {
-  if (user.error) return user;
-
-  const { supabase, id } = user;
-
-  const { data: addresses, error } = await supabase
-    .from('addresses')
-    .select('*')
-    .eq('user_id', id)
-    .order('is_default_shipping', { ascending: false })
-    .order('is_default_billing', { ascending: false })
-    .order('updated_at', { ascending: false });
-
-  if (error) {
-    console.error('Error fetching addresses:', error);
-    return { ...user, error: 'Failed to fetch addresses', errorDetail: error };
-  }
-
-  return { ...user, addresses };
-}
+const dbStats = require('../controllers/dbStats.js');
 
 
 async function bindOrders(user, { page = 1, status = '', q = '' }) {
@@ -117,7 +72,7 @@ async function bindOrders(user, { page = 1, status = '', q = '' }) {
       .from('orders_view')
       .select('id, number, status, placed_at, total_cents, currency, carrier, tracking_code, shipping_eta', { count: 'exact' })
       .eq('user_id', user.id);
-
+    dbStats.increment();
     if (status) query = query.eq('status', status);
     if (q) query = query.ilike('number', `%${q}%`);
 
@@ -144,6 +99,7 @@ async function bindOrders(user, { page = 1, status = '', q = '' }) {
     await Promise.all(statusesToCount.map(async (s) => {
       let qc = user.supabase.from('orders_view').select('id', { count: 'exact', head: true })
         .eq('user_id', user.id);
+      dbStats.increment();
       if (s) qc = qc.eq('status', s);
       if (q) qc = qc.ilike('number', `%${q}%`);
       const { count: c } = await qc;
@@ -170,7 +126,7 @@ async function bindOrderSummary(user) {
       .eq('user_id', user.id)
       .order('placed_at', { ascending: false })
       .limit(5);
-
+    dbStats.increment();
     if (ordersErr) {
       console.error('Error fetching recent orders:', ordersErr);
       return { ...user, error: 'Failed to fetch recent orders', errorDetail: ordersErr };
@@ -226,7 +182,7 @@ async function bindOrderDetail(user, orderId) {
       .eq('user_id', userId)
       .eq('id', orderId)
       .maybeSingle();   // returns null if not found
-
+    dbStats.increment();
     if (error) {
       console.error('Error fetching order detail:', error);
       return { ...user, error: 'Failed to fetch order', errorDetail: error };
@@ -342,8 +298,6 @@ async function bindOrderDetail(user, orderId) {
 
 module.exports = {
   getUser,
-  bindAddresses,
-  bindAddressesList,
   bindOrders,
   bindOrderSummary,
   bindOrderDetail,

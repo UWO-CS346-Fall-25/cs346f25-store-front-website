@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { cssFiles: ['contact.css'], scripts: []}) %>
+
+  <body>
+    <%- include('../partials/navbar') %>
+
+      <main class="section" aria-labelledby="contact-heading">
+        <div class="container container--narrow">
+          <h1 id="contact-heading">Contact</h1>
+          <p class="lead">Have a question about an order or custom piece? Send a note below.</p>
+
+          <section class="stack">
+            <p class="muted">Email: <a href="mailto:hello@example.com">hello@example.com</a></p>
+            <p class="muted">Instagram: <a href="https://instagram.com/your_handle" rel="noopener"> @your_handle</a></p>
+          </section>
+          <form class="contact-form" action="#" onsubmit="return false;">
+            <div class="form-row form-row--two">
+              <div>
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" required>
+              </div>
+              <div>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label for="subject">Subject</label>
+                <input id="subject" name="subject" type="text">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="6" required></textarea>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <button class="primary" type="submit">Send message</button>
+            </div>
+          </form>
+
+        </div>
+      </main>
+
+
+      <%- include('../partials/footer') %>
+  </body>
+
+</html>

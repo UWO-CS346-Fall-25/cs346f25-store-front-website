@@ -1,0 +1,80 @@
+
+<% const items = products || []; %>
+<% if (items.length) { %>
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Last Updated</th>
+          <th>Category</th>
+          <th class="admin-col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(function (product) { %>
+          <tr class="admin-product--status-<%= product.status %>">
+            <td>
+              <div class="admin-product-main">
+                <img class="admin-product-thumb" src="<%= product.image?.url %>" alt="<%= product.image?.alt || 'Product image' %>">
+                <div>
+                  <div class="admin-product-name"><%= product.name || 'Untitled product' %></div>
+                  <div class="admin-product-meta muted price">
+                    <% if (typeof util !== 'undefined' && util.formatPrice) { %>
+                      <%= util.formatPrice(product) %>
+                    <% } else { %>
+                      $<%= (product.price_cents || 0) / 100 %>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </td>
+
+            <td>
+              <div class="admin-product-meta muted">
+                <% if (typeof util !== 'undefined' && util.formatPrice) { %>
+                  <%= util.formatPrice(product) %>
+                <% } else { %>
+                  $<%= (product.price_cents || 0) / 100 %>
+                <% } %>
+              </div>
+            </td>
+
+            <td>
+              <span class="admin-product-meta muted"><%= product.updated_at ? new Date(product.updated_at).toLocaleDateString('en-US') : '—' %></span>
+            </td>
+
+            <td>
+              <% (product.categories || []).forEach(cat => { %>
+                <span class="badge badge--info"><%= cat.name %></span>
+              <% }); %>
+            </td>
+
+            <td>
+              <div class="admin-actions admin-actions--center">
+                <!-- Unarchive action -->
+                <form method="post" action="/admin/products/<%= product.id %>/unarchive" class="admin-inline-form">
+                  <% if (csrfToken) { %>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <% } %>
+                  <%- include('../partials/confirm-button', {
+                    btnClasses: 'link link--icon btn-unarchive',
+                    iconName: 'admin-archive-restore',
+                    label: 'Restore',
+                    modalTitle: 'Restore product',
+                    modalBody: 'Restore this product to active status?',
+                    confirmText: 'Restore',
+                    cancelText: 'Cancel'
+                  }) %>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } else { %>
+  <p class="muted">No archived products.</p>
+<% } %>

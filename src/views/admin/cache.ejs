@@ -1,0 +1,87 @@
+
+
+<% if (items && items.length) { %>
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>TTL Remaining</th>
+          <th class="admin-col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(function (it, idx) { %>
+          <tr class="" data-cache-index="<%= idx %>" tabindex="0" role="button" aria-controls="detail-<%= idx %>" aria-expanded="false">
+            <td class="mono"><%= it.key %></td>
+            <td>
+              <% if (it.ttlRemaining == null) { %>
+                <span class="muted">No expiry</span>
+              <% } else { %>
+                <span class="muted"><%= Math.ceil(it.ttlRemaining / 1000) %>s</span>
+              <% } %>
+            </td>
+            <td>
+              <div class="admin-actions">
+                <form method="post" action="/admin/cache/delete" class="admin-inline-form">
+                  <% if (csrfToken) { %>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <% } %>
+                  <input type="hidden" name="key" value="<%= it.key %>">
+                  <span class="helper-popup" tabindex="0" aria-haspopup="true">
+                    <%- include('../partials/confirm-button', {
+                      btnClasses: 'link link--danger admin-delete-link link--icon',
+                      iconName: 'trash',
+                      label: 'Delete',
+                      modalTitle: 'Delete cache key',
+                      modalBody: 'Delete this cache key? This cannot be undone.',
+                      confirmText: 'Delete',
+                      cancelText: 'Cancel'
+                    }) %>
+                    <span class="helper-popup__text" role="tooltip">Delete</span>
+                  </span>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <tr id="detail-<%= idx %>" class="detail-row" aria-hidden="true">
+            <td colspan="3" class="details">
+              <% if (it.preview == null) { %>
+                <div class="detail-list"><div class="detail-entry"><pre class="detail-pre muted">(null)</pre></div></div>
+              <% } else { %>
+                <div class="detail-list">
+                  <div class="detail-entry">
+                    <pre class="detail-pre"><%= it.preview %></pre>
+                  </div>
+                </div>
+              <% } %>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } else { %>
+  <p class="muted">No cache entries present.</p>
+<% } %>
+
+<hr>
+
+<form method="post" action="/admin/cache/clear-namespace" class="stacked-form">
+  <% if (csrfToken) { %>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <% } %>
+  <label for="ns">Clear namespace (prefix)</label>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <input id="ns" name="ns" placeholder="e.g. products:123" style="flex:1;">
+    <%- include('../partials/confirm-button', {
+      btnClasses: 'link link--danger',
+      iconName: 'trash',
+      label: 'Clear Namespace',
+      modalTitle: 'Clear namespace',
+      modalBody: 'Remove all cache keys starting with the provided prefix? This cannot be undone.',
+      confirmText: 'Clear',
+      cancelText: 'Cancel'
+    }) %>
+  </div>
+</form>

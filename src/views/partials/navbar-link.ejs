@@ -1,6 +1,9 @@
 <li class="<%- onMobile ? "" : "hide-on-mobile" %>">
   <a href="<%- path %>" class="nav-link"<% if(isPath(path)) { %>aria-current="page"<% } %>>
-    <%- include('../svg/' + icon) %>
-    <span class="_hide-on-mobile"><%- link_title %></span>
+    <%- include('../icon', { name: icon }) %>
+    <span class="hide-on-mobile"><%- link_title %></span>
+    <% if(icon == 'cart' && count && count > 0) { %>
+      <span class="cart-badge" aria-label="<%- count %> items in cart">(<%- count %>)</span>
+    <% } %>
   </a>
 </li>

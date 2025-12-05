@@ -1,0 +1,214 @@
+/* Styling for admin TODO viewer */
+.todo-markdown {
+  max-width: 80%;
+  margin: 1.5rem auto 3rem auto;
+  padding: 1.5rem 2rem;
+  background: var(--background);
+  line-height: 1.6;
+  color: #1f2937;
+}
+
+.todo-markdown h1,
+.todo-markdown h2,
+.todo-markdown h3 {
+  color: #0f172a;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.todo-markdown h1 {
+  display: none;
+  font-size: 1.6rem;
+}
+
+.todo-markdown h2 {
+  font-size: 1.6rem;
+}
+
+.todo-markdown h3 {
+  font-size: 1.25rem;
+}
+
+.todo-markdown p {
+  margin: 0.5rem 0;
+}
+
+.todo-markdown ul {
+  margin: 0.5rem 0 0.5rem 1.25rem;
+  list-style: none;
+  padding-left: 0;
+}
+
+.todo-markdown li {
+  margin: 0.35rem 0;
+}
+
+.todo-markdown code {
+  background: #f3f4f6;
+  padding: 0.2rem 0.35rem;
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.todo-markdown pre {
+  background: #0b1220;
+  color: #e6eef8;
+  padding: 1rem;
+  overflow: auto;
+  border-radius: 6px;
+  margin: 0.75rem 0;
+}
+
+.todo-markdown blockquote {
+  border-left: 4px solid #e2e8f0;
+  padding-left: 1rem;
+  color: #334155;
+  margin: 0.5rem 0;
+}
+
+/* Card grid for todo items */
+.todo-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.todo-section {
+  margin: 1.25rem 0 2rem 0;
+}
+
+.todo-section-title {
+  font-size: 1.15rem;
+  margin: 0 0 0.5rem 0;
+  color: #0b1220;
+  font-weight: 600;
+}
+
+.todo-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  width: 100%;
+  max-width: none;
+  background: linear-gradient(180deg, #ffffff, #fcfdff);
+  border: 1px solid #e6eef7;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+}
+
+.todo-card-checkbox {
+  flex: 0 0 36px;
+  height: 36px;
+  width: 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #0b1220;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 120ms ease;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
+  font-size: 0.95rem;
+}
+
+.todo-card-checkbox:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+.todo-card-checkbox:focus,
+.todo-card-checkbox:focus-visible {
+  outline: none;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.6);
+}
+
+.todo-card.completed .todo-card-checkbox {
+  background: linear-gradient(180deg, #ecfdf5, #dff9e9);
+  color: #0b7a3e;
+  border-color: #bbf7d0;
+  box-shadow: 0 1px 0 rgba(11, 122, 62, 0.04) inset;
+}
+
+.todo-card-body {
+  flex: 1 1 auto;
+}
+
+.todo-card-body p {
+  margin: 0;
+}
+
+.todo-card-body ul {
+  margin: 0;
+  padding: 0;
+  margin: 0.5rem 0 0 0;
+  list-style: none;
+}
+
+/* Nested lists inside items keep bullets */
+.todo-card-body li ul,
+.todo-markdown li ul {
+  list-style: disc;
+  margin-left: 1.25rem;
+}
+
+/* Make list items align with injected checkbox */
+.todo-card-body li,
+.todo-markdown li {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Item-level checkbox */
+.todo-item-checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  margin-right: 0.6rem;
+  margin-top: 0.15rem;
+  border-radius: 5px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  background: linear-gradient(180deg, #fff, #fbfdff);
+  color: #0b1220;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 120ms ease;
+}
+
+.todo-item-checkbox:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+}
+
+li.item-completed {
+  opacity: 0.95;
+}
+
+li.item-completed>.todo-item-checkbox {
+  background: linear-gradient(180deg, #ecfdf5, #dff9e9);
+  border-color: #bbf7d0;
+  color: #0b7a3e;
+}
+
+/* Slight indentation so checkbox aligns with list content */
+li>.todo-item-checkbox+* {
+  display: inline;
+}
+
+
+/* Small responsive tweaks */
+@media (max-width: 640px) {
+  .todo-markdown {
+    padding: 1rem;
+    margin: 1rem;
+  }
+}

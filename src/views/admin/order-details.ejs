@@ -1,0 +1,182 @@
+
+
+<div style="display:flex;gap:1rem;align-items:stretch;flex-wrap:wrap;">
+  <!-- Left card: Status + modify -->
+  <div class="card" style="flex:1 1 320px;min-width:260px;">
+    <div class="card__hd"><h3 class="card__title">Status</h3></div>
+    <div class="card__body">
+      <% const s = (order.status || '').toLowerCase(); %>
+      <% const stepPlaced = !(['refunded', 'canceled', 'on_hold'].includes(s)); %>
+      <% const stepShipped = ['shipped','in_transit','delivered'].includes(s); %>
+      <% const stepDelivered = ['delivered'].includes(s); %>
+
+      <ol class="timeline" style="margin:0 0 0.75rem;">
+        <li class="timeline__item  <%= stepPlaced ? (stepShipped ? 'timeline__item--done' : 'timeline__item--current') : '' %>">
+          <div class="timeline__title">Order placed</div>
+          <div class="timeline__meta"><%= order.placed_at_display %></div>
+        </li>
+
+        <li class="timeline__item <%= stepShipped ? (stepDelivered ? 'timeline__item--done' : 'timeline__item--current') : '' %>">
+          <div class="timeline__title">Shipped</div>
+          <div class="timeline__meta">
+            <% if (order.carrier && order.tracking_code) { %>
+              <span><%= order.carrier %> · <%= order.tracking_code %></span>
+            <% } else { %>
+              <span><%= stepShipped ? 'Package has left our facility.' : 'Preparing your shipment.' %></span>
+            <% } %>
+          </div>
+        </li>
+
+        <li class="timeline__item <%= stepDelivered ? 'timeline__item--done' : '' %>">
+          <div class="timeline__title">Delivered</div>
+          <div class="timeline__meta">
+            <% if (order.shipping_eta_display) { %>
+              Estimated by <%= order.shipping_eta_display %>
+            <% } else { %>
+              Delivery date not available yet.
+            <% } %>
+          </div>
+        </li>
+      </ol>
+
+      <% if (order.carrier && order.tracking_code) { %>
+        <p class="timeline-track">Track your package with <strong><%= order.carrier %></strong> using code <code><%= order.tracking_code %></code>.</p>
+      <% } %>
+
+      <form method="post" action="/admin/orders/<%= order.id %>/status" style="margin-top:0.75rem;">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <label for="admin-status-select" class="sr-only">Change status</label>
+        <select id="admin-status-select" name="status" style="width:100%;padding:0.5rem;border-radius:6px;border:1px solid rgba(15,23,42,0.06)">
+          <option value="processing" <%= order.status==='processing' ? 'selected' : '' %>>Processing</option>
+          <option value="packed" <%= order.status==='packed' ? 'selected' : '' %>>Packed</option>
+          <option value="awaiting_shipment" <%= order.status==='awaiting_shipment' ? 'selected' : '' %>>Awaiting shipment</option>
+          <option value="shipped" <%= order.status==='shipped' ? 'selected' : '' %>>Shipped</option>
+          <option value="in_transit" <%= order.status==='in_transit' ? 'selected' : '' %>>In transit</option>
+          <option value="delivered" <%= order.status==='delivered' ? 'selected' : '' %>>Delivered</option>
+          <option value="refunded" <%= order.status==='refunded' ? 'selected' : '' %>>Refunded</option>
+          <option value="on_hold" <%= order.status==='on_hold' ? 'selected' : '' %>>On hold</option>
+        </select>
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <%- include('../partials/confirm-button', {
+              btnClasses: 'button primary button--compact',
+              iconName: 'admin-accept',
+              btnText: 'Update',
+              label: 'Update status',
+              modalTitle: 'Update order status',
+              modalBody: 'Change the order status? This will update the order timeline and notify the customer depending on your settings.',
+              confirmText: 'Update',
+              cancelText: 'Cancel'
+            }) %>
+          </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Middle card: Shipping address -->
+  <div class="card" style="flex:1 1 360px;min-width:260px;">
+    <div class="card__hd"><h3 class="card__title">Shipping address</h3></div>
+    <div class="card__body">
+      <% if (order.shipping_address) { const a = order.shipping_address; %>
+        <div style="display:flex;flex-direction:column;gap:0.25rem;">
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+            <strong><%= a.full_name %></strong>
+            <% if (a.label) { %><span class="badge"><%= a.label %></span><% } %>
+          </div>
+
+          <% if (order.email) { %>
+            <div class="muted" style="font-size:0.95rem;"><a href="mailto:<%= order.email %>" class="link"><%= order.email %></a></div>
+          <% } %>
+
+          <div style="margin-top:0.25rem;">
+            <div><%= a.line1 %></div>
+            <% if (a.line2) { %><div><%= a.line2 %></div><% } %>
+            <div><%= a.city %>, <%= a.region || '' %> <%= a.postal_code %></div>
+            <div><%= a.country_code %></div>
+            <% if (a.phone) { %><div>Phone: <a href="tel:<%= a.phone %>" class="link"><%= a.phone %></a></div><% } %>
+          </div>
+        </div>
+      <% } else if (order.email) { %>
+        <div style="display:flex;flex-direction:column;gap:0.25rem;">
+          <strong>Customer</strong>
+          <div class="muted"><a href="mailto:<%= order.email %>" class="link"><%= order.email %></a></div>
+          <p class="muted">No shipping address on file.</p>
+        </div>
+      <% } else { %>
+        <p class="muted">No shipping address on file.</p>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Right card: Order summary -->
+  <div class="card order-summary-card" style="flex:0 1 280px;min-width:220px;">
+    <div class="card__hd"><h3 class="card__title">Order summary</h3></div>
+    <div class="card__body">
+      <dl class="summary-list">
+        <div class="summary-row"><dt>Subtotal</dt><dd><%= order.subtotal_display %></dd></div>
+        <div class="summary-row"><dt>Shipping</dt><dd><%= order.shipping_display %></dd></div>
+        <div class="summary-row"><dt>Tax</dt><dd><%= order.tax_display %></dd></div>
+        <div class="summary-row summary-row--total"><dt>Total</dt><dd><strong><%= order.total_display %></strong></dd></div>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<!-- Items table -->
+<section class="order-items" aria-labelledby="items-h">
+<div class="section__header">
+  <h2 id="items-h">Items in this order</h2>
+</div>
+
+<% if (order.items && order.items.length) { %>
+  <div class="table-wrap" role="region" aria-label="Order items">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Item</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Price</th>
+          <th scope="col">Total</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% order.items.forEach(it => { %>
+          <tr>
+            <td class="order-item-main">
+              <% if (it.product && it.product.image) { %>
+                <a class="order-item-thumb" href="<%= it.product.url || '#' %>">
+                  <img
+                    src="<%= it.product.image.url %>"
+                    alt="<%= it.product.image.alt || it.name %>"
+                    loading="lazy"
+                  >
+                </a>
+              <% } %>
+
+              <div class="order-item-main__text">
+                <% if (it.product && it.product.url) { %>
+                  <a href="<%= it.product.url %>" class="link"><%= it.name %></a>
+                <% } else { %>
+                  <span><%= it.name %></span>
+                <% } %>
+                <% if (it.sku) { %>
+                  <div class="order-item-sku">SKU: <%= it.sku %></div>
+                <% } %>
+              </div>
+            </td>
+
+            <td><%= it.quantity %></td>
+            <td><%= it.unit_price_display %></td>
+            <td><%= it.total_display %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+
+    </table>
+  </div>
+<% } else { %>
+  <div class="empty">
+    <p class="prose">No items found for this order.</p>
+  </div>
+<% } %>
+</section>

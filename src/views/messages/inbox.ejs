@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { cssFiles: ['messages.css'], scripts: ['messages-page.js']}) %>
+
+  <body>
+    <%- include('../partials/navbar') %>
+
+      <main class="section" aria-labelledby="messages-heading">
+        <div class="container container--narrow">
+          <h1 id="messages-heading">Messages</h1>
+
+          <section class="stack">
+            <div id="messages-list" class="messages-list">
+              <% if (!messages || !messages.length) { %>
+                <div class="messages-empty muted">No messages yet. Say hi!</div>
+              <% } else { %>
+                <% messages.forEach(function(m) { %>
+                  <div class="message <%= m.is_from_user ? 'from-user' : 'from-server' %>">
+                    <div class="message-header">
+                      <time datetime="<%= m.created_at %>"><%= new Date(m.created_at).toLocaleString() %></time>
+                    </div>
+                    <div class="message-body"><%= m.body %></div>
+                  </div>
+                <% }); %>
+              <% } %>
+            </div>
+
+            <form id="messages-form" class="messages-form" action="#">
+              <textarea id="messages-body" name="body" rows="3" placeholder="Write a message..."></textarea>
+              <div class="messages-form-actions">
+                <button class="primary" type="submit">Send</button>
+              </div>
+            </form>
+
+          </section>
+
+        </div>
+      </main>
+
+
+      <%- include('../partials/footer') %>
+  </body>
+
+</html>

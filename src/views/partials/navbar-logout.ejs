@@ -2,7 +2,7 @@
   <form action="/auth/logout" method="post" style="display:inline" class="nav-link">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <button type="submit" class="link--button">
-    <%- include('../svg/logout') %>
+    <%- include('../icon', { name: 'logout' }) %>
     <span class="nav-link-text">Log Out</span></button>
   </form>
 </li>

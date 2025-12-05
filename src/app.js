@@ -27,7 +27,8 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'"],
+        // Allow Chart.js from jsdelivr CDN in addition to self
+        scriptSrc: ["'self'", 'https://cdn.jsdelivr.net'],
         imgSrc: ["'self'", 'data:', 'https:'],
         formAction: ["'self'", "https://checkout.stripe.com"],
         baseUri: ["'self'"],
@@ -55,6 +56,7 @@ app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev", {
 }));
 
 // Body parsing middleware
+app.use('/webhooks', require('./routes/shop/stripe.webhooks.routes.js'))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -88,7 +90,26 @@ app.use(require('./middleware/auth'));
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;
   res.locals.currentUrl = req.originalUrl;
-  res.locals.isPath = (p) => p.endsWith(req.path);
+  // Return true when the current request path equals the given path
+  // or is a sub-path of it. Example: isPath('/admin') => true for
+  // '/admin' and '/admin/products'. Normalizes leading/trailing slashes.
+  res.locals.isPath = (p) => {
+    if (!p || typeof p !== 'string') return false;
+    // Ensure a leading slash so callers can pass 'admin' or '/admin'
+    let normalized = p.startsWith('/') ? p : `/${p}`;
+    // Remove trailing slash except when the path is exactly '/'
+    if (normalized !== '/' && normalized.endsWith('/')) normalized = normalized.slice(0, -1);
+
+    // Compute the full request path including any mount/baseUrl so that
+    // router-mounted roots (e.g. app.use('/admin', adminRouter) where
+    // a route inside the router has path '/') will correctly be matched.
+    const fullReqPath = (req.baseUrl || '') + (req.path || '');
+
+    // Root should only match the root path
+    if (normalized === '/') return fullReqPath === '/';
+
+    return fullReqPath === normalized || fullReqPath.startsWith(normalized + '/');
+  };
   next();
 });
 
@@ -108,6 +129,10 @@ configure({
 
 const csrfProtection = csrf({ cookie: false });
 
+app.use((req, res, next) => {
+  res.locals.cartCount = require('./models/cart').getCart(req).reduce((sum, item) => sum + item.quantity, 0);
+  next();
+});
 
 app.use('/', require('./routes/root.routes'));
 app.use('/', require('./routes/pages.routes'));
@@ -116,23 +141,19 @@ app.use('/', require('./routes/shop.routes'));
 
 app.use('/', require('./routes/shop/cart.routes'));
 app.use('/', require('./routes/shop/stripe.routes.js'));
-app.use('/webhooks', require('./routes/shop/stripe.webhooks.routes.js'));
 
 app.use('/account', require('./routes/account/account.routes'));
-app.use('/account', require('./routes/account/address.routes.js'));
-app.use('/account', require('./routes/account/address.crud.routes.js'));
 app.use('/account', require('./routes/account/profile.routes.js'));
 app.use('/account', require('./routes/account/security.routes.js'));
 
-app.use('/admin', require('./routes/admin/admin.routes'));
-app.use('/admin', require('./routes/admin/admin.crud.routes'));
+app.use('/admin', require('./routes/admin/dashboard.routes'));
 app.use('/auth', require('./routes/auth/auth.crud.routes')(csrfProtection));
 app.use('/', require('./routes/auth/auth.routes')(csrfProtection));
 
 
 
-const ebayRoutes = require("./routes/ebay.routes.js");
-app.use("/ebay", ebayRoutes);
+// const ebayRoutes = require("./routes/ebay.routes.js");
+// app.use("/ebay", ebayRoutes);
 
 
 // Health check and error handling using express-pretty-errors
@@ -143,15 +164,13 @@ app.use(notFound());
 app.use(errorHandler({ showStack: "dev", }));
 
 // Log registered pages to console
-const rows = registry.all().map(p => ({
-  Title: p.meta?.title || '',
-  Route: p.route,
-  View: p.view,
-}));
-console.table(rows);
 
+const log = require("./controllers/debug")("App");
 
+const rows = registry.all().map(p => `${p.meta?.title || ''} -> ${p.route} (${p.view})`);
 
-
+log.system("Registered Pages", `Total: ${rows.length}`);
+log.system("Pages List", rows);
+log.error("Test Error");
 
 module.exports = app;

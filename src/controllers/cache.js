@@ -31,6 +31,18 @@ function clearNamespace(ns) {
   for (const k of store.keys()) if (k.startsWith(ns)) store.delete(k);
 }
 
+// return array of keys with expiry metadata
+function listKeys() {
+  const out = [];
+  for (const [k, v] of store.entries()) {
+    out.push({ key: k, exp: v.exp || 0 });
+  }
+  return out;
+}
+
+// clear all entries
+function clearAll() { store.clear(); }
+
 
 /**
  * Wraps a loader function with caching and deduplication of concurrent loads.
@@ -57,4 +69,4 @@ async function wrap(key, ttlMs, loader) {
   return p;
 }
 
-module.exports = { get, set, del, wrap, clearNS: clearNamespace };
+module.exports = { get, set, del, wrap, clearNS: clearNamespace, listKeys, clearAll };
