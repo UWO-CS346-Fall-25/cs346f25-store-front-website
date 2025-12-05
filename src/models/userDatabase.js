@@ -5,6 +5,7 @@ const productDB = require('./productDatabase.js');
 const NAMESPACE = 'userDB';
 const TTL = 60_000 * 30; // 30 minutes
 const PAGE_SIZE = 10;
+const debug = require('debug')('User Database');
 
 
 const fmtCurrency = (cents, currency = 'USD', locale = 'en-US') =>
@@ -83,7 +84,7 @@ async function bindOrders(user, { page = 1, status = '', q = '' }) {
 
     const { data: rows, error, count } = await query.range(from, to);
     if (error) {
-      console.error('Error fetching orders:', error);
+      debug.error('Error fetching orders:', error);
       return { ...user, error: 'Failed to fetch orders', errorDetail: error };
     }
 
@@ -128,7 +129,7 @@ async function bindOrderSummary(user) {
       .limit(5);
     dbStats.increment();
     if (ordersErr) {
-      console.error('Error fetching recent orders:', ordersErr);
+      debug.error('Error fetching recent orders:', ordersErr);
       return { ...user, error: 'Failed to fetch recent orders', errorDetail: ordersErr };
     }
     const recentOrders = unifyOrders(recentOrdersRaw);
@@ -136,7 +137,7 @@ async function bindOrderSummary(user) {
     const { data: counts, error: countsErr } = await user.supabase
       .rpc('order_summary_counts', { p_user_id: user.id });
     if (countsErr) {
-      console.error('Error fetching order counts:', countsErr);
+      debug.error('Error fetching order counts:', countsErr);
       return { ...user, error: 'Failed to fetch order counts', errorDetail: countsErr };
     }
 
@@ -184,7 +185,7 @@ async function bindOrderDetail(user, orderId) {
       .maybeSingle();   // returns null if not found
     dbStats.increment();
     if (error) {
-      console.error('Error fetching order detail:', error);
+      debug.error('Error fetching order detail:', error);
       return { ...user, error: 'Failed to fetch order', errorDetail: error };
     }
 

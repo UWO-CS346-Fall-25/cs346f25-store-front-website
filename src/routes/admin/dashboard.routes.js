@@ -8,6 +8,7 @@ const { authRequired, adminRequired } = require('../../middleware/accountRequire
 const csrfProtection = csrf({ cookie: false });
 
 const badges = require('../../models/admin-badges.js');
+const debug = require('debug')('Routes.Admin.Dashboard');
 
 bind(router, {
   route: '/',
@@ -53,7 +54,7 @@ bind(router, {
 
       return { flash, utilities };
     } catch (err) {
-      console.error('Error preparing admin dashboard data:', err);
+      debug.error('Error preparing admin dashboard data:', err);
       return { flash, utilities: require('../../models/admin-utilities.js') };
     }
   }

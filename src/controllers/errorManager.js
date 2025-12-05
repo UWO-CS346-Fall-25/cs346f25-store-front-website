@@ -1,6 +1,6 @@
 
 
-
+const debug = require('debug')('app:errorManager');
 
 
 
@@ -23,7 +23,7 @@ function throwCritical(object) {
 }
 
 function throwError(object, message, url = null) {
-  console.error(message);
+  debug.error(message);
   object.session.flash = { error: message || object.errors[0] || 'Unknown error', errorList: object.errorsMap };
   return object.res.redirect(url || object.url || '/');
 }

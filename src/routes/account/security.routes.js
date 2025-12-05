@@ -6,6 +6,7 @@ const { bind } = require('express-page-registry');
 const { authRequired } = require('../../middleware/accountRequired.js');
 const errorManager = require('../../controllers/errorManager.js');
 const dbStats = require('../../controllers/dbStats.js');
+const debug = require('debug')('Routes.Account.Security');
 
 
 // =================================================
@@ -30,7 +31,7 @@ bind(router, {
       flash,
     };
 
-    console.log(data.user);
+    debug.log(data.user);
     return data;
   }
 });
@@ -79,7 +80,7 @@ router.post('/security/profile', authRequired, async (req, res, next) => {
 
     return errors.throwSuccess('Display name updated.');
   } catch (err) {
-    console.log(err);
+    debug.log(err);
     next(err);
   }
 });

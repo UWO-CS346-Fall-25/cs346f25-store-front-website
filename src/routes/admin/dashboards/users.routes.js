@@ -14,6 +14,7 @@ const logs = require('../../../controllers/debug.js');
 const utilities = require('../../../models/admin-utilities.js');
 const supabase = require('../../../models/supabase.js');
 const pageData = require('../../../models/admin-page-data.js');
+const debug = require('debug')('Routes.Admin.Dashboards');
 
 bind(router, {
   route: '/users',
@@ -38,7 +39,7 @@ bind(router, {
         dbStats.increment();
 
         if (error) {
-          console.error('Error listing users:', error);
+          debug.error('Error listing users:', error);
           return { users: [], flash: { error: 'Unable to load users' }, paging: { page, perPage, totalPages: 1 }, q };
         }
 
@@ -64,7 +65,7 @@ bind(router, {
         const { data, error } = await supabase.auth.admin.listUsers({ page: fetchPage, perPage: fetchPerPage });
         dbStats.increment();
         if (error) {
-          console.error('Error listing users while searching:', error);
+          debug.error('Error listing users while searching:', error);
           break;
         }
 
@@ -104,7 +105,7 @@ bind(router, {
         q,
       };
     } catch (err) {
-      console.error('Exception listing users:', err);
+      debug.error('Exception listing users:', err);
       return { users: [], flash: { error: 'Unable to load users' }, paging: { page, totalPages: 1 }, q };
     }
   }
@@ -165,7 +166,7 @@ router.post('/users/:id/set-role', authRequired, adminRequired, csrfProtection, 
     }
     return res.redirect('/admin/users');
   } catch (err) {
-    console.error('Error updating user role:', err);
+    debug.error('Error updating user role:', err);
     if (req.session) req.session.flash = { error: 'Failed to update role.' };
     return res.redirect('/admin/users');
   }
@@ -221,7 +222,7 @@ router.post('/users/:id/ban', authRequired, adminRequired, csrfProtection, async
     }
     return res.redirect('/admin/users');
   } catch (err) {
-    console.error('Error banning/unbanning user:', err);
+    debug.error('Error banning/unbanning user:', err);
     if (req.session) req.session.flash = { error: 'Failed to update user.' };
     return res.redirect('/admin/users');
   }

@@ -2,7 +2,7 @@
 
 const supabase = require('./supabase.js');
 const dbStats = require('../controllers/dbStats.js');
-
+const debug = require('debug')('app:admin-badges');
 
 async function orders() {
   try {
@@ -15,7 +15,7 @@ async function orders() {
     if (!error && typeof count === 'number')
       return count;
   } catch (e) {
-    console.error('Error counting pending orders for badges:', e);
+    debug.error('Error counting pending orders for badges:', e);
   }
   return 0;
 }
@@ -46,12 +46,12 @@ async function products() {
       .eq('status', 'draft');
     dbStats.increment();
     if (error) {
-      console.error('Error counting draft products for badges:', error);
+      debug.error('Error counting draft products for badges:', error);
       return 0;
     }
     return count;
   } catch (e) {
-    console.error('Error counting draft products for dashboard:', e);
+    debug.error('Error counting draft products for dashboard:', e);
   }
   return 0;
 }
@@ -64,12 +64,12 @@ async function messages() {
       .eq('unread', true);
     dbStats.increment();
     if (error) {
-      console.error('Error counting unread messages for badges:', error);
+      debug.error('Error counting unread messages for badges:', error);
       return 0;
     }
     return count;
   } catch (e) {
-    console.error('Error counting unread messages for dashboard:', e);
+    debug.error('Error counting unread messages for dashboard:', e);
   }
   return 0;
 }

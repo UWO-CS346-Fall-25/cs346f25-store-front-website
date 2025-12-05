@@ -15,6 +15,7 @@ const supabase = require('../../../models/supabase.js');
 const cache = require('../../../controllers/cache.js');
 const page_data = require('../../../models/admin-page-data.js');
 const productDB = require('../../../models/productDatabase.js');
+const debug = require('debug')('Routes.Admin.Dashboards');
 
 bind(router, {
   route: '/orders',
@@ -59,7 +60,7 @@ bind(router, {
       const { data: rows, error, count } = await query.range(from, to);
 
       if (error) {
-        console.error('Error fetching admin orders:', error);
+        debug.error('Error fetching admin orders:', error);
         return { orders: [], flash: { error: 'Failed to load orders.' } };
       }
       const TTL = 60_000; // 1 minute cache for user emails
@@ -69,12 +70,12 @@ bind(router, {
             const { data: listData, error: userErr } = await supabase.auth.admin.getUserById(c.user_id);
             dbStats.increment();
             if (userErr) {
-              console.error('Error fetching user for order listing:', userErr);
+              debug.error('Error fetching user for order listing:', userErr);
               return null;
             }
             return listData.user ? listData.user.email : null;
           } catch (e) {
-            console.error('Error fetching user email for order listing:', e);
+            debug.error('Error fetching user email for order listing:', e);
           }
         });
       }));
@@ -98,7 +99,7 @@ bind(router, {
         flash,
       };
     } catch (err) {
-      console.error('Exception fetching admin orders:', err);
+      debug.error('Exception fetching admin orders:', err);
       return { orders: [], flash: { error: 'Failed to load orders.' } };
     }
   }
@@ -129,7 +130,7 @@ bind(router, {
       dbStats.increment();
 
       if (error) {
-        console.error('Error loading order detail (admin):', error);
+        debug.error('Error loading order detail (admin):', error);
         res.status(500);
         return { error: 'Failed to load order' };
       }
@@ -146,12 +147,12 @@ bind(router, {
           const { data: listData, error: userErr } = await supabase.auth.admin.getUserById(row.user_id);
           dbStats.increment();
           if (userErr) {
-            console.error('Error fetching user for order listing:', userErr);
+            debug.error('Error fetching user for order listing:', userErr);
             return null;
           }
           return listData.user ? listData.user.email : null;
         } catch (e) {
-          console.error('Error fetching user email for order listing:', e);
+          debug.error('Error fetching user email for order listing:', e);
         }
       });
 
@@ -206,7 +207,7 @@ bind(router, {
 
       return { flash, order, ...page_data.order_details(order) };
     } catch (err) {
-      console.error('Exception loading admin order detail:', err);
+      debug.error('Exception loading admin order detail:', err);
       res.status(500);
       return { error: 'Failed to load order' };
     }
@@ -250,7 +251,7 @@ router.post('/orders/:id/status', authRequired, adminRequired, csrfProtection, a
     }
     return res.redirect('/admin/order/' + id);
   } catch (err) {
-    console.error('Error updating order status:', err);
+    debug.error('Error updating order status:', err);
     if (req.session) req.session.flash = { error: 'Failed to update order status.' };
     return res.redirect('/admin/orders');
   }

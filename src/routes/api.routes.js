@@ -4,6 +4,7 @@ const router = express.Router();
 const database = require('../models/productDatabase.js');
 const { authClient, masterClient } = require('../models/supabase');
 const { adminRequired } = require('../middleware/accountRequired');
+const debug = require('debug')('Routes.API');
 
 // Messages API
 // GET /api/messages -> returns messages for current user (RLS will enforce visibility)
@@ -19,7 +20,7 @@ router.get('/api/messages', async (req, res) => {
     if (error) return res.status(500).json({ error: error.message || String(error) });
     return res.json({ ok: true, messages: data });
   } catch (err) {
-    console.error('Error fetching messages:', err);
+    debug.error('Error fetching messages:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 });
@@ -51,7 +52,7 @@ router.post('/api/messages', async (req, res) => {
 
     return res.json({ ok: true, message: data });
   } catch (err) {
-    console.error('Error creating message:', err);
+    debug.error('Error creating message:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 });
@@ -83,7 +84,7 @@ router.post('/api/admin/messages', adminRequired, async (req, res) => {
 
     return res.json({ ok: true, message: data });
   } catch (err) {
-    console.error('Error creating admin message:', err);
+    debug.error('Error creating admin message:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 });

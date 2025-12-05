@@ -16,7 +16,7 @@ const supabase = require('../../../models/supabase.js');
 const { uploadProductImages } = require('../../../middleware/uploads.js');
 const { uncacheProduct, uncacheArchived } = require('../../../models/productDatabase.js');
 const pageData = require('../../../models/admin-page-data.js');
-
+const debug = require('debug')('Routes.Admin.Dashboards');
 
 bind(router, {
   route: '/products',
@@ -89,7 +89,7 @@ bind(router, {
       const product_list = [await db.getByID(id)];
 
       if (!product_list[0]) {
-        console.error('Error loading product for edit:', error || 'Not found');
+        debug.error('Error loading product for edit:', error || 'Not found');
         req.flash?.('error', 'Product not found.');
         return {};
       }
@@ -186,7 +186,7 @@ router.post(
       dbStats.increment();
 
       if (productError) {
-        console.error('Error inserting product:', productError);
+        debug.error('Error inserting product:', productError);
         if (req.flash) {
           const isRls =
             productError.code === '42501' ||
@@ -229,7 +229,7 @@ router.post(
           });
 
         if (uploadError) {
-          console.error('Error uploading image to Supabase:', uploadError);
+          debug.error('Error uploading image to Supabase:', uploadError);
           // You can choose to continue or abort here; for now we continue but log it
           continue;
         }
@@ -261,7 +261,7 @@ router.post(
         dbStats.increment();
 
         if (imgError) {
-          console.error('Error inserting product_images:', imgError);
+          debug.error('Error inserting product_images:', imgError);
           // product already exists; you might optionally flash a warning
           req.flash?.(
             'error',
@@ -275,7 +275,7 @@ router.post(
       return res.redirect(`/admin/products`);
 
     } catch (err) {
-      console.error('Unexpected error creating product:', err);
+      debug.error('Unexpected error creating product:', err);
       return next(err);
     }
   }
@@ -342,12 +342,12 @@ router.post(
       dbStats.increment();
 
       if (updateError) {
-        console.error('Error updating product:', updateError);
+        debug.error('Error updating product:', updateError);
         req.flash?.('error', 'Something went wrong saving the product.');
         return res.redirect(`/admin/products/${id}/edit`);
       }
       if (!product) {
-        console.error('No product found to update for id:', id);
+        debug.error('No product found to update for id:', id);
         req.flash?.('error', 'Product not found or you do not have permission to edit it.');
         return res.redirect('/admin/products');
       }
@@ -373,7 +373,7 @@ router.post(
           });
 
         if (uploadError) {
-          console.error('Error uploading product image on edit:', uploadError);
+          debug.error('Error uploading product image on edit:', uploadError);
           continue;
         }
 
@@ -391,7 +391,7 @@ router.post(
         dbStats.increment();
 
         if (imgError) {
-          console.error('Error inserting product_images on edit:', imgError);
+          debug.error('Error inserting product_images on edit:', imgError);
           req.flash?.('error', 'Product saved, but some images failed to upload.');
           return res.redirect(`/admin/products/${id}/edit`);
         }
@@ -427,7 +427,7 @@ router.post('/products/:id/delete', authRequired, adminRequired, csrfProtection,
       .maybeSingle();
     dbStats.increment();
 
-    console.log(error, data);
+    debug.log(error, data);
     if (req.session) {
       req.session.flash = {
         error: (error || !data) ? 'Failed to archive product.' : null,
@@ -439,7 +439,7 @@ router.post('/products/:id/delete', authRequired, adminRequired, csrfProtection,
 
     res.redirect('/admin/products');
   } catch (err) {
-    console.error('Error archiving product:', err);
+    debug.error('Error archiving product:', err);
 
     if (req.session) {
       req.session.flash = { error: 'Failed to archive product. Please try again.' };
@@ -473,7 +473,7 @@ router.post('/products/:id/unarchive', authRequired, adminRequired, csrfProtecti
     await uncacheArchived();
     res.redirect('/admin/products/archived');
   } catch (err) {
-    console.error('Error unarchiving product:', err);
+    debug.error('Error unarchiving product:', err);
     if (req.session) {
       req.session.flash = { error: 'Failed to unarchive product. Please try again.' };
     }

@@ -5,6 +5,7 @@ const db = require('../models/productDatabase.js');
 const { bind } = require('express-page-registry');
 
 const csrfProtection = csrf({ cookie: false });
+const debug = require('debug')('Routes.Shop');
 
 router.get('/shop', async (req, res, next) => {
   res.redirect('/');

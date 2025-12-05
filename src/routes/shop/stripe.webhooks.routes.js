@@ -140,7 +140,7 @@ async function handleCheckoutCompleted(session, db) {
     const product = price?.product;
 
     if (!price || !product) {
-      console.error('Line item missing price or product', {
+      debug.error('Line item missing price or product', {
         sessionId: session.id,
         lineItemId: item.id,
       });
@@ -203,7 +203,7 @@ async function handleCheckoutCompleted(session, db) {
     .insert(itemsPayload);
 
   if (itemsError) {
-    console.error(
+    debug.error(
       'Error inserting order_items for session',
       session.id,
       itemsError

@@ -13,6 +13,7 @@ const csrfProtection = csrf({ cookie: false });
 const logs = require('../../../controllers/debug.js');
 const utilities = require('../../../models/admin-utilities.js');
 const supabase = require('../../../models/supabase.js');
+const debug = require('debug')('Routes.Admin.Dashboards');
 
 
 
@@ -32,7 +33,7 @@ bind(router, {
       const todoHtml = await todoController.getTodoHtml();
       return { flash, todoHtml };
     } catch (err) {
-      console.error('Error loading TODO viewer:', err);
+      debug.error('Error loading TODO viewer:', err);
       return { flash, todoHtml: '<p>Unable to load TODO content.</p>' };
     }
   }

@@ -14,6 +14,7 @@ const logs = require('../../../controllers/debug.js');
 const utilities = require('../../../models/admin-utilities.js');
 const supabase = require('../../../models/supabase.js');
 const pageData = require('../../../models/admin-page-data.js');
+const debug = require('debug')('Routes.Admin.Dashboards');
 
 // Admin: Cache viewer
 bind(router, {
@@ -61,7 +62,7 @@ bind(router, {
 
       return { flash, items };
     } catch (err) {
-      console.error('Error preparing cache admin page:', err);
+      debug.error('Error preparing cache admin page:', err);
       return { flash, items: [] };
     }
   }
@@ -84,7 +85,7 @@ router.post('/cache/delete', authRequired, adminRequired, csrfProtection, async 
     if (req.session) req.session.flash = { success: 'Key deleted.' };
     return res.redirect('/admin/cache');
   } catch (err) {
-    console.error('Error deleting cache key:', err);
+    debug.error('Error deleting cache key:', err);
     if (req.session) req.session.flash = { error: 'Failed to delete key.' };
     return res.redirect('/admin/cache');
   }
@@ -101,7 +102,7 @@ router.post('/cache/clear-namespace', authRequired, adminRequired, csrfProtectio
     if (req.session) req.session.flash = { success: 'Namespace cleared.' };
     return res.redirect('/admin/cache');
   } catch (err) {
-    console.error('Error clearing namespace:', err);
+    debug.error('Error clearing namespace:', err);
     if (req.session) req.session.flash = { error: 'Failed to clear namespace.' };
     return res.redirect('/admin/cache');
   }
@@ -113,7 +114,7 @@ router.post('/cache/clear-all', authRequired, adminRequired, csrfProtection, asy
     if (req.session) req.session.flash = { success: 'Cache cleared.' };
     return res.redirect('/admin/cache');
   } catch (err) {
-    console.error('Error clearing cache:', err);
+    debug.error('Error clearing cache:', err);
     if (req.session) req.session.flash = { error: 'Failed to clear cache.' };
     return res.redirect('/admin/cache');
   }

@@ -14,6 +14,7 @@ const logs = require('../../../controllers/debug.js');
 const utilities = require('../../../models/admin-utilities.js');
 const supabase = require('../../../models/supabase.js');
 const pageData = require('../../../models/admin-page-data.js');
+const debug = require('debug')('Routes.Admin.Dashboards');
 
 
 bind(router, {
@@ -37,12 +38,12 @@ bind(router, {
       dbStats.increment();
 
       if (error) {
-        console.error(error);
+        debug.error(error);
       }
       const rows = (data && data.length) ? data : [];
       return { flash, senders: rows };
     } catch (err) {
-      console.error('Error preparing message-senders admin page:', err);
+      debug.error('Error preparing message-senders admin page:', err);
       return { flash, senders: [] };
     }
   }
@@ -69,19 +70,19 @@ bind(router, {
         .order('created_at', { ascending: true });
       dbStats.increment();
 
-      if (error) console.error('Error fetching thread messages for admin:', error);
+      if (error) debug.error('Error fetching thread messages for admin:', error);
 
       let recipient_display = "Anonymous";
       try {
         const { data: listData, error: userErr } = await sup.auth.admin.getUserById(userId);
         dbStats.increment();
         if (userErr) {
-          console.error('Error fetching user for order listing:', userErr);
+          debug.error('Error fetching user for order listing:', userErr);
           return null;
         }
         recipient_display = listData.user ? listData.user.user_metadata.display_name : "Anonymous";
       } catch (e) {
-        console.error('Error fetching user display name for admin message thread:', e);
+        debug.error('Error fetching user display name for admin message thread:', e);
       }
 
       // Mark server/admin-originated messages as read for this user when they open their inbox
@@ -91,13 +92,13 @@ bind(router, {
           .update({ unread: false })
           .eq('user_id', userId);
       } catch (e) {
-        console.error('Error marking user messages as read:', e);
+        debug.error('Error marking user messages as read:', e);
       }
 
 
       return { flash, messages: (data && data.length) ? data : [], recipient: userId, recipient_display };
     } catch (err) {
-      console.error('Error preparing admin message thread page:', err);
+      debug.error('Error preparing admin message thread page:', err);
       return { flash, messages: [], recipient: userId || '' };
     }
   }
