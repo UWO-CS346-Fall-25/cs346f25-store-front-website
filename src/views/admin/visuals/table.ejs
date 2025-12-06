@@ -1,0 +1,42 @@
+
+
+<div class="table-wrapper">
+  <table class="data-table <%= data.modifierClass || '' %>">
+    <thead>
+      <tr>
+        <% data.columns.forEach(function (col) { %>
+          <th class="<%= col.align === 'right' ? 'col--number' : '' %>">
+            <%= col.label %>
+          </th>
+        <% }) %>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% if (!data.rows || !data.rows.length) { %>
+        <tr>
+          <td colspan="<%= data.columns.length %>" class="table-empty">
+            No data available.
+          </td>
+        </tr>
+      <% } else { %>
+        <% data.rows.forEach(function (row) { %>
+         <tr data-stock-status="<%= row.stockStatus || '' %>">
+            <% data.columns.forEach(function (col) { 
+                 var cls = (col.align === 'right') ? 'col--number' : '';
+                 var value = row[col.key];
+            %>
+              <td class="<%= cls %>">
+                <% if (col.rawHtml) { %>
+                  <%- value %>
+                <% } else { %>
+                  <%= value %>
+                <% } %>
+              </td>
+            <% }) %>
+          </tr>
+        <% }) %>
+      <% } %>
+    </tbody>
+  </table>
+</div>

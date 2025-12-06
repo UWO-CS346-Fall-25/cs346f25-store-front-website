@@ -126,7 +126,18 @@ const page_data = {
       cssFiles: ['account.css', 'admin/dashboard.css', 'admin.css'],
       scripts: []
     }
-  }
+  },
+  test: {
+    title: "Test",
+    subtitle: "This is a test page.",
+    backLink: { name: 'Back to Orders', href: '/admin/orders', icon: 'back' },
+    postLink: null,
+    resetLink: null,
+    preBody: null,
+    body: './test-page',
+    cssFiles: ['account.css', 'admin/dashboard.css', 'admin.css'],
+    scripts: []
+  },
 }
 
 module.exports = page_data;

@@ -1,0 +1,18 @@
+<div class="kpi-card">
+  <div class="kpi-label"><%= kpi.label %></div>
+  <div class="kpi-value">
+    <%= kpi.prefix %><%= kpi.value %><%= kpi.suffix %>
+  </div>
+
+  <% if (kpi.delta !== null && kpi.deltaDirection) { %>
+    <div class="kpi-delta kpi-delta--<%= kpi.deltaDirection %>">
+      <% if (kpi.deltaDirection === 'up') { %>▲<% } else { %>▼<% } %>
+      <span class="kpi-delta-value"><%= kpi.delta %>%</span>
+      <% if (kpi.helpText) { %>
+        <span class="kpi-help"><%= kpi.helpText %></span>
+      <% } %>
+    </div>
+  <% } else if (kpi.helpText) { %>
+    <div class="kpi-help"><%= kpi.helpText %></div>
+  <% } %>
+</div>

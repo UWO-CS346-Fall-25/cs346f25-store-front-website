@@ -1,0 +1,19 @@
+
+
+<section class="panel">
+
+  <div class="chart-container">
+    <span
+      id="<%- data.id %>"
+      class="chart chart--line"
+      data-chart-type="line"
+      data-chart-config='<%- JSON.stringify({
+        labels: data.xaxisLabels,
+        series: data.series,
+        title: data.title,
+        yLabel: data.yaxisTitle,
+      }) %>'>
+    </span>
+  </div>
+</section>
+

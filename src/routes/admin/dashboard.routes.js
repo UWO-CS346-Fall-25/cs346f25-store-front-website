@@ -77,6 +77,8 @@ router.use('/', require('./dashboards/orders.routes.js'));
 router.use('/', require('./dashboards/products.routes.js'));
 router.use('/', require('./dashboards/todo.routes.js'));
 router.use('/', require('./dashboards/users.routes.js'));
+router.use('/', require('./analytics/test.routes.js'));
+
 
 
 
