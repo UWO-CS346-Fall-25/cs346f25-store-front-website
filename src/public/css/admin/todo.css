@@ -47,7 +47,9 @@
   background: #f3f4f6;
   padding: 0.2rem 0.35rem;
   border-radius: 4px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New',
+    monospace;
   font-size: 0.9em;
 }
 
@@ -112,7 +114,11 @@
   font-weight: 700;
   color: #0b1220;
   background: linear-gradient(180deg, #ffffff, #fbfdff);
-  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 120ms ease;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 120ms ease;
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
   font-size: 0.95rem;
 }
@@ -181,7 +187,10 @@
   color: #0b1220;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 140ms ease, border-color 140ms ease, transform 120ms ease;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    transform 120ms ease;
 }
 
 .todo-item-checkbox:hover {
@@ -193,17 +202,16 @@ li.item-completed {
   opacity: 0.95;
 }
 
-li.item-completed>.todo-item-checkbox {
+li.item-completed > .todo-item-checkbox {
   background: linear-gradient(180deg, #ecfdf5, #dff9e9);
   border-color: #bbf7d0;
   color: #0b7a3e;
 }
 
 /* Slight indentation so checkbox aligns with list content */
-li>.todo-item-checkbox+* {
+li > .todo-item-checkbox + * {
   display: inline;
 }
-
 
 /* Small responsive tweaks */
 @media (max-width: 640px) {

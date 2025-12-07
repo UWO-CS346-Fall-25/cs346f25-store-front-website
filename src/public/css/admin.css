@@ -16,7 +16,6 @@
   margin-bottom: 1.5rem;
 }
 
-
 .admin-summary-card {
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
@@ -40,7 +39,6 @@
 }
 
 /* Panels */
-
 
 .admin-panel {
   max-width: 1200px;
@@ -137,7 +135,7 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.15rem 1rem .15rem 0;
+  padding: 0.15rem 1rem 0.15rem 0;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 500;
@@ -146,7 +144,7 @@
 }
 
 .badge::before {
-  content: "•";
+  content: '•';
   font-weight: bold;
 }
 
@@ -154,7 +152,11 @@
 .badge--processing {
   /* strong blue gradient (matches logs system colors) */
   background-color: var(--system, #2563eb);
-  background-image: linear-gradient(90deg, var(--system, #60a5fa), var(--system-2, #2563eb));
+  background-image: linear-gradient(
+    90deg,
+    var(--system, #60a5fa),
+    var(--system-2, #2563eb)
+  );
 }
 
 .badge--packed,
@@ -169,13 +171,21 @@
   /* strong amber gradient (matches logs warn colors) */
   background-color: var(--warn, #f59e0b);
   color: #111;
-  background-image: linear-gradient(90deg, var(--warn, #fcd34d), var(--warn-2, #f59e0b));
+  background-image: linear-gradient(
+    90deg,
+    var(--warn, #fcd34d),
+    var(--warn-2, #f59e0b)
+  );
 }
 
 .badge--delivered {
   /* green success gradient */
   background-color: var(--success, #10b981);
-  background-image: linear-gradient(90deg, var(--success, #6ee7b7), var(--success, #10b981));
+  background-image: linear-gradient(
+    90deg,
+    var(--success, #6ee7b7),
+    var(--success, #10b981)
+  );
 }
 
 .badge--canceled,
@@ -183,7 +193,11 @@
 .badge--refunded {
   /* danger gradient */
   background-color: var(--danger, #ef4444);
-  background-image: linear-gradient(90deg, var(--danger, #f87171), var(--danger-2, #ef4444));
+  background-image: linear-gradient(
+    90deg,
+    var(--danger, #f87171),
+    var(--danger-2, #ef4444)
+  );
 }
 
 .badge--on_hold {
@@ -235,7 +249,7 @@
   margin-right: auto;
   display: inline-flex;
   align-items: center;
-  padding: 0.15rem 1rem .15rem 0;
+  padding: 0.15rem 1rem 0.15rem 0;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 500;
@@ -256,7 +270,6 @@
 .admin-inline-form {
   display: inline;
 }
-
 
 .link--danger {
   color: var(--error);
@@ -280,9 +293,7 @@
   }
 }
 
-
 @media (max-width: 768px) {
-
   th:nth-child(3),
   td:nth-child(3) {
     display: none;
@@ -290,7 +301,6 @@
 }
 
 @media (max-width: 950px) {
-
   th:nth-child(2),
   td:nth-child(2) {
     display: none;
@@ -317,8 +327,6 @@
     display: none;
   }
 }
-
-
 
 /* ---- Create / edit product form layout ---- */
 
@@ -384,7 +392,6 @@
   justify-content: flex-end;
 }
 
-
 #new-product {
   color: var(--tint-2);
 }
@@ -412,7 +419,12 @@
 
 /* Optional: slightly monospace feel for long textareas */
 .textarea--monospace {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
 }
 
 /* Make the layout stack on small screens */
@@ -425,7 +437,6 @@
     padding: 0.75rem 0.9rem;
   }
 }
-
 
 .admin-alert-wrapper {
   margin-bottom: 1rem;
@@ -452,12 +463,9 @@
   color: #065f46;
 }
 
-
-
 .admin-product--status-draft {
   background: var(--background) !important;
 }
-
 
 .image-preview-bar {
   display: flex;
@@ -506,7 +514,11 @@
   background: transparent;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
 }
 
 .icon-btn .icon {
@@ -574,7 +586,11 @@
   background: transparent;
   color: var(--tint-1);
   cursor: pointer;
-  transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
 }
 
 .admin-simple .icon {
@@ -775,7 +791,6 @@
   outline: none !important;
   box-shadow: none !important;
 }
-
 
 .confirm-modal-actions .admin-simple:hover {
   transform: translateY(-1px);

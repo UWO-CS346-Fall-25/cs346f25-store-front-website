@@ -3,13 +3,21 @@
 ## Important
 ### General Next Steps
 * [x] Complete Account pages
-* [ ] Apply Stripe buying products
+* [x] Complete Account pages
 * [ ] Add Account info into admin dashboard
 * [ ] Add Stock properties to products
 * [ ] Cleanup Account pages styling
-* [ ] Cart / Checkout
 * [ ] View / Modify order fulfilment
 * [ ] CHAT GPT integration into order creations
+
+### Recent work (completed)
+The following developer tasks were completed recently and are tracked in the repo:
+
+* [x] Annotated `src/app.js` with inline comments (middleware, CSP, sessions, routing order)
+* [x] Annotated `src/routes/shop.routes.js` with inline comments (redirects, CSRF, pagination, related items)
+* [x] Rewrote `README.md` with a professional overview and a clear Quick Start (PowerShell)
+* [x] Apply Stripe buying products
+* [x] Cart / Checkout
 
 
 ## Customer-Facing Pages
@@ -32,15 +40,16 @@
 * [x] Related or recommended products
 
 ### Cart / Checkout
-* [ ] Shopping cart page
-* [ ] Editable item quantities
-* [ ] Shipping and payment forms
-* [ ] Order summary and confirmation page
+* [x] Shopping cart page
+* [x] Editable item quantities
+* [x] Shipping and payment forms
+* [x] Order summary and confirmation page
 
 ### Contact
 * [ ] Contact form (name, email, message)
 * [ ] Business email & social media links
 * [ ] Optional FAQ or "response time" notice
+* [x] Direct messages
 
 ### Policies
 * [ ] Shipping Policy
@@ -51,7 +60,7 @@
 ### Account
 * [x] Login / Signup / Logout pages
 * [x] View order history
-* [ ] Wishlist (optional)
+* [ ] Wishlist
 * [x] Saved addresses / payment methods
 
 
@@ -59,7 +68,7 @@
 ### Admin
 * [ ] Dashboard overview (sales, stock, analytics)
 * [x] Product management (add / edit / delete)
-* [ ] Orders management (status updates, fulfillment)
+* [x] Orders management (status updates, fulfillment)
 * [ ] Customer database
 * [ ] Analytics charts
 * [ ] Settings for payments, shipping, and branding
