@@ -35,6 +35,14 @@ const utilities = [
     category: 'Store',
   },
   {
+    id: 'stock',
+    name: 'Stock Manager',
+    description: 'Manage product stock levels and inventory',
+    path: '/admin/stock',
+    icon: 'admin-stock',
+    category: 'Store',
+  },
+  {
     id: 'logs',
     name: 'Log Viewer',
     description: 'View and filter application logs',

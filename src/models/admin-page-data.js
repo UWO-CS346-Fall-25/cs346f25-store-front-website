@@ -127,6 +127,17 @@ const page_data = {
       scripts: []
     }
   },
+  stock: {
+    title: "Stock Dashboard",
+    subtitle: "Manage product stock levels and inventory.",
+    backLink: { name: 'Back to Dashboard', href: '/admin', icon: 'back' },
+    postLink: null,
+    resetLink: null,
+    preBody: null,
+    body: './stock-manager',
+    cssFiles: ['account.css', 'admin/dashboard.css', 'admin.css'],
+    scripts: []
+  },
   test: {
     title: "Test",
     subtitle: "This is a test page.",

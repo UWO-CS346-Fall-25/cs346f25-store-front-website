@@ -1,0 +1,68 @@
+
+
+<%- include('visuals/_visuals.ejs') %>
+
+
+<%- include('visuals/table.ejs', { data: productTable }) %>
+
+<!-- Pagination controls -->
+<% if (pagination && pagination.totalPages > 1) { %>
+  <nav class="pagination" aria-label="Stock table pagination">
+    <div class="pagination__info">
+      Page <%= pagination.currentPage %> of <%= pagination.totalPages %> 
+      <span class="muted">(<%= pagination.totalProducts %> products total)</span>
+    </div>
+    
+    <div class="pagination__buttons">
+      <% if (pagination.hasPrevPage) { %>
+        <a href="?page=1" class="pagination__button pagination__button--first" title="First page">
+          &laquo;
+        </a>
+        <a href="?page=<%= pagination.prevPage %>" class="pagination__button pagination__button--prev">
+          &lsaquo; Previous
+        </a>
+      <% } %>
+      
+      <div class="pagination__pages">
+        <% 
+          const startPage = Math.max(1, pagination.currentPage - 2);
+          const endPage = Math.min(pagination.totalPages, pagination.currentPage + 2);
+          
+          if (startPage > 1) { %>
+            <a href="?page=1" class="pagination__page">1</a>
+            <% if (startPage > 2) { %>
+              <span class="pagination__ellipsis">…</span>
+            <% } %>
+          <% }
+          
+          for (let p = startPage; p <= endPage; p++) { %>
+            <% if (p === pagination.currentPage) { %>
+              <span class="pagination__page pagination__page--active"><%= p %></span>
+            <% } else { %>
+              <a href="?page=<%= p %>" class="pagination__page"><%= p %></a>
+            <% } %>
+          <% }
+          
+          if (endPage < pagination.totalPages) { %>
+            <% if (endPage < pagination.totalPages - 1) { %>
+              <span class="pagination__ellipsis">…</span>
+            <% } %>
+            <a href="?page=<%= pagination.totalPages %>" class="pagination__page"><%= pagination.totalPages %></a>
+          <% } %>
+        </span>
+      </div>
+      
+      <% if (pagination.hasNextPage) { %>
+        <a href="?page=<%= pagination.nextPage %>" class="pagination__button pagination__button--next">
+          Next &rsaquo;
+        </a>
+        <a href="?page=<%= pagination.totalPages %>" class="pagination__button pagination__button--last" title="Last page">
+          &raquo;
+        </a>
+      <% } %>
+    </div>
+  </nav>
+<% } %>
+
+
+
