@@ -54,7 +54,9 @@ function createLogger(context = 'App') {
 
     // Normalize main message to string
     const msgText =
-      typeof message === 'string' ? message : JSON.stringify(message, null, 2);
+      typeof message === 'string'
+        ? message
+        : JSON.stringify(message, null, 2);
 
     // Store in global map
     const entry = {
@@ -70,14 +72,10 @@ function createLogger(context = 'App') {
     ctxLogs.push(entry);
     // Choose color per log level
     const color =
-      level === 'error'
-        ? 'red'
-        : level === 'system'
-          ? 'cyan'
-          : level === 'debug'
-            ? 'white'
-            : level === 'warn'
-              ? 'yellow'
+      level === 'error' ? 'red'
+        : level === 'system' ? 'cyan'
+          : level === 'debug' ? 'white'
+            : level === 'warn' ? 'yellow'
               : 'green'; // info/log
 
     // Build styled console output with node-color-log:

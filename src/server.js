@@ -9,18 +9,16 @@
 
 require('dotenv').config();
 const app = require('./app');
-const debug = require('./controllers/debug.js')('server');
+const debug = require('./controllers/debug.js')("server");
 
 // Server configuration
 const PORT = process.env.PORT || 3000;
 
 // Start server
 app.listen(PORT, async () => {
+
   debug.system('Environment Setup', `${process.env.NODE_ENV || 'development'}`);
-  debug.system(
-    `Server Listening : http://localhost:${PORT}`,
-    `http://localhost:${PORT}`
-  );
+  debug.system(`Server Listening : http://localhost:${PORT}`, `http://localhost:${PORT}`);
 });
 
 // Handle server errors

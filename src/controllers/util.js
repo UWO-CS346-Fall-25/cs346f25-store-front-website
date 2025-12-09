@@ -6,6 +6,7 @@ function formatPrice({ price_cents, currency }) {
   }).format(amount);
 }
 
+
 module.exports = {
   formatPrice,
 };

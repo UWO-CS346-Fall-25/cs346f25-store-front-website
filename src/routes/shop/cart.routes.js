@@ -2,18 +2,13 @@ const express = require('express');
 const router = express.Router();
 
 const productDB = require('../../models/productDatabase');
-const {
-  getCart,
-  addToCart,
-  updateCartItem,
-  removeFromCart,
-  clearCart,
-} = require('../../models/cart');
+const { getCart, addToCart, updateCartItem, removeFromCart, clearCart } = require('../../models/cart');
 const errorManager = require('../../controllers/errorManager.js');
 const { bind } = require('express-page-registry');
 const util = require('../../controllers/util');
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: false });
+
 
 /* ─────────────────────────────────────────────
  * POST /cart/add
@@ -29,8 +24,7 @@ router.post('/cart/add', async (req, res, next) => {
 
     // Validate product exists and is active / visible
     const product = await productDB.getByID(productId);
-    if (!product || product.status !== 'active')
-      errors.throwError('That product is not available.');
+    if (!product || product.status !== 'active') errors.throwError('That product is not available.');
 
     addToCart(req, productId, qty);
 
@@ -44,7 +38,7 @@ router.post('/cart/add', async (req, res, next) => {
 
 /* ─────────────────────────────────────────────
  * GET /cart – show cart
- * ────────────────────────────────────────────*/
+* ────────────────────────────────────────────*/
 bind(router, {
   route: '/cart',
   view: 'cart/cart',
@@ -52,7 +46,7 @@ bind(router, {
   meta: {
     title: 'Your Cart',
   },
-  getData: async function (req) {
+  getData: async function (req, res, next) {
     const cart = getCart(req);
 
     if (!cart.length) {
@@ -66,9 +60,7 @@ bind(router, {
 
     // Load product details for cart items
     const productIds = [...new Set(cart.map((i) => i.productId))];
-    let products = await Promise.all(
-      productIds.map((id) => productDB.getByID(id))
-    );
+    let products = await Promise.all(productIds.map((id) => productDB.getByID(id)));
     products = products.filter(Boolean);
 
     // Bind primary images for all products at once (mutates objects in place)
@@ -114,8 +106,9 @@ bind(router, {
       subtotalDisplay,
       flash: req.flash(),
     };
-  },
+  }
 });
+
 
 /* ─────────────────────────────────────────────
  * POST /cart/update – update quantities
@@ -161,6 +154,7 @@ router.post('/cart/update', (req, res, next) => {
   }
 });
 
+
 /* ─────────────────────────────────────────────
  * POST /cart/remove – remove item
  * ────────────────────────────────────────────*/
@@ -170,6 +164,7 @@ router.post('/cart/remove', (req, res, next) => {
     const { product_id } = req.body || {};
     if (product_id) removeFromCart(req, product_id);
     errors.throwSuccess('Item removed from your cart.', '/cart');
+
   } catch (err) {
     next(err);
   }

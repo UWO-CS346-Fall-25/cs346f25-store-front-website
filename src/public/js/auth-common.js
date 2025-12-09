@@ -5,10 +5,7 @@
     const input = document.getElementById(id);
     if (!input) return;
     btn.setAttribute('aria-pressed', input.type === 'text' ? 'true' : 'false');
-    btn.setAttribute(
-      'aria-label',
-      input.type === 'text' ? 'Hide password' : 'Show password'
-    );
+    btn.setAttribute('aria-label', input.type === 'text' ? 'Hide password' : 'Show password');
   }
 
   document.querySelectorAll('.password-toggle').forEach((btn) => {
@@ -24,8 +21,9 @@
   });
 })();
 
+
 (function () {
-  document.querySelectorAll('.password-toggle').forEach((btn) => {
+  document.querySelectorAll('.password-toggle').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.getAttribute('data-target');
       const input = document.getElementById(id);

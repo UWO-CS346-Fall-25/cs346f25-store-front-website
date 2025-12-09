@@ -49,7 +49,7 @@ module.exports = function (csrfProtection) {
     // Only set maxAge if user wants to be remembered
     if (rememberMe) {
       accessCookieOptions.maxAge = oneHour * 12; // 12 hours
-      refreshCookieOptions.maxAge = sevenDays; // 7 days
+      refreshCookieOptions.maxAge = sevenDays;   // 7 days
     }
 
     // If rememberMe is false, no maxAge ⇒ session cookie
@@ -61,7 +61,8 @@ module.exports = function (csrfProtection) {
       sameSite: 'lax',
     });
 
-    let redirectTo = (req.session && req.session.returnTo) || '/';
+
+    const redirectTo = (req.session && req.session.returnTo) || '/';
     if (redirectTo === '/login') redirectTo = '/';
 
     if (req.session) {
@@ -70,6 +71,7 @@ module.exports = function (csrfProtection) {
 
     res.redirect(redirectTo);
   });
+
 
   // POST /auth/signup
   router.post('/signup', csrfProtection, async (req, res) => {
@@ -138,10 +140,14 @@ module.exports = function (csrfProtection) {
         maxAge: refreshMaxAge,
       });
 
-      res.cookie('user-display-name', user?.user_metadata?.display_name || '', {
-        httpOnly: false,
-        sameSite: 'lax',
-      });
+      res.cookie(
+        'user-display-name',
+        user?.user_metadata?.display_name || '',
+        {
+          httpOnly: false,
+          sameSite: 'lax',
+        }
+      );
 
       const redirectTo = (req.session && req.session.returnTo) || '/';
       if (req.session) {
@@ -168,6 +174,8 @@ module.exports = function (csrfProtection) {
     });
   });
 
+
+
   // POST /auth/logout
   router.post('/logout', csrfProtection, (req, res) => {
     res.clearCookie('sb-access-token');
@@ -179,6 +187,8 @@ module.exports = function (csrfProtection) {
 
     res.redirect('/');
   });
+
+
 
   return router;
 };

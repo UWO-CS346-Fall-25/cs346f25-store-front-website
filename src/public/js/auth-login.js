@@ -1,3 +1,4 @@
+
 (function () {
   const btn = document.querySelector('.password-toggle');
   const input = document.getElementById('password');
@@ -8,3 +9,4 @@
     btn.setAttribute('aria-label', isPw ? 'Hide password' : 'Show password');
   });
 })();
+

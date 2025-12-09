@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const isOpen = next.classList.contains('show');
 
     // Close others
-    document.querySelectorAll('.detail-row.show').forEach((r) => {
+    document.querySelectorAll('.detail-row.show').forEach(r => {
       if (r !== next) {
         r.classList.remove('show');
         r.setAttribute('aria-hidden', 'true');
@@ -78,13 +78,11 @@ document.addEventListener('DOMContentLoaded', function () {
   if (levelFilter) {
     levelFilter.addEventListener('change', function () {
       const val = levelFilter.value;
-      document.querySelectorAll('.admin-panel tbody tr').forEach((tr) => {
+      document.querySelectorAll('.admin-panel tbody tr').forEach(tr => {
         if (!val) {
           tr.style.display = '';
         } else {
-          tr.style.display = tr.classList.contains('level-' + val)
-            ? ''
-            : 'none';
+          tr.style.display = tr.classList.contains('level-' + val) ? '' : 'none';
         }
       });
     });
@@ -98,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
       clearTimeout(timer);
       timer = setTimeout(() => {
         const q = (search.value || '').toLowerCase().trim();
-        document.querySelectorAll('.admin-panel tbody tr').forEach((tr) => {
+        document.querySelectorAll('.admin-panel tbody tr').forEach(tr => {
           const text = tr.textContent.toLowerCase();
           tr.style.display = q ? (text.includes(q) ? '' : 'none') : '';
         });

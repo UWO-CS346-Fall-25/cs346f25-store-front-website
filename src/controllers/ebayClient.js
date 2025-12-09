@@ -20,7 +20,7 @@ if (process.env.EPN_REFERENCE_ID) {
 // Apply headers for *all* Browse calls
 if (endUserCtx.length) {
   ebay.buy.browse.api({
-    headers: { 'X-EBAY-C-ENDUSERCTX': endUserCtx.join(',') },
+    headers: { 'X-EBAY-C-ENDUSERCTX': endUserCtx.join(',') }
   });
 }
 

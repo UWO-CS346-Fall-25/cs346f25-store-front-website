@@ -3,6 +3,7 @@
   padding-block: 2rem;
 }
 
+
 /* Base */
 html,
 body {
@@ -66,15 +67,16 @@ button {
   gap: 1rem;
   margin-bottom: 1rem;
   border-bottom: 1px solid var(--foreground);
-  padding-bottom: 0.5rem;
+  padding-bottom: .5rem;
 }
 
 .section__header h2 {
   margin: 0;
   font-size: clamp(1.25rem, 2.2vw, 1.5rem);
   font-weight: 700;
-  letter-spacing: 0.2px;
+  letter-spacing: .2px;
 }
+
 
 .grid {
   display: grid;
@@ -106,19 +108,17 @@ button {
   }
 }
 
+
 .button.primary,
 button.primary {
   display: inline-block;
   text-decoration: none;
   font-weight: 600;
   font-size: 1.25rem;
-  padding: 0.7rem 1rem;
-  border-radius: 0.75rem;
+  padding: .7rem 1rem;
+  border-radius: .75rem;
   border: 0;
-  transition:
-    transform 0.15s ease,
-    background 0.2s ease,
-    color 0.2s ease;
+  transition: transform .15s ease, background .2s ease, color .2s ease;
   /* background: linear-gradient(135deg,
       var(--tint-1),
       var(--tint-2)); */
@@ -133,6 +133,8 @@ button.primary:hover {
   background: var(--tint-2);
 }
 
+
+
 .button.primary:active,
 button.primary:active {
   transform: translateY(0);
@@ -141,8 +143,9 @@ button.primary:active {
 .button.primary.small,
 button.primary.small {
   font-size: 1rem;
-  padding: 0.5rem 1rem;
+  padding: .5rem 1rem;
 }
+
 
 .button.ghost,
 button.ghost {
@@ -150,13 +153,10 @@ button.ghost {
   text-decoration: none;
   font-weight: 600;
   font-size: 1.25rem;
-  padding: 0.7rem 1rem;
-  border-radius: 0.75rem;
+  padding: .7rem 1rem;
+  border-radius: .75rem;
   border: 2px solid var(--tint-1);
-  transition:
-    transform 0.15s ease,
-    background 0.2s ease,
-    color 0.2s ease;
+  transition: transform .15s ease, background .2s ease, color .2s ease;
   background: var(--background);
   color: var(--tint-1);
   cursor: pointer;
@@ -171,6 +171,7 @@ button.ghost:hover {
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
+
   .button,
   button,
   .contact-form input,
@@ -178,6 +179,8 @@ button.ghost:hover {
     transition: none;
   }
 }
+
+
 
 .container {
   width: min(100% - 2rem, 1100px);
@@ -192,14 +195,15 @@ button.ghost:hover {
   gap: 1rem;
   margin-bottom: 1rem;
   border-bottom: 1px solid var(--foreground);
-  padding-bottom: 0.5rem;
+  padding-bottom: .5rem;
 }
+
 
 .section__header h2 {
   margin: 0;
   font-size: clamp(1.25rem, 2.2vw, 1.5rem);
   font-weight: 700;
-  letter-spacing: 0.2px;
+  letter-spacing: .2px;
 }
 
 /* Subtle link styling */
@@ -212,7 +216,7 @@ button.ghost:hover {
 }
 
 .link::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   right: 0;
@@ -221,17 +225,21 @@ button.ghost:hover {
   background: currentColor;
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.18s ease;
+  transition: transform .18s ease;
 }
 
 .link:hover {
   text-decoration: none;
-  color: var(--tint-2);
+  color: var(--tint-2)
 }
 
 .link:hover::after {
   transform: scaleX(1);
 }
+
+
+
+
 
 /* Generic form grid */
 .form-row {
@@ -242,9 +250,9 @@ button.ghost:hover {
 }
 
 /* Generic inputs */
-input[type='text'],
-input[type='email'],
-input[type='password'],
+input[type="text"],
+input[type="email"],
+input[type="password"],
 textarea {
   width: 100%;
   border: 1px solid #e6e8eb;
@@ -253,10 +261,7 @@ textarea {
   color: #0f1a2b;
   font: inherit;
   line-height: 1.2;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    background-color 0.15s ease;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
 }
 
 /* Focus rings */
@@ -264,13 +269,14 @@ input:focus,
 textarea:focus {
   outline: none;
   border-color: #9b87f5;
-  box-shadow: 0 0 0 3px rgba(155, 135, 245, 0.25);
+  box-shadow: 0 0 0 3px rgba(155, 135, 245, .25);
 }
 
 :focus-visible {
   outline: 2px solid #9b87f5;
   outline-offset: 2px;
 }
+
 
 .prose {
   max-width: 70ch;
@@ -282,7 +288,7 @@ textarea:focus {
 }
 
 /* Vertical rhythm: every sibling after the first gets spacing */
-.prose > * + * {
+.prose>*+* {
   margin-top: 0.75rem;
 }
 
@@ -305,13 +311,13 @@ textarea:focus {
 }
 
 .prose h3 {
-  font-size: 1rem;
+  font-size: 1.0rem;
 }
 
 .prose h4 {
   font-size: 0.95rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: .04em;
 }
 
 /* Lists */
@@ -321,7 +327,7 @@ textarea:focus {
   padding-left: 1.25rem;
 }
 
-.prose li + li {
+.prose li+li {
   margin-top: 0.25rem;
 }
 
@@ -351,6 +357,11 @@ textarea:focus {
   font-size: 0.85em;
   color: #666;
 }
+
+
+
+
+
 
 .sr-only {
   position: absolute;
@@ -385,7 +396,7 @@ textarea:focus {
 
 /* The “circle forming” hover background */
 .link--icon::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
@@ -418,6 +429,7 @@ textarea:focus {
   /* sits above the ::before circle */
   display: block;
 }
+
 
 /* ---- Flash / Alert styles ---- */
 .alerts {
@@ -467,6 +479,7 @@ textarea:focus {
 .alert--dismissible {
   position: relative;
 }
+
 
 /* Ensure quantity selects look consistent across cart and product detail */
 .cart-item__qty-select {

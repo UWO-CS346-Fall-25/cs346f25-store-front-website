@@ -5,6 +5,7 @@ function getFlash(req) {
   return req.flash ? { error: req.flash('error')[0] } : {};
 }
 
+
 module.exports = function (csrfProtection) {
   const router = express.Router();
 
@@ -13,12 +14,12 @@ module.exports = function (csrfProtection) {
     view: 'auth/login',
     meta: {
       title: 'Log in',
-      description: 'Access your account to view orders and manage details.',
+      description: 'Access your account to view orders and manage details.'
     },
     middleware: [csrfProtection, require('../../middleware/csrfLocals')],
     getData: async (req, _res) => ({
       flash: getFlash(req),
-    }),
+    })
   });
 
   bind(router, {
@@ -26,13 +27,14 @@ module.exports = function (csrfProtection) {
     view: 'auth/signup',
     meta: {
       title: 'Signup',
-      description: 'Create a new account to view orders and manage details.',
+      description: 'Create a new account to view orders and manage details.'
     },
     middleware: [csrfProtection, require('../../middleware/csrfLocals')],
     getData: async (req, _res) => ({
       flash: getFlash(req),
-    }),
+    })
   });
+
 
   return router;
 };

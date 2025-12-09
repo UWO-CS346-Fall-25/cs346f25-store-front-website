@@ -24,8 +24,9 @@
   box-sizing: border-box;
 }
 
+
 /* allow columns to shrink */
-.hero__inner > * {
+.hero__inner>* {
   min-width: 0;
 }
 
@@ -33,12 +34,12 @@
 .hero__title {
   font-size: clamp(1.6rem, 3.6vw, 2.4rem);
   line-height: 1.15;
-  margin: 0 0 0.35rem;
+  margin: 0 0 .35rem;
 }
 
 .hero__tagline {
   max-width: 42ch;
-  opacity: 0.9;
+  opacity: .9;
   margin: 0 0 1rem;
 }
 
@@ -53,10 +54,10 @@
   margin-inline: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: .5rem;
 
   /* this is the padding that will pull the image in from the edges */
-  padding-inline: clamp(0.75rem, 3vw, 1.25rem);
+  padding-inline: clamp(.75rem, 3vw, 1.25rem);
   box-sizing: border-box;
 }
 
@@ -66,7 +67,7 @@
   max-inline-size: 100%;
   border-radius: 0.9rem;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
   background: #0000;
 }
 
@@ -78,6 +79,7 @@
   object-fit: cover;
 }
 
+
 /* Empty state */
 .hero__empty {
   inline-size: min(100%, 780px);
@@ -85,8 +87,8 @@
   display: grid;
   place-items: center;
   border: 1px dashed color-mix(in srgb, #fff 35%, transparent);
-  border-radius: 0.6rem;
-  opacity: 0.85;
+  border-radius: .6rem;
+  opacity: .85;
 }
 
 /* --- Carousel shared --- */
@@ -94,11 +96,11 @@
   position: absolute;
   left: 1rem;
   bottom: 1rem;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, .55);
   color: #fff;
-  padding: 0.5rem 0.75rem;
+  padding: .5rem .75rem;
   border-radius: 999px;
-  font-size: 0.9rem;
+  font-size: .9rem;
 }
 
 .carousel__link {
@@ -115,21 +117,21 @@
   block-size: 40px;
   border-radius: 50%;
   border: 0;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, .9);
   cursor: pointer;
   font-size: 24px;
   line-height: 40px;
   display: grid;
   place-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
 }
 
 .carousel__control--prev {
-  left: 0.5rem;
+  left: .5rem;
 }
 
 .carousel__control--next {
-  right: 0.5rem;
+  right: .5rem;
 }
 
 .carousel__control:focus-visible {
@@ -144,8 +146,8 @@
   bottom: auto;
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0;
+  gap: .5rem;
+  padding: .25rem 0;
   background: transparent;
   backdrop-filter: none;
 }
@@ -157,7 +159,7 @@
   padding: 0;
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, .35);
   overflow: hidden;
   cursor: pointer;
 }
@@ -212,13 +214,14 @@
     text-align: center;
   }
 
+
   .hero__tagline {
     margin-inline: auto;
   }
 
   .hero__actions {
     display: inline-flex;
-    gap: 0.6rem;
+    gap: .6rem;
     flex-wrap: wrap;
     justify-content: center;
   }

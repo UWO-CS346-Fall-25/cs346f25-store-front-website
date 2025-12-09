@@ -6,18 +6,13 @@
 const store = new Map();
 const inflight = new Map();
 
-function now() {
-  return Date.now();
-}
+function now() { return Date.now(); }
 
 // simple in-memory cache with TTL and deduplication of concurrent loads
 function get(key) {
   const hit = store.get(key);
   if (!hit) return null;
-  if (hit.exp !== 0 && hit.exp < now()) {
-    store.delete(key);
-    return null;
-  }
+  if (hit.exp !== 0 && hit.exp < now()) { store.delete(key); return null; }
   return hit.value;
 }
 
@@ -29,9 +24,7 @@ function set(key, value, ttlMs = 60_000) {
 }
 
 // delete a key
-function del(key) {
-  store.delete(key);
-}
+function del(key) { store.delete(key); }
 
 // clear all keys starting with ns + ":"
 function clearNamespace(ns) {
@@ -48,15 +41,14 @@ function listKeys() {
 }
 
 // clear all entries
-function clearAll() {
-  store.clear();
-}
+function clearAll() { store.clear(); }
+
 
 /**
  * Wraps a loader function with caching and deduplication of concurrent loads.
  * If the value is already cached, it is returned. Otherwise, the loader function is executed,
  * and its result is cached and returned.
- *
+ * 
  * @param {string} key - The key of the cache entry.
  * @param {number} ttlMs - The TTL in milliseconds for the cached value.
  * @param {() => Promise<*>} loader - The loader function to execute if the value is not cached.
@@ -67,28 +59,14 @@ async function wrap(key, ttlMs, loader) {
   if (cached != null) return cached;
 
   if (inflight.has(key)) return inflight.get(key);
-  const p = Promise.resolve()
-    .then(loader)
-    .then((val) => {
-      set(key, val, ttlMs);
-      inflight.delete(key);
-      return val;
-    })
-    .catch((err) => {
-      inflight.delete(key);
-      throw err;
-    });
+  const p = Promise.resolve().then(loader).then(val => {
+    set(key, val, ttlMs);
+    inflight.delete(key);
+    return val;
+  }).catch(err => { inflight.delete(key); throw err; });
 
   inflight.set(key, p);
   return p;
 }
 
-module.exports = {
-  get,
-  set,
-  del,
-  wrap,
-  clearNS: clearNamespace,
-  listKeys,
-  clearAll,
-};
+module.exports = { get, set, del, wrap, clearNS: clearNamespace, listKeys, clearAll };
