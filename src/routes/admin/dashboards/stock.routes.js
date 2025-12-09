@@ -13,7 +13,7 @@ const { classifyStock } = require('../../../models/analytics/stock.js');
 const pageData = require('../../../models/admin-page-data.js');
 const { getProductStockLevels } = require('../../../models/analytics/analytics-tracker.js');
 const { get } = require('./cache.routes.js');
-
+const cache = require('../../../controllers/cache.js');
 
 const productStats = [
   { name: 'Cat Tarot Cup', sku: 'CUP-001', category: 'Cups', revenue: 1820.75, unitsSold: 73, stock: 6 },
@@ -39,14 +39,16 @@ function applyStockBadge(productStats) {
         ? `<img src="${p.image.url}" alt="${p.image.alt || p.name}" style="width: 48px; height: 48px; object-fit: cover; border-radius: 4px;">`
         : '<span style="color: var(--muted);">No image</span>';
       return {
+        id: p.id,
         image: imageHtml,
         name: p.name,
         sku: p.sku,
+        stock_quantity: p.stock_quantity,
         // category: p.category,
         // revenue: `$${p.revenue.toFixed(2)}`,
         // unitsSold: p.unitsSold.toLocaleString(),
         // value is HTML, but still just the INSIDE of the cell
-        stock: `<span class="${badgeClass}">${p.stock_quantity}</span>`,
+        stock: `<span class="${badgeClass}" data-product-id="${p.id}" data-stock-quantity="${p.stock_quantity}">${p.stock_quantity}</span>`,
         stockStatus,
       };
     })
@@ -123,6 +125,42 @@ bind(router, {
       flash: req.session?.flash || null,
     }
   }
+});
+
+// POST route to update stock quantity
+router.post('/stock/:productId/update', authRequired, adminRequired, csrfProtection, async (req, res) => {
+  const { productId } = req.params;
+  const { stock_quantity } = req.body;
+
+  try {
+    const { masterClient } = require('../../../models/supabase.js');
+    const supabase = masterClient();
+
+    const quantity = parseInt(stock_quantity, 10);
+    if (isNaN(quantity) || quantity < 0) {
+      req.flash?.('error', 'Invalid stock quantity.');
+      return res.redirect('/admin/stock');
+    }
+
+    const { error } = await supabase
+      .from('products')
+      .update({ stock_quantity: quantity, updated_at: new Date().toISOString() })
+      .eq('id', productId);
+
+    cache.clearNS('analytics:productStockLevels');
+
+    if (error) {
+      console.error('Error updating stock:', error);
+      req.flash?.('error', 'Failed to update stock.');
+    } else {
+      req.flash?.('success', `Stock updated to ${quantity}.`);
+    }
+  } catch (err) {
+    console.error('Unexpected error updating stock:', err);
+    req.flash?.('error', 'An unexpected error occurred.');
+  }
+
+  res.redirect('/admin/stock' + (req.body.page ? `?page=${req.body.page}` : ''));
 });
 
 
