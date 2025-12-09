@@ -82,7 +82,4 @@ router.use('/', require('./dashboards/stock.routes.js'));
 router.use('/', require('./analytics/test.routes.js'));
 
 
-
-
-
 module.exports = router;

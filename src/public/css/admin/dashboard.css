@@ -123,6 +123,12 @@ section {
   max-width: 280px;
 }
 
+/* Keep cards constrained so they present as uniform tiles */
+.utility-card {
+  width: 100%;
+  max-width: 280px;
+}
+
 /* make room for an optional badge */
 .utility-card {
   position: relative;
