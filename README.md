@@ -8,166 +8,170 @@
 - 📦 **Product Details**   - Images, description, price, variants, related items
 - 🧾 **Cart & Checkout**	- (Planned) Shopping cart + payment integration
 - 👤 **Account**	         - Login, signup, and user profile pages
-- 📞 **Contact**	         - Simple contact form & social links
-- 📜 **Policies**   	      - Shipping, refunds, and privacy pages
-### 🔧 Backend
-- Product management: add/edit/remove items
-- Order & stock overview
-- Analytics dashboard
+# Ravens Treasures — Storefront Web Application
 
-## 🔧 Tech Stack
-|        Tech      |          Solution        |
-| :--------------- | :----------------------- |
-| 🚀**Server**       | Node.js 20 + Express 4   |
-| 🧾**Templating**   | EJS (server-rendered)    |
-| 🎨**Styling**      | Vanilla CSS              |
-| 📝**Scripts**      | Vanilla JS               |
-| 🗄️**Data**         | Supabase & mock data     |
-| 🔒**Security**     | Helmet, CSRF tokens      |
-| 📜**Clean Code**   | ESLint, Prettier         |
+Professional, production-oriented express/ejs storefront template used for educational purposes.
 
+This repository contains a small e-commerce storefront built with Node.js and Express. It includes server-rendered pages (EJS), a lightweight product database layer, session-backed shopping cart support, basic account routes, and utilities for database migrations and seeding.
 
-- 🚀 **Server** - **Node.js 20** + **Express 4**
-- 🚀 **Node.js 20** + **Express 4** - Modern JavaScript backend
-- 🎨 **EJS** - Server-side templating
-- 🗄️ **PostgreSQL** - Reliable relational database
-- 🔒 **Security First** - Helmet, CSRF protection, secure sessions
-- 📝 **Clean Code** - ESLint, Prettier, best practices
+Key goals:
+- Demonstrate a clear, maintainable Express app structure.
+- Provide realistic patterns for sessions, CSRF protection, and security headers.
+- Ship a usable local development experience (migrations, seeds).
 
-## Quick Start
+---
 
-1. **Clone the repository**
-   ```bash
-   git clone <your-repository-url>
-   cd cs346-semester-project-template
-   ```
+**Contents**
+- Features
+- Technology stack
+- Prerequisites
+- Quick Start (PowerShell)
+- Project structure
+- Available scripts
+- Security considerations
+- Documentation and roadmap
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+---
 
-3. **Set up 'Supabase' database**
-   visit `https://supabase.com/` to make a free database
+## Features
+- Home page with featured items
+- Category listing and product detail pages
+- Session-based cart and simple checkout flow hooks
+- Admin-style dashboard and product management scaffolding
+- Database migration and seed scripts for local development
+- Basic security: Helmet, CSRF protection, secure session cookie settings
 
-4. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your credentials
-   ```
+## Technology stack
+- Node.js 20
+- Express 4
+- EJS templates (server-side rendered)
+- PostgreSQL-compatible storage (example: Supabase or local Postgres)
+- Vanilla CSS and client-side JavaScript
+- Dev tools: ESLint, Prettier, Nodemon
 
+---
 
-5. **Run migrations**
-   ```bash
-   npm run migrate
-   ```
+## Prerequisites
+- Node.js 20.x installed
+- npm (bundled with Node.js) or pnpm/yarn
+- PostgreSQL-compatible database (Supabase or local Postgres recommended)
 
-6. **Seed database (optional)**
-   ```bash
-   npm run seed
-   ```
-NOTE: run `npm run reset` to clear db and repopulate
+If you plan to use Supabase, sign up at https://supabase.com and create a project. Alternatively, run Postgres locally via your OS package manager or Docker.
 
-7. **Start the application**
-   ```bash
-   npm run dev
-   ```
+---
 
-8. **(Optional) Start Stripe listener for webhooks**
-   In a separate terminal, run:
-   ```bash
-   stripe listen --forward-to localhost:3000/webhooks/stripe
-   ```
-   This forwards Stripe webhook events to your local development server.
+## Quick Start (Windows PowerShell)
+These instructions assume you are on Windows and using PowerShell. Adjust commands for other shells as needed.
 
-9. **Open your browser**
-   ```
-   http://localhost:3000
-   ```
+1. Clone the repository
 
-## Project Structure
-
-```
-├── src/
-│   ├── server.js           # Server entry point
-│   ├── app.js              # Express app configuration
-│   ├── routes/             # Route definitions
-│   ├── controllers/        # Request handlers
-│   ├── models/             # Database models
-│   ├── views/              # EJS templates
-│   └── public/             # Static files (CSS, JS, images)
-│   └── middleware/         # Express middleware
-├── db/
-│   ├── migrations/         # Database migrations
-│   ├── seeds/              # Database seeds
-│   ├── migrate.js          # Migration runner
-│   ├── seed.js             # Seed runner
-│   └── reset.js            # Database reset script
-├── docs/                   # Documentation
-│   ├── README.md           # Documentation overview
-│   ├── SETUP.md            # Setup guide
-│   └── ARCHITECTURE.md     # Architecture details
-├── .env.example            # Environment variables template
-├── .eslintrc.json          # ESLint configuration
-├── .prettierrc.json        # Prettier configuration
-└── package.json            # Dependencies and scripts
+```powershell
+git clone <repository-url>
+cd cs346f25-store-front-website
 ```
 
-## Available Scripts
+2. Install dependencies
 
-- `npm start` - Start production server
-- `npm run dev` - Start development server with auto-reload
-- `npm run migrate` - Run database migrations
-- `npm run seed` - Seed database with sample data
-- `npm run reset` - Reset database (WARNING: deletes all data!)
-- `npm run lint` - Check code for linting errors
-- `npm run lint:fix` - Fix linting errors automatically
-- `npm run format` - Format code with Prettier
+```powershell
+npm install
+```
 
-## Security Features
+3. Configure environment
 
-- **Helmet**: Sets security-related HTTP headers
-- **express-session**: Secure session management with httpOnly cookies
-- **csurf**: Cross-Site Request Forgery (CSRF) protection
-- **Parameterized SQL**: SQL injection prevention with prepared statements
-- **Environment Variables**: Sensitive data kept out of source code
+- Copy the example environment file and edit values. At minimum set database connection and a session secret.
 
-## Pages
-- **Health**: `/health` A simple health page to display the status of the site
-- **Home**: `/` Home page showing the basic shop
-- **Contact**: `/contact` Simple contact page
-- **Auth**: No functionality yet
-   * `/login` Simple login page
-   * `/signup` Signup page
+```powershell
+copy .env.example .env
+notepad .env
+```
 
-## Documentation
+Recommended `.env` variables (examples):
+- `DATABASE_URL=postgres://user:password@localhost:5432/dbname`
+- `SESSION_SECRET=replace-with-a-secure-random-string`
+- `NODE_ENV=development`
 
-Comprehensive documentation is available in the `docs/` folder:
+4. Run database migrations
 
-- [docs/README.md](docs/README.md) - Documentation overview
-- [docs/SETUP.md](docs/SETUP.md) - Detailed setup instructions
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - Architecture and design patterns
+```powershell
+npm run migrate
+```
 
-## Technology Stack
+5. (Optional) Seed the database with sample data
 
-- **Runtime**: Node.js 20
-- **Framework**: Express 4
-- **Templating**: EJS
-- **Database**: PostgreSQL (with pg driver)
-- **Security**: Helmet, express-session, csurf
-- **Development**: ESLint, Prettier, Nodemon
+```powershell
+npm run seed
+```
 
-## Learning Resources
+6. Start the development server
 
-- [Express.js Documentation](https://expressjs.com/)
-- [EJS Documentation](https://ejs.co/)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
-- [Node.js Documentation](https://nodejs.org/docs/)
-- [OWASP Security Guide](https://owasp.org/)
+```powershell
+npm run dev
+```
 
-## 🗺️ Roadmap
-High-level plan is tracked in **[docs/TODO.md](docs/TODO.md)**.
+By default the app listens on `http://localhost:3000`. Open that URL in your browser.
+
+Notes:
+- If you use Supabase, set `DATABASE_URL` accordingly and ensure the DB is reachable.
+- For production deployment, set `NODE_ENV=production`, ensure `SESSION_SECRET` is strong, and serve over HTTPS.
+
+---
+
+## Project structure (high level)
+```
+src/
+  server.js           # Entrypoint that starts the http server
+  app.js              # Express app configuration and middleware
+  routes/             # Route definitions
+  controllers/        # Controller logic and helpers
+  models/             # Database access layer
+  views/              # EJS templates
+  public/             # Static assets (css, js, images)
+  middleware/         # Reusable Express middleware
+db/
+  migrations/         # SQL migrations
+  seeds/              # Seed data
+  migrate.js          # Migration runner
+  seed.js             # Seed runner
+  reset.js            # Reset + seed helper
+docs/                 # Additional documentation and architecture notes
+.env.example           # Template environment variables
+package.json           # Scripts and dependencies
+```
+
+---
+
+## Available scripts
+- `npm start` — start production server
+- `npm run dev` — start development server with auto-reload (nodemon)
+- `npm run migrate` — run database migrations
+- `npm run seed` — seed the database with sample data
+- `npm run reset` — reset DB and re-run migrations + seeds (destructive)
+- `npm run lint` — run ESLint
+- `npm run lint:fix` — auto-fix lint problems
+- `npm run format` — format code with Prettier
+
+---
+
+## Security considerations
+- `Helmet` is configured to provide sensible HTTP security headers; review the Content Security Policy before adding new external resources.
+- `express-session` is used for session management; set a strong `SESSION_SECRET` in production.
+- CSRF protection is enabled (`csurf`) and applied to pages that render forms. Routes that accept JSON webhooks (e.g., Stripe) are mounted before the JSON body parser when raw body access is required.
+- Use parameterized queries via the data access layer to reduce SQL injection risk.
+
+---
+
+## Documentation and roadmap
+See the `docs/` folder for additional information:
+- `docs/SETUP.md` — detailed setup and environment guidance
+- `docs/ARCHITECTURE.md` — high-level architecture and design notes
+- `docs/TODO.md` — roadmap and planned improvements
+
+---
+
+## Contributing
+Contributions are welcome. Please follow the coding conventions and run lint/format before submitting a pull request.
+
+---
 
 ## License
-
-ISC
+This project is provided under the ISC license.

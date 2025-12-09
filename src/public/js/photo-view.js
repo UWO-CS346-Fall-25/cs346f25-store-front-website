@@ -9,11 +9,11 @@
 
     // Remove old upload previews but KEEP existing images
     const oldUploads = previewBar.querySelectorAll('[data-source="upload"]');
-    oldUploads.forEach(el => el.remove());
+    oldUploads.forEach((el) => el.remove());
 
     if (!files.length) return;
 
-    files.forEach(file => {
+    files.forEach((file) => {
       if (!file.type.startsWith('image/')) return;
 
       const wrapper = document.createElement('div');

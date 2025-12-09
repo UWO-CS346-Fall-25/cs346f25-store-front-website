@@ -47,7 +47,9 @@
   background: #f3f4f6;
   padding: 0.2rem 0.35rem;
   border-radius: 4px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New',
+    monospace;
   font-size: 0.9em;
 }
 
@@ -123,7 +125,11 @@ li>.todo-item-checkbox+* {
   font-weight: 700;
   color: #0b1220;
   background: linear-gradient(180deg, #ffffff, #fbfdff);
-  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 120ms ease;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 120ms ease;
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
   font-size: 0.95rem;
 }
@@ -195,7 +201,10 @@ li>.todo-item-checkbox+* {
   color: #0b1220;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 140ms ease, border-color 140ms ease, transform 120ms ease;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    transform 120ms ease;
 }
 
 .todo-item-checkbox:hover {
@@ -207,13 +216,16 @@ li.item-completed {
   opacity: 0.95;
 }
 
-li.item-completed>.todo-item-checkbox {
+li.item-completed > .todo-item-checkbox {
   background: linear-gradient(180deg, #ecfdf5, #dff9e9);
   border-color: #bbf7d0;
   color: #0b7a3e;
 }
 
-
+/* Slight indentation so checkbox aligns with list content */
+li > .todo-item-checkbox + * {
+  display: inline;
+}
 
 /* Small responsive tweaks */
 @media (max-width: 640px) {
@@ -221,154 +233,4 @@ li.item-completed>.todo-item-checkbox {
     padding: 1rem;
     margin: 1rem;
   }
-}
-
-.todo-card {
-  min-width: 0;
-}
-
-.todo-card-body p,
-.todo-card-body span {
-  white-space: normal;
-}
-
-/* Main card container */
-.todo-card {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  border: 1px solid #e6eef7;
-  border-radius: 8px;
-  overflow: hidden;
-  /* ensures header aligns with border & prevents rounding gaps */
-  padding: 0 !important;
-  /* prevents body padding from pushing title inward */
-}
-
-/* Title header bar */
-.todo-card-title {
-  width: 100%;
-  /* forced full width */
-  display: block;
-  background: linear-gradient(90deg, #3b82f6, #2563eb);
-  color: white;
-  font-weight: 600;
-  font-size: 1rem;
-  padding: 0.65rem 1rem;
-  margin: 0;
-  /* removes spacing that causes offset from border */
-  border-radius: 8px 8px 0 0;
-  /* remove curves here (card handles rounding) */
-}
-
-/* Body styling */
-.todo-card-body {
-  padding: 1rem;
-  flex: 1;
-  width: 100%;
-}
-
-/* Ensure list items wrap cleanly next to checkboxes */
-.todo-card-body li {
-  display: flex;
-  flex-wrap: wrap;
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-li>.todo-item-checkbox+* {
-  display: block;
-  flex: 1 1 auto;
-  min-width: 0;
-  white-space: normal;
-}
-
-/* Main card container */
-.todo-card {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  border: 1px solid #e6eef7;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
-  overflow: hidden;
-  /* ensures the colored strip and body respect the rounded corners */
-  padding: 0;
-  /* IMPORTANT: no padding on the outer card */
-}
-
-/* Title strip */
-.todo-card-title {
-  width: 100%;
-  display: block;
-  background: linear-gradient(90deg, #3b82f6, #2563eb);
-  color: #fff;
-  font-weight: 600;
-  font-size: 1rem;
-  padding: 0.65rem 1rem;
-  margin: 0;
-  /* kill default h3 margin just in case */
-}
-
-/* Card body (inner padding lives here now) */
-.todo-card-body {
-  flex: 1;
-  padding: 0.85rem 1rem;
-}
-
-/* Wrapping/checkbox stuff from earlier */
-.todo-card-body li,
-.todo-markdown li {
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-li>.todo-item-checkbox+* {
-  display: block;
-  flex: 1 1 auto;
-  min-width: 0;
-  white-space: normal;
-}
-
-.todo-item-checkbox {
-  pointer-events: none;
-  /* disables clicking */
-  cursor: default;
-  opacity: 1;
-  /* ensure no dimming */
-}
-
-/* Base checkbox appearance */
-.todo-item-checkbox {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  min-width: 20px;
-  margin-right: 0.6rem;
-  margin-top: 0.15rem;
-
-  border-radius: 5px;
-  font-size: 0.95rem;
-  font-weight: 700;
-
-  background: linear-gradient(180deg, #fff, #fbfdff);
-  border: 2px solid rgba(0, 0, 0, 0.35);
-  /* <<< Darker border */
-  color: #0b1220;
-
-  pointer-events: none;
-  /* user can't toggle */
-}
-
-/* When marked completed visually */
-li.item-completed>.todo-item-checkbox {
-  background: linear-gradient(180deg, #ecfdf5, #dff9e9);
-  border-color: #22c55e;
-  /* softer green instead of gray */
-  color: #0b7a3e;
 }

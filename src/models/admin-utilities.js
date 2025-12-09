@@ -101,19 +101,3 @@ const utilities = [
 ];
 
 module.exports = utilities;
-
-// Helper: return utilities grouped by the `category` property.
-// Returns an array of { category, items } where items is an array of utilities.
-utilities.getGrouped = function () {
-  const map = new Map();
-  (utilities || []).forEach(u => {
-    const cat = u.category || 'General';
-    if (!map.has(cat)) map.set(cat, []);
-    map.get(cat).push(u);
-  });
-  // Convert to array preserving insertion order of categories
-  return Array.from(map.entries()).map(([category, items]) => ({ category, items }));
-};
-
-// Backwards compat: also expose grouped as property
-utilities.grouped = utilities.getGrouped();

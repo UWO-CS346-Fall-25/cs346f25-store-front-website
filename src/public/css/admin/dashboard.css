@@ -40,7 +40,6 @@ section {
   color: var(--tint-1);
 }
 
-
 /* Utility grid */
 .utilities-grid {
   display: grid;
@@ -114,7 +113,9 @@ section {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid var(--primary-2);
   text-align: center;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 /* Keep cards constrained so they present as uniform tiles */
@@ -231,7 +232,9 @@ section {
   white-space: nowrap;
   opacity: 0;
   transform: translateY(6px) scale(0.98);
-  transition: opacity 150ms ease, transform 150ms ease;
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
   z-index: 4;
   pointer-events: none;
 }
@@ -247,7 +250,9 @@ section {
   transform: rotate(45deg);
   border-radius: 2px;
   opacity: 0;
-  transition: opacity 150ms ease, transform 150ms ease;
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
   z-index: 4;
 }
 
@@ -286,7 +291,7 @@ section {
 }
 
 /* Order-details: inline status controls and timeline styles */
-form[action^="/admin/orders/"] {
+form[action^='/admin/orders/'] {
   display: flex;
   gap: 0.5rem;
   align-items: center;
@@ -294,7 +299,7 @@ form[action^="/admin/orders/"] {
   flex-wrap: wrap;
 }
 
-form[action^="/admin/orders/"] select#admin-status-select {
+form[action^='/admin/orders/'] select#admin-status-select {
   flex: 1 1 auto;
   min-width: 0;
   padding: 0.5rem;
@@ -303,7 +308,7 @@ form[action^="/admin/orders/"] select#admin-status-select {
   background: var(--bg, #fff);
 }
 
-form[action^="/admin/orders/"] .button.button--compact {
+form[action^='/admin/orders/'] .button.button--compact {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -311,14 +316,16 @@ form[action^="/admin/orders/"] .button.button--compact {
   border-radius: 6px;
   height: 36px;
   font-size: 0.95rem;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
-form[action^="/admin/orders/"] .button.button--compact svg {
+form[action^='/admin/orders/'] .button.button--compact svg {
   display: block;
 }
 
-form[action^="/admin/orders/"] .button.button--compact:hover {
+form[action^='/admin/orders/'] .button.button--compact:hover {
   transform: translateY(-1px);
 }
 
@@ -341,13 +348,21 @@ form[action^="/admin/orders/"] .button.button--compact:hover {
 }
 
 .timeline__item--current {
-  background: linear-gradient(90deg, rgba(255, 234, 179, 0.10), rgba(250, 204, 210, 0.04));
+  background: linear-gradient(
+    90deg,
+    rgba(255, 234, 179, 0.1),
+    rgba(250, 204, 210, 0.04)
+  );
   border-color: rgba(245, 158, 11, 0.12);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
 }
 
 .timeline__item--done {
-  background: linear-gradient(90deg, rgba(187, 247, 208, 0.10), rgba(167, 243, 208, 0.04));
+  background: linear-gradient(
+    90deg,
+    rgba(187, 247, 208, 0.1),
+    rgba(167, 243, 208, 0.04)
+  );
   border-color: rgba(16, 185, 129, 0.12);
   opacity: 0.98;
 }
@@ -370,12 +385,12 @@ form[action^="/admin/orders/"] .button.button--compact:hover {
 }
 
 @media (max-width: 640px) {
-  form[action^="/admin/orders/"] {
+  form[action^='/admin/orders/'] {
     flex-direction: column;
     align-items: stretch;
   }
 
-  form[action^="/admin/orders/"] .button.button--compact {
+  form[action^='/admin/orders/'] .button.button--compact {
     width: 100%;
     justify-content: center;
   }
@@ -383,9 +398,8 @@ form[action^="/admin/orders/"] .button.button--compact:hover {
 
 /* Additional mobile / responsive tweaks for order-details */
 @media (max-width: 900px) {
-
   /* Stack the three top cards vertically for small/medium screens */
-  .admin-panel>div {
+  .admin-panel > div {
     flex-direction: column;
     gap: 0.75rem;
   }
@@ -417,14 +431,13 @@ form[action^="/admin/orders/"] .button.button--compact:hover {
   }
 
   /* Increase touch targets for select/button */
-  form[action^="/admin/orders/"] select#admin-status-select,
-  form[action^="/admin/orders/"] .button.button--compact {
+  form[action^='/admin/orders/'] select#admin-status-select,
+  form[action^='/admin/orders/'] .button.button--compact {
     height: 42px;
   }
 }
 
 @media (max-width: 520px) {
-
   /* Make the timeline items have comfortable spacing on phones */
   .timeline__item {
     padding: 0.7rem;
@@ -458,8 +471,6 @@ form[action^="/admin/orders/"] .button.button--compact:hover {
   }
 }
 
-
-
 .admin-panel {
   max-width: 1200px;
   margin: 0 auto;
@@ -474,7 +485,6 @@ form[action^="/admin/orders/"] .button.button--compact:hover {
   justify-content: space-between;
   align-items: center;
 }
-
 
 .admin-inline-form {
   margin: 0;
@@ -491,10 +501,13 @@ form[action^="/admin/orders/"] .button.button--compact:hover {
   text-decoration: none;
   font-weight: 600;
   font-size: 1.25rem;
-  border-radius: .4rem .4rem 0 0;
+  border-radius: 0.4rem 0.4rem 0 0;
   border: 0;
-  padding: .5rem .6rem;
-  transition: transform .15s ease, background .2s ease, color .2s ease;
+  padding: 0.5rem 0.6rem;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease,
+    color 0.2s ease;
   background: transparent;
   cursor: pointer;
   margin: 0;
@@ -505,14 +518,7 @@ form[action^="/admin/orders/"] .button.button--compact:hover {
 .simple:focus-visible {
   outline: none;
   background: color-mix(in srgb, var(--foreground) 10%, transparent);
-  transition: background .2s ease, color .2s ease;
-}
-
-.admin-utilities {
-  max-width: 1200px;
-  /* overall admin content width */
-  margin: 0 auto 3rem;
-  /* center on page */
-  padding: 0 2rem;
-  /* side padding for breathing room */
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
