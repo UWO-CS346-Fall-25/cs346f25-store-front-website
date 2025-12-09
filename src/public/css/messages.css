@@ -50,7 +50,7 @@
   border: none;
   font-size: 20px;
   line-height: 1;
-  cursor: pointer;
+  cursor: pointer
 }
 
 .messages-list {
@@ -70,11 +70,7 @@
 
 .message.from-user {
   align-self: flex-end;
-  background: linear-gradient(
-    180deg,
-    var(--tint-1),
-    color-mix(in srgb, var(--tint-1) 70%, black 2%)
-  );
+  background: linear-gradient(180deg, var(--tint-1), color-mix(in srgb, var(--tint-1) 70%, black 2%));
   color: var(--overlay);
 }
 

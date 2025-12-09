@@ -1,27 +1,22 @@
+
 const express = require('express');
 const router = express.Router();
 const csrf = require('csurf');
 const { bind } = require('express-page-registry');
-const {
-  authRequired,
-  adminRequired,
-} = require('../../../middleware/accountRequired.js');
+const db = require('../../../models/productDatabase.js');
+const { authRequired, adminRequired } = require('../../../middleware/accountRequired.js');
 
 const csrfProtection = csrf({ cookie: false });
 
-const debug = require('../../../controllers/debug.js')('Routes.Admin.Dashboards');
+
+
 
 // Admin TODO viewer (renders docs/TODO.md)
 bind(router, {
   route: '/todo',
   view: 'admin/todo',
   meta: { title: 'Admin TODO' },
-  middleware: [
-    authRequired,
-    adminRequired,
-    csrfProtection,
-    require('../../../middleware/csrfLocals.js'),
-  ],
+  middleware: [authRequired, adminRequired, csrfProtection, require('../../../middleware/csrfLocals.js')],
   getData: async function (req) {
     const flash = req.session?.flash;
     if (req.session) {
@@ -32,10 +27,11 @@ bind(router, {
       const todoHtml = await todoController.getTodoHtml();
       return { flash, todoHtml };
     } catch (err) {
-      debug.error('Error loading TODO viewer:', err);
+      console.error('Error loading TODO viewer:', err);
       return { flash, todoHtml: '<p>Unable to load TODO content.</p>' };
     }
-  },
+  }
 });
+
 
 module.exports = router;

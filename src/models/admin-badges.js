@@ -1,7 +1,8 @@
+
+
 const supabase = require('./supabase.js');
 const dbStats = require('../controllers/dbStats.js');
-const debug = require('../controllers/debug.js')('app:admin-badges');
-const fs = require('fs').promises;
+
 
 async function orders() {
   try {
@@ -11,9 +12,10 @@ async function orders() {
       .select('id', { count: 'exact', head: true })
       .in('status', ['processing', 'packed', 'awaiting_shipment']);
     dbStats.increment();
-    if (!error && typeof count === 'number') return count;
+    if (!error && typeof count === 'number')
+      return count;
   } catch (e) {
-    debug.error('Error counting pending orders for badges:', e);
+    console.error('Error counting pending orders for badges:', e);
   }
   return 0;
 }
@@ -24,19 +26,13 @@ async function logs() {
 
 async function todo() {
   try {
-    const todoPath = require('path').join(
-      __dirname,
-      '..',
-      '..',
-      'docs',
-      'TODO.md'
-    );
+    const todoPath = require('path').join(__dirname, '..', '..', 'docs', 'TODO.md');
     const md = await fs.readFile(todoPath, { encoding: 'utf8' });
     if (md) {
       const matches = md.match(/- \[ \]/g);
       return matches ? matches.length : 0;
     }
-  } catch {
+  } catch (e) {
     // ignore if file not present
   }
   return 0;
@@ -50,12 +46,12 @@ async function products() {
       .eq('status', 'draft');
     dbStats.increment();
     if (error) {
-      debug.error('Error counting draft products for badges:', error);
+      console.error('Error counting draft products for badges:', error);
       return 0;
     }
     return count;
   } catch (e) {
-    debug.error('Error counting draft products for dashboard:', e);
+    console.error('Error counting draft products for dashboard:', e);
   }
   return 0;
 }
@@ -68,12 +64,12 @@ async function messages() {
       .eq('unread', true);
     dbStats.increment();
     if (error) {
-      debug.error('Error counting unread messages for badges:', error);
+      console.error('Error counting unread messages for badges:', error);
       return 0;
     }
     return count;
   } catch (e) {
-    debug.error('Error counting unread messages for dashboard:', e);
+    console.error('Error counting unread messages for dashboard:', e);
   }
   return 0;
 }
@@ -85,3 +81,5 @@ module.exports = {
   products,
   messages,
 };
+
+

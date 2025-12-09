@@ -1,3 +1,4 @@
+
 const { createClient } = require('@supabase/supabase-js');
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
@@ -5,6 +6,8 @@ const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing SUPABASE_URL or SUPABASE_ANON_KEY');
 }
+
+
 
 function authClient(req) {
   const token = req.cookies['sb-access-token'];
@@ -18,6 +21,7 @@ function authClient(req) {
   });
 }
 function genericClient() {
+
   return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY, {
     auth: {
       autoRefreshToken: false,
@@ -27,16 +31,12 @@ function genericClient() {
 }
 
 function masterClient() {
-  return createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    }
-  );
+  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
 }
 
 module.exports = { authClient, genericClient, masterClient };

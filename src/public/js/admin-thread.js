@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipient, body }),
+        body: JSON.stringify({ recipient, body })
       });
       if (!res.ok) {
         const txt = await res.text();

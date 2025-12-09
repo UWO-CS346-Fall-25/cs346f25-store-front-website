@@ -1,3 +1,4 @@
+
 (() => {
   const hero = document.querySelector('.hero .hero__stage');
   if (!hero) return;
@@ -8,30 +9,23 @@
   if (!frame || !imgEl || indicators.length === 0) return;
 
   // interval from CSS var
-  const cssInterval =
-    getComputedStyle(document.documentElement)
-      .getPropertyValue('--carousel-interval')
-      .trim() || '5000ms';
+  const cssInterval = getComputedStyle(document.documentElement)
+    .getPropertyValue('--carousel-interval').trim() || '5000ms';
   const INTERVAL = Number(cssInterval.replace('ms', '')) || 5000;
 
   // Slides from data-*
-  const slides = indicators
-    .map((btn) => ({
-      src: btn.dataset.src,
-      alt: btn.dataset.alt || 'Featured image',
-      href: btn.dataset.href || '',
-      caption: btn.dataset.caption || '',
-    }))
-    .filter((s) => s.src);
+  const slides = indicators.map(btn => ({
+    src: btn.dataset.src,
+    alt: btn.dataset.alt || 'Featured image',
+    href: btn.dataset.href || '',
+    caption: btn.dataset.caption || ''
+  })).filter(s => s.src);
 
   let index = 0;
   let timerId = null;
   let paused = false;
   const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function setBar(
-    bar,
-    { width = 0, animate = false, duration = INTERVAL, paused = false }
-  ) {
+  function setBar(bar, { width = 0, animate = false, duration = INTERVAL, paused = false }) {
     if (!bar) return;
     bar.style.animation = 'none';
     bar.style.width = width + '%';
@@ -47,7 +41,7 @@
   function render(i) {
     const was = index;
     index = (i + slides.length) % slides.length;
-    const wrapped = was === slides.length - 1 && index === 0; // last -> first
+    const wrapped = (was === slides.length - 1 && index === 0); // last -> first
 
     const s = slides[index];
     if (!s) return;
@@ -86,6 +80,7 @@
         setBar(bar, { width: 0, animate: false });
       }
     });
+
   }
 
   // --- scheduling with drift correction ---
@@ -99,7 +94,7 @@
   function scheduleNext(now = performance.now()) {
     clearLoop();
     // keep the cadence steady even if the tab hiccups:
-    if (nextDue <= now) nextDue = now + INTERVAL; // first time or catch-up
+    if (nextDue <= now) nextDue = now + INTERVAL;     // first time or catch-up
     const delay = Math.max(0, nextDue - now);
     timerId = setTimeout(tick, delay);
   }
@@ -112,7 +107,7 @@
   }
 
   function startLoop() {
-    if (prefersReduced) return; // respect reduced motion
+    if (prefersReduced) return;  // respect reduced motion
     nextDue = performance.now() + INTERVAL;
     scheduleNext();
   }
@@ -140,69 +135,38 @@
 
   function syncBarsPaused() {
     // freeze the active bar
-    const active = hero.querySelector(
-      '.carousel__indicator.is-active .carousel__indicator-bar'
-    );
+    const active = hero.querySelector('.carousel__indicator.is-active .carousel__indicator-bar');
     if (active) active.style.animationPlayState = 'paused';
   }
 
   // keyboard
   hero.tabIndex = 0;
   hero.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') {
-      e.preventDefault();
-      render(index + 1);
-      startLoop();
-    }
-    if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      render(index - 1);
-      startLoop();
-    }
+    if (e.key === 'ArrowRight') { e.preventDefault(); render(index + 1); startLoop(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); render(index - 1); startLoop(); }
   });
 
   // swipe
-  let startX = 0,
-    dx = 0,
-    dragging = false,
-    pid = null;
+  let startX = 0, dx = 0, dragging = false, pid = null;
   frame.addEventListener('pointerdown', (e) => {
-    dragging = true;
-    pid = e.pointerId;
-    startX = e.clientX;
-    dx = 0;
+    dragging = true; pid = e.pointerId; startX = e.clientX; dx = 0;
     frame.setPointerCapture(pid);
-    paused = true;
-    stopLoop();
-    syncBarsPaused();
+    paused = true; stopLoop(); syncBarsPaused();
   });
-  frame.addEventListener('pointermove', (e) => {
-    if (dragging) dx = e.clientX - startX;
-  });
+  frame.addEventListener('pointermove', (e) => { if (dragging) dx = e.clientX - startX; });
   frame.addEventListener('pointerup', () => {
     if (!dragging) return;
     dragging = false;
     if (Math.abs(dx) > 40) render(dx < 0 ? index + 1 : index - 1);
-    dx = 0;
-    pid = null;
-    paused = false;
-    startLoop();
+    dx = 0; pid = null;
+    paused = false; startLoop();
   });
-  frame.addEventListener('pointercancel', () => {
-    dragging = false;
-    dx = 0;
-    pid = null;
-    paused = false;
-    startLoop();
-  });
+  frame.addEventListener('pointercancel', () => { dragging = false; dx = 0; pid = null; paused = false; startLoop(); });
 
   // pause when tab hidden (prevents huge catch-up delays)
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      stopLoop();
-    } else {
-      startLoop();
-    }
+    if (document.hidden) { stopLoop(); }
+    else { startLoop(); }
   });
 
   // optional: click image navigates to product

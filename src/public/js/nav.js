@@ -1,3 +1,4 @@
+
 (function () {
   var btn = document.querySelector('.nav-toggle');
   var nav = document.getElementById('primary-nav');

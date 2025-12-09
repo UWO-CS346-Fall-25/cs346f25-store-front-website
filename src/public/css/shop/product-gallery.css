@@ -1,7 +1,7 @@
 /* Scrollable window that contains all overflow */
 .product-images-window {
   max-width: 100%;
-  padding: 0.5rem;
+  padding: .5rem;
   box-sizing: border-box;
 
   /* This is the important part: only this box scrolls */
@@ -14,7 +14,7 @@
 .pg-thumbs {
   --thumb-h: 160px;
   /* thumbnail height; adjust as you like */
-  --thumb-gap: 0.75rem;
+  --thumb-gap: .75rem;
 
   /* display: flex; */
   flex-wrap: nowrap;
@@ -34,7 +34,7 @@
   border: 1px solid var(--background);
   background: transparent;
   padding: 0;
-  border-radius: 0.5rem;
+  border-radius: .5rem;
   cursor: pointer;
   line-height: 0;
   transition:
@@ -47,15 +47,17 @@
 /* Selected = square (same height, wider width) */
 .pg-thumb.is-selected {
   width: var(--thumb-h);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06) inset;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, .06) inset;
   transform: scale(1.03);
 }
+
+
 
 /* Keyboard focus should also look selected */
 .pg-thumb:focus-visible {
   outline: none;
   width: var(--thumb-h);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) inset;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, .1) inset;
 }
 
 /* Image covers its box cleanly */
@@ -65,8 +67,10 @@
   object-fit: cover;
   object-position: center;
   display: block;
-  border-radius: 0.45rem;
+  border-radius: .45rem;
 }
+
+
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
@@ -75,10 +79,13 @@
   }
 }
 
+
 /* Make grid children shrink instead of forcing the page wider */
 .product-detail__media {
   min-width: 0;
 }
+
+
 
 .product-detail {
   display: grid;
@@ -92,6 +99,7 @@
   padding: 0 1.5rem;
 }
 
+
 form {
   margin-top: 1rem;
 }
@@ -101,12 +109,14 @@ form {
 }
 
 #add-to-cart {
-  margin-left: 0.5rem;
+  margin-left: .5rem;
 }
 
 #related-products-separator {
   margin: 2rem 0;
 }
+
+
 
 h2 {
   margin: 0 0 0.75rem;
@@ -148,10 +158,11 @@ h2 {
   color: var(--foreground);
 }
 
-.product-actions input[type='number'] {
+.product-actions input[type="number"] {
   width: 70px;
   padding: 0.35rem 0.5rem;
 }
+
 
 .section__header--product {
   position: relative;
@@ -180,12 +191,13 @@ h2 {
   display: flex;
 }
 
+
 .product-detail__media {
   background: var(--overlay);
   border: 1px solid var(--primary-1);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  padding: 0.5rem;
+  padding: .5rem;
 }
 
 @media (min-width: 800px) {
@@ -214,8 +226,9 @@ h2 {
     border: 1px solid var(--primary-1);
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    padding: 0.5rem;
+    padding: .5rem;
   }
+
 }
 
 /* If Big */
