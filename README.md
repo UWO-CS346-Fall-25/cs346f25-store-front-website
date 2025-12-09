@@ -73,7 +73,14 @@ NOTE: run `npm run reset` to clear db and repopulate
    npm run dev
    ```
 
-8. **Open your browser**
+8. **(Optional) Start Stripe listener for webhooks**
+   In a separate terminal, run:
+   ```bash
+   stripe listen --forward-to localhost:3000/webhooks/stripe
+   ```
+   This forwards Stripe webhook events to your local development server.
+
+9. **Open your browser**
    ```
    http://localhost:3000
    ```

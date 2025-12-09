@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { stripe } = require('../../models/stripe');
-
+const cache = require('../../controllers/cache.js');
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const supabase = require('../../models/supabase.js');
 const debug = require('../../controllers/debug.js')('Stripe');
+const userDatabase = require('../../models/userDatabase.js');
 
 router.post(
   '/stripe',
@@ -124,6 +125,8 @@ async function handleCheckoutCompleted(session, db) {
     debug.error('Error inserting order for session', session.id, orderError);
     throw orderError;
   }
+  cache.clearNS(`${userDatabase.namespace}:${userId}:orderSummary`);
+  cache.clearNS(`${userDatabase.namespace}:${userId}:orders`);
 
   debug.log('Order inserted for session', session.id, {
     order_id: order.id,

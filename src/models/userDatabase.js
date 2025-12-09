@@ -301,5 +301,6 @@ module.exports = {
   bindOrders,
   bindOrderSummary,
   bindOrderDetail,
+  namespace: NAMESPACE,
 };
 
