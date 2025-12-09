@@ -52,7 +52,7 @@ function applyStockBadge(productStats) {
         stockStatus,
       };
     })
-    .sort((a, b) => b.stock_quantity - a.stock_quantity);
+    .sort((a, b) => a.stock_quantity - b.stock_quantity);
   return rows;
 }
 
