@@ -53,6 +53,17 @@
   font-size: 0.9em;
 }
 
+li>.todo-item-checkbox+* {
+  display: block;
+  /* was inline */
+  flex: 1 1 auto;
+  /* take remaining space and allow shrink */
+  min-width: 0;
+  /* allow wrapping instead of overflowing */
+  white-space: normal;
+  /* just in case something else sets nowrap */
+}
+
 .todo-markdown pre {
   background: #0b1220;
   color: #e6eef8;
@@ -144,7 +155,9 @@
 
 .todo-card-body {
   flex: 1 1 auto;
+  min-width: 0;
 }
+
 
 .todo-card-body p {
   margin: 0;
@@ -169,6 +182,7 @@
 .todo-markdown li {
   display: flex;
   align-items: flex-start;
+  flex-wrap: wrap;
 }
 
 /* Item-level checkbox */

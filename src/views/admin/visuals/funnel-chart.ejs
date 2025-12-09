@@ -1,0 +1,12 @@
+<div class="chart-container chart-container--funnel">
+  <span
+    id="<%- data.id %>"
+    class="chart chart--funnel"
+    data-chart-type="funnel"
+    data-chart-config='<%- JSON.stringify({
+      labels: data.labels,
+      values: data.values,
+      title: data.title,
+    }) %>'>
+  </span>
+</div>

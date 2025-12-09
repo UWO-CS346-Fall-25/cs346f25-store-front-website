@@ -43,8 +43,66 @@ section {
 /* Utility grid */
 .utilities-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1.5rem;
+
+  /* Take full width of the admin-utilities container */
+  width: 100%;
+
+  /* Dynamic columns with a reasonable min card width */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+
+  /* Make columns start from the left */
+  justify-content: flex-start;
+}
+
+@media (min-width: 1200px) {
+  .utilities-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .utility-description {
+    display: none;
+  }
+
+}
+
+@media (min-width: 400px) {
+  .utilities-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .2rem;
+    padding: 0;
+    margin: 0;
+  }
+
+}
+
+/* ≥ 900px: 3 columns */
+@media (min-width: 600px) {
+  .utilities-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ≥ 1200px: 4 columns */
+@media (min-width: 1200px) {
+  .utilities-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Group wrapper to contain a titled set of utilities and center them */
+.utilities-group {
+  margin: 0 0 1.75rem;
+  padding: 0 1rem;
+}
+
+.utilities-group__title {
+  font-size: 1.125rem;
+  margin: 0 0 0.75rem 0;
+  color: var(--foreground);
+  font-weight: 700;
 }
 
 /* Utility card */
@@ -58,6 +116,12 @@ section {
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
+}
+
+/* Keep cards constrained so they present as uniform tiles */
+.utility-card {
+  width: 100%;
+  max-width: 280px;
 }
 
 /* make room for an optional badge */

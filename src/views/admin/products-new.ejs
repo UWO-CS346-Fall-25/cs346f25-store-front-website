@@ -215,6 +215,58 @@
               placeholder="RT-MUG-FOREST-RACCOON">
           </div>
         </div>
+
+        <div class="form-row">
+          <div>
+            <label for="stock_quantity">
+              Stock quantity
+            </label>
+            <input
+              id="stock_quantity"
+              name="stock_quantity"
+              type="number"
+              min="0"
+              step="1"
+              inputmode="numeric"
+              value="<%= isEdit ? product.stock_quantity : '0' %>"
+              placeholder="0">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label for="low_stock_threshold">
+              Low stock alert threshold
+              <span class="muted">(optional)</span>
+            </label>
+            <input
+              id="low_stock_threshold"
+              name="low_stock_threshold"
+              type="number"
+              min="0"
+              step="1"
+              inputmode="numeric"
+              value="<%= isEdit ? product.low_stock_threshold : '5' %>"
+              placeholder="5">
+            <p class="field-hint muted">
+              You'll be alerted when stock falls below this number.
+            </p>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="checkbox-inline">
+            <input
+              type="checkbox"
+              name="track_inventory"
+              value="true"
+              <%= (isEdit && product.track_inventory !== false) || !isEdit ? 'checked' : '' %>>
+            <span>Track inventory for this product</span>
+          </label>
+          <p class="field-hint muted">
+            Uncheck for digital products or items with unlimited stock.
+          </p>
+        </div>
       </div>
     </aside>
   </div>

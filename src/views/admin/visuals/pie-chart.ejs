@@ -1,0 +1,14 @@
+<section class="panel">
+  <div class="chart-container chart-container--pie">
+    <span
+      id="<%- data.id %>"
+      class="chart chart--pie"
+      data-chart-type="pie"
+      data-chart-config='<%- JSON.stringify({
+        labels: data.labels,
+        data: data.values,
+        title: data.title,
+      }) %>'>
+    </span>
+  </div>
+</section>

@@ -1,0 +1,115 @@
+
+
+
+<%- include('visuals/_visuals.ejs') %>
+
+<script src="/js/admin/stock-manager.js" defer></script>
+
+<%- include('visuals/table.ejs', { data: productTable }) %>
+
+<!-- Stock Edit Modal -->
+<div id="stock-edit-modal" class="modal" style="display: none;">
+  <div class="modal__backdrop"></div>
+  <div class="modal__content">
+    <h2 class="modal__title">Edit Stock</h2>
+    <form id="stock-edit-form" method="post" class="modal__form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="product_id" id="modal-product-id">
+      <input type="hidden" name="page" value="<%= pagination ? pagination.currentPage : 1 %>">
+      
+      <div class="form-row">
+        <label for="modal-product-name">Product</label>
+        <input
+          type="text"
+          id="modal-product-name"
+          readonly
+          class="input input--readonly"
+        >
+      </div>
+      
+      <div class="form-row">
+        <label for="modal-stock-quantity">Stock Quantity</label>
+        <input 
+          type="number" 
+          id="modal-stock-quantity" 
+          name="stock_quantity" 
+          min="0" 
+          step="1" 
+          inputmode="numeric"
+          required
+          class="input"
+        >
+      </div>
+      
+      <div class="modal__actions">
+        <button type="submit" class="btn btn--primary">Update Stock</button>
+        <button type="button" class="btn btn--ghost" id="modal-cancel-btn">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- Pagination controls -->
+<% if (pagination && pagination.totalPages > 1) { %>
+  <nav class="pagination" aria-label="Stock table pagination">
+    <div class="pagination__info">
+      Page <%= pagination.currentPage %> of <%= pagination.totalPages %> 
+      <span class="muted">(<%= pagination.totalProducts %> products total)</span>
+    </div>
+    
+    <div class="pagination__buttons">
+      <% if (pagination.hasPrevPage) { %>
+        <a href="?page=1" class="pagination__button pagination__button--first" title="First page">
+          &laquo;
+        </a>
+        <a href="?page=<%= pagination.prevPage %>" class="pagination__button pagination__button--prev">
+          &lsaquo; Previous
+        </a>
+      <% } %>
+      
+      <div class="pagination__pages">
+        <% 
+          const startPage = Math.max(1, pagination.currentPage - 2);
+          const endPage = Math.min(pagination.totalPages, pagination.currentPage + 2);
+          
+          if (startPage > 1) { %>
+            <a href="?page=1" class="pagination__page">1</a>
+            <% if (startPage > 2) { %>
+              <span class="pagination__ellipsis">…</span>
+            <% } %>
+          <% }
+          
+          for (let p = startPage; p <= endPage; p++) { %>
+            <% if (p === pagination.currentPage) { %>
+              <span class="pagination__page pagination__page--active"><%= p %></span>
+            <% } else { %>
+              <a href="?page=<%= p %>" class="pagination__page"><%= p %></a>
+            <% } %>
+          <% }
+          
+          if (endPage < pagination.totalPages) { %>
+            <% if (endPage < pagination.totalPages - 1) { %>
+              <span class="pagination__ellipsis">…</span>
+            <% } %>
+            <a href="?page=<%= pagination.totalPages %>" class="pagination__page"><%= pagination.totalPages %></a>
+          <% } %>
+        </span>
+      </div>
+      
+      <% if (pagination.hasNextPage) { %>
+        <a href="?page=<%= pagination.nextPage %>" class="pagination__button pagination__button--next">
+          Next &rsaquo;
+        </a>
+        <a href="?page=<%= pagination.totalPages %>" class="pagination__button pagination__button--last" title="Last page">
+          &raquo;
+        </a>
+      <% } %>
+    </div>
+  </nav>
+<% } %>
+
+
+

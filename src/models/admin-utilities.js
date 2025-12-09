@@ -8,6 +8,7 @@ const utilities = [
     description: 'Manage store products',
     path: '/admin/products',
     icon: 'admin-products',
+    category: 'Store',
   },
   {
     id: 'orders',
@@ -15,6 +16,7 @@ const utilities = [
     description: 'Manage customer orders',
     path: '/admin/orders',
     icon: 'admin-orders',
+    category: 'Store',
   },
   {
     id: 'archived-products',
@@ -22,6 +24,7 @@ const utilities = [
     description: 'View and restore archived products',
     path: '/admin/products/archived',
     icon: 'admin-archive',
+    category: 'Store',
   },
   {
     id: 'users',
@@ -29,6 +32,15 @@ const utilities = [
     description: 'Manage user accounts and profiles',
     path: '/admin/users',
     icon: 'admin-users',
+    category: 'Store',
+  },
+  {
+    id: 'stock',
+    name: 'Stock Manager',
+    description: 'Manage product stock levels and inventory',
+    path: '/admin/stock',
+    icon: 'admin-stock',
+    category: 'Store',
   },
   {
     id: 'logs',
@@ -36,6 +48,7 @@ const utilities = [
     description: 'View and filter application logs',
     path: '/admin/logs',
     icon: 'admin-log',
+    category: 'Developer',
   },
   {
     id: 'todo',
@@ -43,6 +56,7 @@ const utilities = [
     description: 'View development TODOs and tasks',
     path: '/admin/todo',
     icon: 'admin-todo',
+    category: 'Developer',
   },
   {
     id: 'database',
@@ -50,6 +64,7 @@ const utilities = [
     description: 'View and manage database connections',
     path: '/admin/stats',
     icon: 'admin-database',
+    category: 'System',
   },
   {
     id: 'cache',
@@ -57,6 +72,7 @@ const utilities = [
     description: 'View and manage in-memory cache',
     path: '/admin/cache',
     icon: 'admin-cache',
+    category: 'System',
   },
   {
     id: 'messages',
@@ -64,6 +80,7 @@ const utilities = [
     description: 'View and manage user messages',
     path: '/admin/message-senders',
     icon: 'admin-messages',
+    category: 'Content',
   },
   {
     id: 'health',
@@ -71,6 +88,7 @@ const utilities = [
     description: 'Basic health checks and diagnostics',
     path: '/health',
     icon: 'admin-health',
+    category: 'System',
   },
   // Add more as you build them:
   // {

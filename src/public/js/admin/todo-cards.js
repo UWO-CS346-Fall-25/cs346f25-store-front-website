@@ -28,23 +28,27 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'H3') {
-      // Create a card for this H3 and include subsequent nodes until next H2/H3
       const card = document.createElement('article');
       card.className = 'todo-card';
-
-      const checkbox = document.createElement('div');
-      checkbox.className = 'todo-card-checkbox';
 
       const body = document.createElement('div');
       body.className = 'todo-card-body';
 
-      // Add the H3 as the card header
-      const header = document.createElement('h3');
+      // ❌ OLD: header inside body
+      // const header = document.createElement('h3');
+      // header.className = 'todo-card-title';
+      // header.innerHTML = node.innerHTML;
+      // body.appendChild(header);
+
+      // ✅ NEW: header as sibling before body
+      const header = document.createElement('div'); // or 'h3' if you prefer
       header.className = 'todo-card-title';
       header.innerHTML = node.innerHTML;
-      body.appendChild(header);
 
-      // Collect following sibling nodes as card content
+      card.appendChild(header);
+      card.appendChild(body);
+
+      // Collect following nodes into body (unchanged)
       let j = i + 1;
       for (; j < nodes.length; j++) {
         const next = nodes[j];

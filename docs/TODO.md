@@ -1,4 +1,3 @@
-
 # 🛍️ Storefront Website – TODO List
 ## Important
 ### General Next Steps
@@ -22,22 +21,27 @@ The following developer tasks were completed recently and are tracked in the rep
 
 ## Customer-Facing Pages
 ### Home
-* [x] Create hero banner with brand name and tagline
-* [x] Add featured products section
-* [x] Add "Shop Now" button linking to store
-* [x] Include quick links (About, Contact, etc.)
+- [x] Hero banner
+- [x] Featured products
+- [x] Shop Now button
+- [x] Quick links
+- [ ] Optional video support in hero
 
 ### Shop / Products
-* [x] Product grid layout
-* [ ] Filter by category / price / availability
-* [ ] Sorting options (Newest, Popular, Price)
-* [ ] Add search bar
+- [x] Product grid
+- [ ] Filters: category/price/stock
+- [ ] Sorting: new/popular/price
+- [ ] Search bar
+- [ ] Sale badge system
 
 ### Product Details
-* [x] Product title, images, and description
-* [x] Price, variants (size, color, etc.)
-* [x] "Add to Cart" & "Buy Now" buttons
-* [x] Related or recommended products
+- [x] Title, images, description
+- [x] Price + variant options
+- [x] Add to cart + buy now
+- [x] Recommended products
+- [ ] Show stock status
+- [ ] Product video support
+- [ ] Etsy badge if cross-listed
 
 ### Cart / Checkout
 * [x] Shopping cart page
@@ -52,10 +56,10 @@ The following developer tasks were completed recently and are tracked in the rep
 * [x] Direct messages
 
 ### Policies
-* [ ] Shipping Policy
-* [ ] Return & Refund Policy
-* [ ] Privacy Policy
-* [ ] Terms of Service
+- [ ] Shipping
+- [ ] Return/Refund
+- [ ] Privacy
+- [ ] Terms of Service
 
 ### Account
 * [x] Login / Signup / Logout pages
@@ -75,21 +79,19 @@ The following developer tasks were completed recently and are tracked in the rep
 
 ## Optional Add-Ons
 ### Blog / Journal
-* [ ] Blog layout & post system
-* [ ] Create first article (“Our Story” or “Making Of…”)
+- [ ] Blog posts system
+- [ ] Write “Our Story” article
 
 ### About / Story
-* [ ] Write brand story and mission
-* [ ] Add photos or video of your process
-* [ ] Introduce the maker (you!)
+- [ ] Write brand mission
+- [ ] Add maker info + pictures
 
 ### Gallery / Portfolio
-* [ ] Display handmade collections / past works
-* [ ] Add category filters or carousel
+- [ ] Showcase handmade work
 
 ### Reviews / Testimonials
-* [ ] Customer review system on product pages
-* [ ] Featured testimonials section
+- [ ] Customer review system
+- [ ] Featured testimonials block
 
 ### Events / Markets
 * [ ] Upcoming market schedule

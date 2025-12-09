@@ -41,6 +41,11 @@ create table if not exists public.products (
   -- SKU or other unique product code
   sku              text unique,
 
+  -- Inventory tracking
+  stock_quantity   integer not null default 0 check (stock_quantity >= 0),
+  track_inventory  boolean not null default true,
+  low_stock_threshold integer default 5 check (low_stock_threshold >= 0),
+
   -- Quick search (generated tsvector)
   search           tsvector generated always as (
     setweight(to_tsvector('simple', coalesce(name,'')), 'A') ||

@@ -1,0 +1,28 @@
+<div class="kpi-grid">
+  <% if (Array.isArray(data)) { %>
+    <% data.forEach(function(kpiItem) { %>
+      <div class="kpi-card">
+        <div class="kpi-label"><%= kpiItem.label %></div>
+
+        <div class="kpi-main-row">
+          <div class="kpi-value">
+            <%= kpiItem.prefix %><%= kpiItem.value %><%= kpiItem.suffix %>
+          </div>
+
+          <% if (kpiItem.delta !== null && kpiItem.deltaDirection) { %>
+            <div class="kpi-delta kpi-delta--<%= kpiItem.deltaDirection %>">
+              <span class="kpi-delta-icon">
+                <% if (kpiItem.deltaDirection === 'up') { %>▲<% } else { %>▼<% } %>
+              </span>
+              <span class="kpi-delta-value"><%= kpiItem.delta %>%</span>
+            </div>
+          <% } %>
+        </div>
+
+        <% if (kpiItem.helpText) { %>
+          <div class="kpi-help"><%= kpiItem.helpText %></div>
+        <% } %>
+      </div>
+    <% }) %>
+  <% } %>
+</div>

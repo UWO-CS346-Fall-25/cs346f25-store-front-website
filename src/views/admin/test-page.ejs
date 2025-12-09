@@ -1,0 +1,41 @@
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-funnel@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-geo@4"></script>
+
+<script src="/js/visuals/line-chart.js" defer></script>
+
+<link rel="stylesheet" href="/css/admin/visuals.css">
+
+
+
+<%- include('visuals/header.ejs', { title: 'Charts', subtitle: '2 Cool charts' }) %>
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <div style="width: 45%">
+    <%- include('visuals/line-chart.ejs', {data: chart1}) %>
+  </div>
+  <div style="width: 45%">
+    <%- include('visuals/line-chart.ejs', {data: chart2}) %>
+  </div>
+</div>
+
+<%- include('visuals/header.ejs', { title: 'Product Stock Status', subtitle: 'Current stock levels for all products' }) %>
+<%- include('visuals/table.ejs', { data: productTable }) %>
+
+<%- include('visuals/header.ejs', { title: 'KPI', subtitle: 'KPI cards' }) %>
+<%- include('visuals/kpi.ejs', {data: kpis}) %>
+
+<%- include('visuals/header.ejs', { title: 'Funel Chart', subtitle: '' }) %>
+<%- include('visuals/funnel-chart.ejs', {data: funnel1}) %>
+
+<%- include('visuals/us-heatmap.ejs', { data: heatmap }) %>
+
+<%- include('visuals/header.ejs', { title: 'Pie Charts', subtitle: '' }) %>
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <div style="width: 35%">
+    <%- include('visuals/pie-chart.ejs', {data: pie1}) %>
+  </div>
+  <div style="width: 35%">
+    <%- include('visuals/pie-chart.ejs', {data: pie2}) %>
+  </div>
+</div>
