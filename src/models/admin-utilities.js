@@ -48,7 +48,7 @@ const utilities = [
     description: 'View and filter application logs',
     path: '/admin/logs',
     icon: 'admin-log',
-    category: 'System',
+    category: 'Developer',
   },
   {
     id: 'todo',

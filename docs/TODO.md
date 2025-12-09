@@ -8,6 +8,7 @@
 - [x] Implement Stripe webhook `checkout.session.completed`
 - [x] Save Orders + Order Items in DB
 
+
 ### Add Account info into admin dashboard
 - [x] Show user information (name/email/created)
 - [x] Show orders + verification status
@@ -28,7 +29,9 @@
 - [ ] Confirmation page + email receipt
 ### View / Modify order fulfillment
 - [x] Admin order list + filters
-- [x] Status pipeline: pending → shipped → delivered
+- [x] Status pipeline:
+
+pending → shipped → delivered
 - [ ] Add internal notes
 - [ ] Optional email on status change
 
@@ -38,6 +41,132 @@
 - [ ] UI button “Generate Suggestion”
 - [ ] Log prompts/responses
 - [ ] Manual editing before saving
+
+## Analytics
+### Sales & Revenue Analytics
+- [ ] Daily / Monthly / Yearly
+- [ ] By Product
+- [ ] By Category
+- [ ] Profit Margin per Item
+- [ ] Sales Volume (# of orders)
+- [ ] Average order value (AOV)
+- [ ] Conversion rate (% of visitors who purchase)
+- [ ] Refund rate or chargebacks
+- [ ] Repeat purchase rate
+
+#### Visuals
+
+✔ Line chart: Revenue over time
+
+✔ Pie chart: Sales by category or product
+
+✔ KPI cards: Today’s revenue | Month-to-date | Total orders
+
+### Product & Inventory Analytics
+- [ ] Best selling products
+- [ ] Worst selling products
+- [ ] Inventory levels & low-stock alerts
+- [ ] Sell-through rate (how fast stock depletes)
+- [ ] Inventory aging (how long stock sits)
+- [ ] Stock forecast (days remaining before sellout)
+- [ ] Product views to purchase ratio
+
+("interest efficiency")
+
+#### Visuals
+✔ Table view: Products sorted by revenue, sales count, stock
+
+✔ Red highlight for low or overstock situations
+
+### Customer Behavior & Demographics
+- [ ] New vs returning customers
+- [ ] Customer lifetime value (CLV)
+- [ ] Average time between purchases
+- [ ] Geographical insights (city, state/country)
+- [ ] Customer funnel
+
+Visitors → Cart → Checkout → Purchase
+
+#### Visuals
+✔ Funnel chart
+
+✔ World/US heatmap
+
+✔ Customer lifetime leaderboards
+
+
+
+### Cart & Checkout insights
+- [ ] Abandoned carts count & rate
+- [ ] Most abandoned product combinations
+- [ ] Steps where users drop off during checkout
+- [ ] Time to checkout completion
+- [ ] Devices used (mobile/desktop)
+
+#### Visuals
+✔ Abandonment report with recovery suggestions
+
+✔ % drop at each checkout stage
+
+
+### Traffic & Engagement Analytics
+- [ ] Page views & unique visitors
+- [ ] Referral sources
+
+(Facebook, TikTok, Google, direct)
+- [ ] Session duration & activity
+- [ ] Search terms used on-site
+- [ ] Click-through rates
+
+(featured products, hero banners)
+
+#### Visuals
+✔ Traffic over time
+
+✔ Pie chart of traffic sources
+
+### Marketing & Promotions
+- [ ] Coupon usage statistics
+- [ ] Email open rate & click rate
+- [ ] Influencer or affiliate performance
+- [ ] ROI per marketing channel
+
+#### Visuals
+✔ Conversion rate per campaign
+
+✔ Coupon usage trends
+
+
+### Shipping & Order Processing
+- [ ] Orders awaiting shipment
+- [ ] Average fulfillment time
+- [ ] Delivery success vs delay rate
+- [ ] Shipping cost per carrier
+- [ ] Return reasons breakdown
+
+#### Visuals
+✔ Fulfillment dashboard with progress statuses
+
+✔ Alerts for delayed or unfulfilled orders
+
+### Financial & Operational Metrics
+- [ ] Gross revenue vs net revenue
+
+(after fees/refunds)
+- [ ] COGS tracking
+
+(cost of goods sold)
+- [ ] Supplier cost trends
+- [ ] Taxes collected
+- [ ] Monthly recurring costs (optional input)
+
+#### Visuals
+✔ Profit vs cost bar chart
+
+✔ Month-to-month financial comparison
+
+
+
 
 ## 🛒 Customer-Facing Pages
 ### Home
